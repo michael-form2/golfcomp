@@ -1,0 +1,2376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#082f25">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>GolfComp</title>
+<style>
+:root{--green:#082f25;--green2:#14523f;--cream:#f4f0e8;--ink:#122019;--gold:#d8b45c;
+      --muted:#6f7b74;--line:rgba(18,32,25,.09);--bad:#b3261e;--good:#25704d}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#082f25;color:var(--ink);-webkit-text-size-adjust:100%}
+button{font:inherit;cursor:pointer}
+.app{width:min(430px,100vw);min-height:100vh;margin:auto;background:var(--cream);
+  position:relative;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.28)}
+
+/* ---------- hero ---------- */
+.top{height:250px;padding:calc(20px + env(safe-area-inset-top)) 18px 30px;color:#fff;
+  background:linear-gradient(180deg,rgba(3,28,21,.12),rgba(4,35,27,.88)),
+  url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgMTIwMCI+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InNreSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNzc5NjhiIi8+PHN0b3Agb2Zmc2V0PSIuNDUiIHN0b3AtY29sb3I9IiNiN2MyYWEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkZmM4OTYiLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJsYW5kIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CjxzdG9wIHN0b3AtY29sb3I9IiM2MDgyNWQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyMTRiMzYiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9InVybCgjc2t5KSIvPgo8Y2lyY2xlIGN4PSI3MDAiIGN5PSIyMjAiIHI9IjExMCIgZmlsbD0iI2Y0ZDk5ZiIgb3BhY2l0eT0iLjUwIi8+CjxwYXRoIGQ9Ik0wIDUxMCBDMTcwIDQ1MCAzMDAgNDk1IDQzMCA0NTAgQzU5MCAzOTUgNzQwIDQ0NSA5MDAgMzg1IEw5MDAgMTIwMCBMMCAxMjAwWiIgZmlsbD0iIzI5NGQzOSIvPgo8cGF0aCBkPSJNMCA2MzAgQzE4MCA1MjAgMzQwIDU3MCA0NzAgNTIwIEM2MzAgNDU1IDc2MCA1MTAgOTAwIDQ1NSBMOTAwIDEyMDAgTDAgMTIwMFoiIGZpbGw9InVybCgjbGFuZCkiLz4KPHBhdGggZD0iTS01MCA4NTAgQzE2MCA2NjAgMzQwIDY0MCA1MTAgNjY1IEM3MDAgNjk1IDgxMCA4MTAgOTUwIDg5MCBMOTUwIDEyMDAgTC01MCAxMjAwWiIgZmlsbD0iIzZlOTM2NyIvPgo8ZWxsaXBzZSBjeD0iNjUwIiBjeT0iODIwIiByeD0iOTAiIHJ5PSIyOCIgZmlsbD0iI2RkY2M5ZCIvPgo8cGF0aCBkPSJNNTM1IDgxNSBMNTQwIDU5MCIgc3Ryb2tlPSIjZjZmMmU4IiBzdHJva2Utd2lkdGg9IjciLz4KPHBhdGggZD0iTTU0MCA1OTAgTDYzMCA2MjIgTDU0MCA2NTBaIiBmaWxsPSIjZDdiMjVhIi8+Cjwvc3ZnPg==") center 48%/cover no-repeat;
+  position:relative}
+.top.tall{height:330px}
+.toprow{display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:900;letter-spacing:-.5px}
+.mark{width:36px;height:36px;border-radius:13px;background:linear-gradient(145deg,#f0d787,#cba447);
+  display:grid;place-items:center;color:var(--green);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.avatar{width:40px;height:40px;border-radius:14px;background:#fff;color:var(--green);
+  display:grid;place-items:center;font-size:12px;font-weight:900;border:0}
+.welcome{position:absolute;left:18px;right:18px;bottom:28px}
+.welcome small{font-size:9px;font-weight:900;letter-spacing:1.25px;text-transform:uppercase;color:#f0d88f}
+.welcome h1{font-size:29px;line-height:1.03;letter-spacing:-1px;margin:5px 0 5px}
+.welcome p{font-size:12px;color:rgba(255,255,255,.72);margin:0}
+.welcome .cta{margin-top:15px;width:100%;border:0;border-radius:15px;padding:14px;background:#fff;
+  color:var(--green);font-size:12.5px;font-weight:900;box-shadow:0 12px 28px rgba(0,0,0,.15)}
+.welcome .alt{text-align:center;margin-top:8px;font-size:10px;color:rgba(255,255,255,.65)}
+.welcome .alt button{border:0;background:none;color:#fff;font-weight:900;padding:0}
+
+.content{padding:0 15px 108px;margin-top:-14px;position:relative;z-index:2}
+.card{background:rgba(255,255,255,.97);border-radius:22px;border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 12px 32px rgba(8,47,37,.09)}
+
+/* ---------- quick actions ---------- */
+.quick{background:#fff;border-radius:22px;padding:12px;box-shadow:0 14px 34px rgba(8,47,37,.11)}
+.play-btn{width:100%;border:0;border-radius:18px;background:var(--green);color:#fff;
+  display:grid;grid-template-columns:48px 1fr 22px;gap:12px;align-items:center;padding:15px;text-align:left}
+.play-icon{width:48px;height:48px;border-radius:16px;background:rgba(255,255,255,.13);
+  display:grid;place-items:center;font-size:21px}
+.play-copy b{display:block;font-size:17px;margin-bottom:3px}
+.play-copy span{font-size:10.8px;line-height:1.35;color:rgba(255,255,255,.7)}
+.chev{font-size:27px;color:var(--gold)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.tile{border:0;border-radius:18px;padding:15px;text-align:left;min-height:112px}
+.tile.dark{background:#123b2e;color:#fff}
+.tile.gold{background:linear-gradient(145deg,#d9b45d,#efd58a);color:var(--green)}
+.tile.white{background:#f8f6f1;color:var(--ink)}
+.tile.soft{background:#e9e1d3;color:var(--ink)}
+.tile .ico{font-size:18px}
+.tile b{display:block;font-size:14px;margin-top:17px;margin-bottom:3px}
+.tile span{display:block;font-size:10px;line-height:1.35;opacity:.67}
+
+.section{display:flex;justify-content:space-between;align-items:center;margin:22px 3px 10px}
+.section h2{font-size:17px;letter-spacing:-.3px;margin:0}
+.section button{border:0;background:none;color:var(--green);font-size:10.5px;font-weight:900;padding:0}
+
+/* ---------- handicap ---------- */
+.hcp{padding:17px;display:grid;grid-template-columns:90px 1fr;gap:15px;align-items:center}
+.ring{width:88px;height:88px;border-radius:50%;background:conic-gradient(var(--gold) 0%,#e9e4da 0);
+  display:grid;place-items:center}
+.ringin{width:70px;height:70px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center}
+.ring b{font-size:24px;line-height:1;color:var(--green)}
+.ring small{display:block;font-size:7px;font-weight:900;letter-spacing:.6px;color:var(--muted);margin-top:3px}
+.hcp .label{font-size:8.5px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.hcp h3{font-size:18px;margin:4px 0 4px}
+.hcp p{font-size:11px;line-height:1.45;color:var(--muted);margin:0}
+.trend{font-size:10px;color:var(--good);font-weight:900;margin-top:6px}
+
+/* ---------- live comp ---------- */
+.live{overflow:hidden}
+.live-head{padding:16px 16px 12px;display:flex;justify-content:space-between;gap:10px}
+.live-kicker{font-size:8.5px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#28704f}
+.live h3{font-size:18px;margin:4px 0 2px}
+.small{font-size:10.5px;color:var(--muted)}
+.pill{height:max-content;background:#e6f1eb;color:#176141;padding:6px 9px;border-radius:999px;
+  font-size:8.5px;font-weight:900;text-transform:uppercase;letter-spacing:.7px}
+.teamhead{display:grid;grid-template-columns:1fr 52px 42px;padding:8px 16px;background:#f7f4ee;
+  font-size:8.5px;font-weight:900;color:var(--muted);letter-spacing:.7px;text-transform:uppercase}
+.team{display:grid;grid-template-columns:1fr 52px 42px;align-items:center;padding:10px 16px;
+  border-top:1px solid var(--line);font-size:12.5px}
+.team strong{text-align:right;font-size:17px;color:var(--green)}
+.team .thru{text-align:right;font-size:10px;color:var(--muted)}
+.team.me{background:#fbf6e8}
+.team.me .teamname{font-weight:900}
+.teamname b{display:inline-grid;place-items:center;width:21px;height:21px;border-radius:8px;
+  background:var(--green);color:#fff;font-size:9px;margin-right:7px}
+.live-bottom{padding:12px 15px 15px}
+.format{font-size:10.5px;color:var(--muted);margin-bottom:10px}
+.format b{color:var(--green)}
+.primary{width:100%;border:0;border-radius:14px;padding:14px;background:var(--green);color:#fff;
+  font-size:12px;font-weight:900}
+.primary:disabled{opacity:.4}
+.ghostbtn{width:100%;border:1px solid #dcd4c7;background:transparent;color:var(--green);
+  border-radius:14px;padding:13px;font-weight:900;font-size:11.5px;margin-top:9px}
+
+/* ---------- trips ---------- */
+.trip{overflow:hidden}
+.trip-img{height:130px;background:linear-gradient(180deg,rgba(4,34,26,.02),rgba(4,34,26,.72)),
+  url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgMTIwMCI+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InNreSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNzc5NjhiIi8+PHN0b3Agb2Zmc2V0PSIuNDUiIHN0b3AtY29sb3I9IiNiN2MyYWEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkZmM4OTYiLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJsYW5kIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CjxzdG9wIHN0b3AtY29sb3I9IiM2MDgyNWQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyMTRiMzYiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9InVybCgjc2t5KSIvPgo8Y2lyY2xlIGN4PSI3MDAiIGN5PSIyMjAiIHI9IjExMCIgZmlsbD0iI2Y0ZDk5ZiIgb3BhY2l0eT0iLjUwIi8+CjxwYXRoIGQ9Ik0wIDUxMCBDMTcwIDQ1MCAzMDAgNDk1IDQzMCA0NTAgQzU5MCAzOTUgNzQwIDQ0NSA5MDAgMzg1IEw5MDAgMTIwMCBMMCAxMjAwWiIgZmlsbD0iIzI5NGQzOSIvPgo8cGF0aCBkPSJNMCA2MzAgQzE4MCA1MjAgMzQwIDU3MCA0NzAgNTIwIEM2MzAgNDU1IDc2MCA1MTAgOTAwIDQ1NSBMOTAwIDEyMDAgTDAgMTIwMFoiIGZpbGw9InVybCgjbGFuZCkiLz4KPHBhdGggZD0iTS01MCA4NTAgQzE2MCA2NjAgMzQwIDY0MCA1MTAgNjY1IEM3MDAgNjk1IDgxMCA4MTAgOTUwIDg5MCBMOTUwIDEyMDAgTC01MCAxMjAwWiIgZmlsbD0iIzZlOTM2NyIvPgo8ZWxsaXBzZSBjeD0iNjUwIiBjeT0iODIwIiByeD0iOTAiIHJ5PSIyOCIgZmlsbD0iI2RkY2M5ZCIvPgo8cGF0aCBkPSJNNTM1IDgxNSBMNTQwIDU5MCIgc3Ryb2tlPSIjZjZmMmU4IiBzdHJva2Utd2lkdGg9IjciLz4KPHBhdGggZD0iTTU0MCA1OTAgTDYzMCA2MjIgTDU0MCA2NTBaIiBmaWxsPSIjZDdiMjVhIi8+Cjwvc3ZnPg==") center 58%/cover;
+  position:relative}
+.trip-copy{position:absolute;left:15px;bottom:13px;color:#fff}
+.trip-copy small{font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#f0d78b}
+.trip-copy h3{font-size:20px;margin:3px 0 0}
+.trip-info{padding:13px 15px 15px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.trip-info b{font-size:11.5px;color:var(--green)}
+.trip-info span{display:block;font-size:9.5px;color:var(--muted);margin-top:3px}
+.view{border:0;border-radius:12px;padding:10px 12px;background:#ece5d9;color:var(--green);
+  font-size:10px;font-weight:900}
+
+/* ---------- bottom nav ---------- */
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100vw);
+  display:grid;grid-template-columns:1fr 1fr 68px 1fr 1fr;align-items:end;
+  padding:9px 12px calc(11px + env(safe-area-inset-bottom));background:rgba(250,248,244,.96);
+  backdrop-filter:blur(18px);border-top:1px solid var(--line);z-index:10}
+.nav{text-align:center;font-size:9px;color:#7b867f;font-weight:800;border:0;background:none;padding:0}
+.nav b{display:block;font-size:18px;margin-bottom:2px}
+.nav.on{color:var(--green)}
+.plus{border:0;width:56px;height:56px;border-radius:19px;background:var(--green);color:#fff;
+  font-size:24px;margin:-26px auto 0;box-shadow:0 12px 24px rgba(8,47,37,.27)}
+
+/* ---------- sheets ---------- */
+.sheet-wrap{display:none;position:fixed;inset:0;z-index:30;background:rgba(3,20,15,.55);
+  align-items:flex-end;justify-content:center}
+.sheet-wrap.open{display:flex}
+.sheet{width:min(430px,100vw);background:var(--cream);border-radius:25px 25px 0 0;
+  padding:12px 17px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -20px 55px rgba(0,0,0,.22);
+  max-height:92vh;overflow-y:auto}
+.handle{width:43px;height:5px;border-radius:99px;background:#cfc7ba;margin:0 auto 17px}
+.sheet h2{font-size:25px;letter-spacing:-.8px;margin:0 0 5px}
+.sheet p.sub{font-size:12px;line-height:1.5;color:var(--muted);margin:0 0 17px}
+label{display:block;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:1px;
+  color:var(--muted);margin:14px 0 6px}
+input,select{width:100%;border:1px solid #dcd4c7;background:#fff;border-radius:14px;padding:14px;
+  font-size:15px;outline:none;font-family:inherit}
+input:focus,select:focus{border-color:var(--green)}
+input.big{font-size:30px;font-weight:900;text-align:center;padding:16px}
+.pwwrap{position:relative}
+.pwwrap input{padding-right:64px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;
+  color:var(--green);font-size:11px;font-weight:900;padding:10px 10px;letter-spacing:.3px}
+.fine{text-align:center;color:var(--muted);font-size:9.5px;margin-top:9px;line-height:1.5}
+.cancel{width:100%;border:0;background:none;color:var(--muted);padding:12px;font-size:11px;font-weight:800}
+.note{background:rgba(216,180,92,.16);border:1px solid var(--gold);border-radius:14px;
+  padding:12px 14px;font-size:11.5px;margin:13px 0;line-height:1.55}
+.note.lock{background:rgba(37,112,77,.10);border-color:var(--good)}
+.note.err{background:rgba(179,38,30,.10);border-color:var(--bad);color:var(--bad);font-weight:700}
+
+/* ---------- play mode picker ---------- */
+.backbtn{width:40px;height:40px;border:0;border-radius:13px;background:rgba(255,255,255,.93);
+  color:var(--green);font-size:19px;font-weight:900}
+.mode{width:100%;border:0;border-radius:19px;padding:17px;text-align:left;display:grid;
+  grid-template-columns:48px 1fr 22px;gap:12px;align-items:center;margin-bottom:10px}
+.mode:last-child{margin-bottom:0}
+.mode.solo{background:var(--green);color:#fff}
+.mode.mate{background:linear-gradient(145deg,#d9b45d,#efd58a);color:var(--green)}
+.mico{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;font-size:21px;
+  background:rgba(255,255,255,.14)}
+.mode.mate .mico{background:rgba(255,255,255,.32)}
+.mode b{display:block;font-size:16px;margin-bottom:4px}
+.mode span{display:block;font-size:10.8px;line-height:1.4;opacity:.72}
+.partner-box{display:flex;align-items:center;gap:10px;background:#fff;border-radius:15px;
+  padding:12px;border:1px solid var(--line);margin-top:8px;cursor:pointer}
+.partner-box.sel{border-color:var(--green);background:#f3f8f4}
+.partner-avatar{width:38px;height:38px;border-radius:13px;background:#e8e1d4;display:grid;
+  place-items:center;font-weight:900;color:var(--green);font-size:12px}
+.partner-box b{font-size:12.5px}
+.partner-box span{display:block;font-size:9.5px;color:var(--muted);margin-top:2px}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.choice button{border:1px solid #d9d1c4;background:#fff;border-radius:13px;padding:12px;
+  font-size:10.5px;font-weight:900;color:var(--green)}
+.choice button.active{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* ---------- round entry — one hole at a time ---------- */
+.holehead{background:var(--green);color:#fff;border-radius:22px 22px 0 0;padding:15px 17px;
+  display:flex;justify-content:space-between;align-items:center}
+.holehead .n{font-size:26px;font-weight:900;letter-spacing:-.8px}
+.holehead .i{font-size:10.5px;opacity:.8;text-align:right;line-height:1.5}
+.prow{display:grid;grid-template-columns:1fr 130px 58px;gap:8px;align-items:center;
+  padding:12px 13px;border-bottom:1px solid var(--line)}
+.prow:last-of-type{border-bottom:none}
+.prow .nm{font-weight:800;font-size:13.5px}
+.prow .nm small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;margin-top:2px}
+.step{display:grid;grid-template-columns:40px 1fr 40px;gap:4px;align-items:center}
+.step button{border:0;background:var(--green);color:#fff;border-radius:12px;height:48px;
+  font-size:20px;font-weight:900;padding:0}
+.step button:active{background:var(--green2)}
+.step input{border:1px solid #e2dbcd;border-radius:12px;height:48px;text-align:center;
+  font-size:20px;font-weight:900;padding:0;background:#fff;outline:none;width:100%}
+.step input:focus{border-color:var(--gold)}
+.ptsbox{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:50px;border-radius:13px;border:1px solid #e6ded0;background:#faf7f0;line-height:1.1}
+.ptsbox .v{font-size:19px;font-weight:900;color:var(--green)}
+.ptsbox .l{font-size:7.5px;font-weight:900;text-transform:uppercase;color:var(--muted);
+  letter-spacing:.4px;margin-top:2px}
+.ptsbox.good{background:linear-gradient(145deg,#d9b45d,#efd58a);border-color:var(--green)}
+.explain{font-size:10.5px;color:var(--muted);text-align:center;padding:10px 14px;
+  border-top:1px solid var(--line);line-height:1.5}
+.explain b{color:var(--green)}
+.totbar{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;
+  background:var(--green);color:#fff;border-radius:0 0 22px 22px}
+.totbar .l{font-size:8.5px;text-transform:uppercase;letter-spacing:.9px;opacity:.8}
+.totbar .v{font-size:22px;font-weight:900}
+.nav2{display:flex;gap:9px;padding:0 2px;margin-top:12px}
+.nav2 button{flex:1;border:0;border-radius:15px;background:var(--green);color:#fff;
+  min-height:52px;font-size:14px;font-weight:900}
+.nav2 button:disabled{background:#ded7c9;color:#9aa39c}
+.nav2 .ctr{flex:0 0 70px;background:#fff;border:2px solid var(--green);color:var(--green);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.nav2 .ctr .b{font-size:20px;font-weight:900}
+.nav2 .ctr .s{font-size:8px;font-weight:900;color:var(--muted);margin-top:2px}
+/* ---------- comp setup ---------- */
+.plist{display:grid;gap:1px;background:var(--line);border-radius:16px;overflow:hidden;margin-top:8px}
+.plist .p{display:grid;grid-template-columns:34px 1fr auto auto;gap:10px;align-items:center;
+  background:#fff;padding:11px 13px}
+.plist .p .av{width:34px;height:34px;border-radius:12px;background:#ece5d9;display:grid;
+  place-items:center;font-size:11px;font-weight:900;color:var(--green)}
+.plist .p .nm{font-size:13px;font-weight:800}
+.plist .p .nm small{display:block;font-size:9.5px;color:var(--muted);font-weight:700;margin-top:1px}
+.plist .p .hc{font-size:15px;font-weight:900;color:var(--green)}
+.plist .p .x{border:0;background:none;color:var(--muted);font-size:17px;padding:4px 2px;line-height:1}
+.addrow{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.addrow input{border-radius:13px}
+.addrow button{border:0;border-radius:13px;background:var(--green);color:#fff;
+  padding:0 16px;font-weight:900;font-size:12px;white-space:nowrap}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
+.tabs button{border:1px solid #ddd5c7;background:#fff;border-radius:12px;padding:10px 4px;
+  font-size:10.5px;font-weight:900;color:var(--green)}
+.tabs button.on{background:var(--green);color:#fff;border-color:var(--green)}
+.tbox{background:#fff;border-radius:16px;padding:13px;margin-top:9px;border:1px solid var(--line)}
+.tbox .th{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.tbox .tn{font-size:12px;font-weight:900;color:var(--green)}
+.tbox .thc{font-size:10px;font-weight:900;color:var(--muted)}
+.tbox select{margin-bottom:6px;padding:11px;font-size:13px}
+.stepnum{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:8px;
+  background:var(--green);color:#fff;font-size:11px;font-weight:900;margin-right:8px}
+.stepnum.done{background:var(--good)}
+.pinrow{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px}
+.pinbox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.pinbox .l{font-size:8.5px;font-weight:900;color:var(--muted);letter-spacing:.7px}
+.pinbox .v{font-size:22px;font-weight:900;color:var(--green);letter-spacing:.15em;margin-top:3px}
+
+/* ---------- review & sign ---------- */
+.rvhead{display:grid;gap:8px;padding:12px 14px;background:#f7f4ee;font-size:8.5px;
+  font-weight:900;color:var(--muted);letter-spacing:.7px;text-transform:uppercase}
+.rvrow{display:grid;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);
+  align-items:center;font-size:13px}
+.rvrow:last-child{border-bottom:none}
+.rvrow .hn{font-weight:900;color:var(--muted);font-size:11px}
+.rvrow .sc{font-weight:900;font-variant-numeric:tabular-nums}
+.rvrow .pt{font-size:10px;color:var(--muted);font-weight:800}
+.rvrow.tot{background:var(--green);color:#fff;font-size:15px;font-weight:900;
+  border-radius:0 0 22px 22px;padding:14px}
+.rvrow.tot .pt{color:rgba(255,255,255,.75)}
+.signbox{border:2px dashed #ddd5c7;border-radius:16px;padding:16px;text-align:center;margin-top:10px}
+.signbox.signed{border:2px solid var(--good);background:rgba(37,112,77,.08)}
+.signbox .who{font-size:12.5px;font-weight:900;color:var(--ink)}
+.signbox .st{font-size:10.5px;color:var(--muted);margin-top:3px}
+.signbox button{margin-top:11px;width:100%;border:0;border-radius:13px;padding:13px;
+  background:var(--green);color:#fff;font-weight:900;font-size:12px}
+.signbox.signed button{background:var(--good)}
+.signbox .tick{font-size:26px;color:var(--good)}
+
+.striplabel{font-size:8.5px;font-weight:900;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.7px;margin:12px 0 4px}
+.strip{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
+.strip .h{background:#fff;border:1px solid #e6ded0;border-radius:9px;min-height:40px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;
+  font-weight:900;color:var(--muted);line-height:1.15;padding:4px 1px}
+.strip .h .hn{font-size:10px;opacity:.75}
+.strip .h small{font-size:10px;font-weight:900;margin-top:1px;color:var(--ink)}
+.strip .h small i{font-style:normal;font-size:8px;font-weight:900;color:var(--gold);
+  margin-left:1px;vertical-align:super}
+.strip .h small.p2{color:var(--muted);border-top:1px solid var(--line);
+  width:100%;text-align:center;margin-top:2px;padding-top:2px}
+.strip.pair .h{min-height:56px}
+.strip .h.done{background:var(--green);border-color:var(--green);color:#fff}
+.strip .h.done small{color:#fff}
+.strip .h.done small i{color:var(--gold)}
+.strip .h.done small.p2{color:rgba(255,255,255,.8);border-top-color:rgba(255,255,255,.25)}
+.strip .h.now{background:var(--gold);border-color:var(--green);color:var(--green)}
+.strip .h.now small{color:var(--green)}
+.strip .h.now small i{color:var(--green)}
+.strip .h.now small.p2{color:rgba(8,47,37,.7);border-top-color:rgba(8,47,37,.2)}
+/* running totals per player */
+.tot2{display:grid;gap:1px;background:var(--line);border-radius:0 0 22px 22px;overflow:hidden}
+.tot2 .r{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;
+  background:var(--green);color:#fff;padding:12px 16px}
+.tot2 .r .who{font-size:12.5px;font-weight:900}
+.tot2 .r .g{font-size:11px;opacity:.7;font-weight:800}
+.tot2 .r .p{font-size:21px;font-weight:900}
+.tot2 .r .p em{font-style:normal;font-size:9px;opacity:.7;margin-left:3px}
+
+.screen{display:none}
+.screen.on{display:block}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(14px);
+  background:#122019;color:#fff;border-radius:12px;padding:11px 15px;font-size:11px;opacity:0;
+  transition:.2s;z-index:40;pointer-events:none;max-width:88vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--bad)}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid var(--line);
+  border-top-color:var(--green);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{padding:22px 16px;text-align:center;color:var(--muted);font-size:11.5px;line-height:1.6}
+table.t{width:100%;border-collapse:collapse;font-size:12px}
+table.t th,table.t td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line)}
+table.t th{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;
+  font-weight:900;background:#f7f4ee}
+table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:900}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ============ SIGNED OUT — hero + live preview of the app ============ -->
+<div id="v-out" class="screen">
+  <header class="top" style="height:420px">
+    <div class="toprow" style="align-items:flex-start">
+      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+    </div>
+    <div class="welcome">
+      <small>Your handicap · Your mates · Your comp</small>
+      <h1 style="font-size:34px;letter-spacing:-1.25px;margin:0 0 10px;max-width:355px">
+        Golf without the expensive membership.</h1>
+      <p style="max-width:350px">Build your <strong>GolfComp Handicap</strong>, run proper comps
+        and compete with your mates — wherever you play.</p>
+      <button class="cta" onclick="authMode('signup');openSheet('sh-signup')">
+        Create a free account →</button>
+      <div class="alt">Already have an account?
+        <button onclick="authMode('signin');openSheet('sh-signup')">Sign in</button></div>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="card hcp">
+      <div class="ring" style="background:conic-gradient(var(--gold) 76%,#e9e4da 0)">
+        <div class="ringin"><div><b>18.4</b><small>GOLFCOMP HCP</small></div></div></div>
+      <div>
+        <div class="label">Your GolfComp Handicap</div>
+        <h3>18.4 and trending ↓</h3>
+        <p>Built from your eligible GolfComp rounds. Keep playing and it keeps moving.</p>
+        <div class="trend">↓ 1.6 over your last 5 rounds</div>
+      </div>
+    </section>
+
+    <div class="section"><h2>On now</h2><button>Full leaderboard →</button></div>
+    <section class="card live">
+      <div class="live-head">
+        <div><div class="live-kicker">Tassie Trip · Day 1 · Hole 11</div>
+          <h3>Barnbougle Dunes</h3><div class="small">2-Man Ambrose</div></div>
+        <div class="pill">Live</div>
+      </div>
+      <div class="teamhead"><div>Team</div><div style="text-align:right">Thru</div>
+        <div style="text-align:right">Net</div></div>
+      <div class="team me"><div class="teamname"><b>1</b>Mick + Freddy</div>
+        <div class="thru">11</div><strong>-6</strong></div>
+      <div class="team"><div class="teamname"><b>2</b>Ritchie + Jake</div>
+        <div class="thru">11</div><strong>-4</strong></div>
+      <div class="team"><div class="teamname"><b>3</b>Max + Callum</div>
+        <div class="thru">10</div><strong>-2</strong></div>
+      <div class="live-bottom">
+        <div class="format"><b>2-Man Ambrose</b> · Best shot selected · Team handicap applied</div>
+        <button class="primary" onclick="openSheet('sh-signup')">Continue team scoring →</button>
+      </div>
+    </section>
+
+    <div class="section"><h2>What are we doing?</h2></div>
+    <section class="grid">
+      <button class="tile dark" onclick="openSheet('sh-signup')">
+        <div class="ico">🏆</div><b>Start a comp</b><span>Any format. Any mates.</span></button>
+      <button class="tile gold" onclick="openSheet('sh-signup')">
+        <div class="ico">＋</div><b>Join a comp</b><span>Enter the code. Tee it up.</span></button>
+      <button class="tile white" onclick="openSheet('sh-signup')">
+        <div class="ico">↗</div><b>My rounds</b><span>Scores, history &amp; handicap.</span></button>
+      <button class="tile soft" onclick="openSheet('sh-signup')">
+        <div class="ico">✈</div><b>Golf trips</b><span>Where are we going next?</span></button>
+    </section>
+
+    <div class="section"><h2>Your Tassie trip</h2><button>Trip hub →</button></div>
+    <section class="card trip">
+      <div class="trip-img"><div class="trip-copy">
+        <small>3 days · 8 players</small><h3>Barnbougle, Tasmania</h3></div></div>
+      <div class="trip-info">
+        <div><b>Dunes · Lost Farm · Bougle Run</b>
+          <span>Rounds, teams, itinerary &amp; trip leaderboard</span></div>
+        <button class="view" onclick="openSheet('sh-signup')">Open</button></div>
+    </section>
+
+    <div class="fine" style="margin-top:16px">Free · No club membership · We only ask for a name
+      and an email</div>
+  </main>
+</div>
+
+<!-- ============ ONBOARD NAME ============ -->
+<div id="v-name" class="screen">
+  <header class="top" style="height:200px">
+    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="welcome"><small>Step 1 of 2</small>
+      <h1>What should we call you?</h1>
+      <p>The name your mates see on the leaderboard.</p></div>
+  </header>
+  <main class="content">
+    <section class="card" style="padding:17px">
+      <label>Your name</label>
+      <input type="text" id="ob-name" placeholder="Mick Harvey" autocomplete="name">
+      <button class="primary" style="margin-top:14px" onclick="saveName()">Continue →</button>
+    </section>
+  </main>
+</div>
+
+<!-- ============ ONBOARD HANDICAP ============ -->
+<div id="v-est" class="screen">
+  <header class="top" style="height:200px">
+    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="welcome"><small>Step 2 of 2</small>
+      <h1>Roughly what do you shoot?</h1>
+      <p>Your best guess for 18 holes. One round and we'll work out the real number.</p></div>
+  </header>
+  <main class="content">
+    <section class="card" style="padding:17px">
+      <label>Typical 18-hole score</label>
+      <input type="number" id="ob-score" class="big" placeholder="100" inputmode="numeric"
+             min="50" max="200" oninput="previewEstimate()">
+      <div id="est-preview" style="text-align:center;font-size:12px;color:var(--muted);
+        margin-top:12px;min-height:22px"></div>
+      <div class="note lock"><strong>You only set this once.</strong> After that it's automatic —
+        every round updates it. That's what keeps it honest, so nobody can talk their handicap up
+        before a big comp.</div>
+      <button class="primary" onclick="saveEstimate()">Set my starting handicap →</button>
+      <button class="ghostbtn" onclick="skipEstimate()">I've genuinely no idea</button>
+    </section>
+  </main>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="v-home" class="screen">
+  <header class="top">
+    <div class="toprow">
+      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+      <button class="avatar" id="av" onclick="openSheet('sh-profile')">--</button>
+    </div>
+    <div class="welcome">
+      <small id="greet">Good afternoon</small>
+      <h1>What are we playing?</h1>
+      <p>Your golf, your mates, your comp.</p>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="quick">
+      <button class="play-btn" onclick="startRound()">
+        <div class="play-icon">⛳</div>
+        <div class="play-copy"><b>Play Golf</b>
+          <span>Enter a round and build your GolfComp Handicap.</span></div>
+        <div class="chev">›</div>
+      </button>
+      <div class="grid">
+        <button class="tile dark" onclick="openSheet('sh-newcomp')">
+          <div class="ico">🏆</div><b>Create Comp</b>
+          <span>Choose the format, course and players.</span></button>
+        <button class="tile gold" onclick="openSheet('sh-join')">
+          <div class="ico">＋</div><b>Join Comp</b>
+          <span>Enter the comp code and you're in.</span></button>
+        <button class="tile white" onclick="toast('Golf trips coming soon')">
+          <div class="ico">✈</div><b>Trips</b>
+          <span>Plan and manage your next golf trip.</span></button>
+        <button class="tile soft" onclick="showRounds()">
+          <div class="ico">↗</div><b>My Rounds</b>
+          <span>Scores, history and handicap rounds.</span></button>
+      </div>
+    </section>
+
+    <div class="section"><h2>Your GolfComp Handicap</h2>
+      <button onclick="showRounds()">History →</button></div>
+    <section class="card hcp">
+      <div class="ring" id="ring"><div class="ringin"><div>
+        <b id="h-val">—</b><small id="h-conf">GOLFCOMP HCP</small></div></div></div>
+      <div>
+        <div class="label" id="h-label">Current index</div>
+        <h3 id="h-head">—</h3>
+        <p id="h-sub">—</p>
+        <div class="trend" id="h-trend"></div>
+      </div>
+    </section>
+
+    <div id="live-wrap"></div>
+
+    <div class="section"><h2>Your comps</h2></div>
+    <div id="my-comps"></div>
+  </main>
+</div>
+
+<!-- ============ MATES ============ -->
+<div id="v-mates" class="screen">
+  <header class="top" style="height:190px">
+    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="welcome"><small>The group</small><h1>Your mates</h1>
+      <p>Who’s out there, and what they’ve been shooting.</p></div>
+  </header>
+  <main class="content">
+    <div class="tabs" style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="ghostbtn" id="mt-tab-feed" style="flex:1;margin:0"
+        onclick="matesTab('feed')">Activity</button>
+      <button class="ghostbtn" id="mt-tab-list" style="flex:1;margin:0"
+        onclick="matesTab('list')">Following</button>
+    </div>
+    <div id="mates-body"></div>
+    <button class="ghostbtn" onclick="show('v-home')">← Back to dashboard</button>
+  </main>
+</div>
+
+<!-- ============ MY ROUNDS ============ -->
+<div id="v-rounds" class="screen">
+  <header class="top" style="height:190px">
+    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="welcome"><small>Your record</small><h1>My rounds</h1>
+      <p>Every round that counts towards your handicap.</p></div>
+  </header>
+  <main class="content">
+    <section class="card" style="overflow:hidden"><div id="rounds-body"></div></section>
+    <div class="note"><strong>What counts:</strong> anything where you played and holed out your
+      own ball — Stableford, stroke, best ball.<br><br>
+      <strong>What doesn't:</strong> Ambrose and scrambles, because you're hitting from someone
+      else's spot rather than playing your own round.</div>
+    <button class="ghostbtn" onclick="show('v-home')">← Back to dashboard</button>
+  </main>
+</div>
+
+<!-- ============ PLAY GOLF — MODE PICKER ============ -->
+<div id="v-play" class="screen">
+  <header class="top" style="height:230px">
+    <div class="toprow">
+      <button class="backbtn" onclick="show('v-home')">←</button>
+      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+    </div>
+    <div class="welcome">
+      <small>Play Golf</small>
+      <h1>How are you playing today?</h1>
+      <p>Keep it casual, keep it honest, and keep building your GolfComp Handicap.</p>
+    </div>
+  </header>
+  <main class="content">
+    <section class="card" style="padding:12px">
+      <button class="mode solo" onclick="openSheet('sh-solo')">
+        <div class="mico">👤</div>
+        <div><b>Play on my own</b><span>Score your own round. Quick, simple and added to your
+          GolfComp history.</span></div>
+        <div class="chev">›</div>
+      </button>
+      <button class="mode mate" onclick="openMateSheet()">
+        <div class="mico">👥</div>
+        <div><b>Play with a mate</b><span>Pair up and either of you can keep score for both
+          players.</span></div>
+        <div class="chev">›</div>
+      </button>
+    </section>
+
+    <div class="section"><h2>About casual rounds</h2></div>
+    <section class="card" style="padding:15px 16px;background:#f8f4e8">
+      <b style="display:block;color:var(--green);font-size:12.5px;margin-bottom:5px">
+        GolfComp rounds are unofficial — honesty still matters.</b>
+      <p style="font-size:10.8px;color:var(--muted);line-height:1.5;margin:0">
+        Your casual scores help shape your GolfComp Handicap. If you enter dodgy scores, you're
+        really only setting yourself up to get found out the next time you play a proper comp.</p>
+      <p style="font-size:10.8px;line-height:1.5;margin:9px 0 0;color:#2a6a4e;font-weight:800">
+        The leaderboard has a funny way of sorting that out. 😏</p>
+    </section>
+  </main>
+</div>
+
+<!-- ============ PLAY A ROUND ============ -->
+<div id="v-round" class="screen">
+  <header class="top" style="height:190px">
+    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="welcome"><small id="rd-course">—</small><h1>Your card</h1>
+      <p id="rd-hint">Enter your score for each hole.</p></div>
+  </header>
+  <main class="content">
+    <div id="rd-body"></div>
+  </main>
+</div>
+
+<!-- ============ COMP SETUP ============ -->
+<div id="v-comp" class="screen">
+  <header class="top" style="height:200px">
+    <div class="toprow">
+      <button class="backbtn" onclick="show('v-home')">←</button>
+      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+    </div>
+    <div class="welcome"><small id="cs-kicker">Setting up</small>
+      <h1 id="cs-name" style="font-size:25px">—</h1>
+      <p id="cs-sub">—</p></div>
+  </header>
+  <main class="content"><div id="cs-body"></div></main>
+</div>
+
+<!-- ============ REVIEW & SIGN ============ -->
+<div id="v-review" class="screen">
+  <header class="top" style="height:190px">
+    <div class="toprow">
+      <button class="backbtn" onclick="show('v-round');renderRoundHole()">←</button>
+      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+    </div>
+    <div class="welcome"><small>Almost done</small><h1 id="rv-title">Check your card</h1>
+      <p id="rv-sub">One last look before it counts.</p></div>
+  </header>
+  <main class="content"><div id="rd-rev"></div></main>
+</div>
+
+<!-- ============ NAV ============ -->
+<nav class="bottom" id="nav" style="display:none">
+  <button class="nav on" onclick="show('v-home')"><b>⌂</b>Home</button>
+  <button class="nav" onclick="showMates()"><b>▤</b>Mates</button>
+  <button class="plus" onclick="startRound()">＋</button>
+  <button class="nav" onclick="toast('Golf trips coming soon')"><b>✈</b>Trips</button>
+  <button class="nav" onclick="openSheet('sh-profile')"><b>◉</b>Profile</button>
+</nav>
+</div>
+
+<!-- ============ SHEETS ============ -->
+<div class="sheet-wrap" id="sh-signup" onclick="outside(event,'sh-signup')"><div class="sheet">
+  <div class="handle"></div>
+  <h2 id="au-title">Join GolfComp.</h2>
+  <p class="sub" id="au-sub">Start building your GolfComp Handicap and running comps with your mates.</p>
+
+  <div class="tabs" style="grid-template-columns:1fr 1fr;margin-bottom:4px">
+    <button id="au-t-up" class="on" onclick="authMode('signup')">Create account</button>
+    <button id="au-t-in" onclick="authMode('signin')">Sign in</button>
+  </div>
+
+  <label>Email address</label>
+  <input type="email" id="auth-email" placeholder="you@example.com" inputmode="email"
+         autocomplete="email">
+
+  <label>Password</label>
+  <div class="pwwrap">
+    <input type="password" id="auth-pass" placeholder="At least 6 characters"
+           autocomplete="current-password"
+           onkeydown="if(event.key==='Enter')doAuth()">
+    <button type="button" class="eye" id="au-eye" onclick="togglePw()"
+            aria-label="Show password">Show</button>
+  </div>
+
+  <button class="primary" style="margin-top:11px" id="au-go" onclick="doAuth()">
+    Create my free account →</button>
+  <div id="auth-msg"></div>
+
+  <div style="display:flex;align-items:center;gap:10px;margin:14px 0 2px">
+    <div style="flex:1;height:1px;background:var(--line)"></div>
+    <div style="font-size:9px;font-weight:900;color:var(--muted);letter-spacing:.8px">OR</div>
+    <div style="flex:1;height:1px;background:var(--line)"></div>
+  </div>
+  <button class="ghostbtn" onclick="sendMagicLink()">Email me a sign-in link instead</button>
+  <button class="linkbtn" id="au-forgot" onclick="resetPassword()"
+          style="width:100%;border:0;background:none;color:var(--muted);font-size:10.5px;
+                 font-weight:800;text-decoration:underline;padding:10px;display:none">
+    Forgotten your password?</button>
+
+  <div class="fine">No club membership · No joining fee · Free to play</div>
+  <button class="cancel" onclick="closeSheet('sh-signup')">Not now</button>
+</div></div>
+
+<div class="sheet-wrap" id="sh-newcomp" onclick="outside(event,'sh-newcomp')"><div class="sheet">
+  <div class="handle"></div>
+  <h2>Create a comp.</h2>
+  <p class="sub">Set it up once, share a link, everyone scores on their phone.</p>
+  <label>Comp name</label>
+  <input type="text" id="nc-name" placeholder="Saturday at Ivanhoe">
+
+  <div id="nc-days"></div>
+
+  <button class="ghostbtn" style="margin-top:10px" onclick="addDay()">＋ Add another day</button>
+  <div class="fine" id="nc-days-note" style="text-align:left;margin-top:6px"></div>
+
+  <button class="primary" style="margin-top:14px" onclick="createComp()">Create comp →</button>
+  <button class="cancel" onclick="closeSheet('sh-newcomp')">Cancel</button>
+</div></div>
+
+<div class="sheet-wrap" id="sh-rules" onclick="outside(event,'sh-rules')"><div class="sheet">
+  <div class="handle"></div>
+  <div id="rules-body"></div>
+  <button class="cancel" onclick="closeSheet('sh-rules')">Close</button>
+</div></div>
+
+<div class="sheet-wrap" id="sh-created" onclick="outside(event,'sh-created')"><div class="sheet">
+  <div class="handle"></div>
+  <h2>You're set.</h2>
+  <p class="sub" id="cr-name"></p>
+  <label>Share this link</label>
+  <input type="text" id="cr-link" readonly onclick="this.select()">
+  <button class="primary" style="margin-top:12px" onclick="shareComp()">Share with the boys →</button>
+  <div class="note">Anyone who taps it signs in, or makes a free account, and lands on their
+    own card. You're the organiser because you set it up — nothing to remember.</div>
+  <button class="cancel" onclick="closeSheet('sh-created')">Done</button>
+</div></div>
+
+<div class="sheet-wrap" id="sh-join" onclick="outside(event,'sh-join')"><div class="sheet">
+  <div class="handle"></div>
+  <h2>Join a comp.</h2>
+  <p class="sub">Paste the link a mate sent you.</p>
+  <label>Link or code</label>
+  <input type="text" id="join-code" placeholder="golfcomp.com.au/c/…">
+  <button class="primary" style="margin-top:11px" onclick="joinComp()">Find it →</button>
+  <div id="join-msg"></div>
+  <button class="cancel" onclick="closeSheet('sh-join')">Cancel</button>
+</div></div>
+
+<div class="sheet-wrap" id="sh-solo" onclick="outside(event,'sh-solo')"><div class="sheet">
+  <div class="handle"></div>
+  <h2>Solo round.</h2>
+  <p class="sub">Choose your course and tee, then start scoring.</p>
+  <label>Course &amp; tee</label>
+  <select id="so-tee"></select>
+  <label>Date played</label>
+  <input type="date" id="so-date">
+  <button class="primary" onclick="beginRound(false)">Start round →</button>
+  <button class="cancel" onclick="closeSheet('sh-solo')">Cancel</button>
+</div></div>
+
+<div class="sheet-wrap" id="sh-mate" onclick="outside(event,'sh-mate')"><div class="sheet">
+  <div class="handle"></div>
+  <h2>Play with a mate.</h2>
+  <p class="sub">Add your playing partner. Either of you can score the round for both players.</p>
+  <label>Course &amp; tee</label>
+  <select id="ma-tee"></select>
+  <label>Date played</label>
+  <input type="date" id="ma-date">
+  <label>Playing partner</label>
+  <div id="ma-recent"></div>
+  <div style="display:flex;align-items:center;gap:10px;margin:14px 0 4px">
+    <div style="flex:1;height:1px;background:var(--line)"></div>
+    <div style="font-size:9px;font-weight:900;color:var(--muted);letter-spacing:.8px">OR BY EMAIL</div>
+    <div style="flex:1;height:1px;background:var(--line)"></div>
+  </div>
+  <input type="email" id="ma-email" placeholder="their@email.com" inputmode="email"
+         onkeydown="if(event.key==='Enter')lookupEmail()">
+  <button class="ghostbtn" onclick="lookupEmail()">Look them up</button>
+  <div id="ma-results"></div>
+  <button class="primary" onclick="beginRound(true)">Start round together →</button>
+  <button class="cancel" onclick="closeSheet('sh-mate')">Cancel</button>
+</div></div>
+
+<div class="sheet-wrap" id="sh-result" onclick="outside(event,'sh-result')"><div class="sheet">
+  <div class="handle"></div>
+  <h2 id="rs-title">Round saved.</h2>
+  <p class="sub" id="rs-sub"></p>
+  <section class="card hcp" style="box-shadow:none;border:1px solid #e2dbcd">
+    <div class="ring" id="rs-ring"><div class="ringin"><div>
+      <b id="rs-val">—</b><small>GOLFCOMP HCP</small></div></div></div>
+    <div><div class="label">Updated handicap</div>
+      <h3 id="rs-move">—</h3><p id="rs-note"></p></div>
+  </section>
+  <div class="note lock" id="rs-other" style="display:none"></div>
+  <button class="primary" style="margin-top:12px"
+    onclick="closeSheet('sh-result');show('v-home')">Back to dashboard</button>
+</div></div>
+
+<div class="sheet-wrap" id="sh-profile" onclick="outside(event,'sh-profile')"><div class="sheet">
+  <div class="handle"></div>
+  <h2 id="pr-name">Profile</h2>
+  <p class="sub" id="pr-email"></p>
+  <div id="pr-emailstate"></div>
+  <div class="note lock" id="pr-hcp"></div>
+  <button class="ghostbtn" onclick="closeSheet('sh-profile');showRounds()">My rounds</button>
+
+  <button class="ghostbtn" onclick="toggleEmailForm()" id="pr-embtn">Update email</button>
+  <div id="pr-emform" style="display:none;margin-top:4px">
+    <label>Email address</label>
+    <input type="email" id="pr-email-in" placeholder="you@email.com" inputmode="email"
+           autocomplete="email">
+    <div id="pr-emmsg"></div>
+    <button class="primary" style="margin-top:10px" onclick="changeEmail()">Save email</button>
+  </div>
+
+  <div id="pr-verifybox" style="display:none;margin-top:4px">
+    <label>Enter the 6-digit code we emailed you</label>
+    <input type="text" id="pr-otp" inputmode="numeric" maxlength="6" placeholder="123456"
+           autocomplete="one-time-code" style="letter-spacing:5px;text-align:center;font-size:19px">
+    <div id="pr-otpmsg"></div>
+    <button class="primary" style="margin-top:10px" onclick="confirmCode()">Verify</button>
+    <button class="linkbtn" onclick="sendVerify()"
+      style="width:100%;border:0;background:none;color:var(--muted);font-size:10.5px;
+      font-weight:800;text-decoration:underline;padding:9px;cursor:pointer">Send it again</button>
+  </div>
+
+  <button class="ghostbtn" onclick="togglePwForm()" id="pr-pwbtn">Change password</button>
+
+  <div id="pr-pwform" style="display:none;margin-top:4px">
+    <label>New password</label>
+    <div style="position:relative">
+      <input type="password" id="pr-pw1" placeholder="At least 8 characters" autocomplete="new-password">
+      <button type="button" id="pr-eye" onclick="togglePrPw()"
+        style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;
+        border:0;font-size:11px;font-weight:900;color:var(--green);cursor:pointer">Show</button>
+    </div>
+    <label>Confirm it</label>
+    <input type="password" id="pr-pw2" placeholder="Type it again" autocomplete="new-password">
+    <div id="pr-pwmsg"></div>
+    <button class="primary" style="margin-top:10px" onclick="changePassword()">Update password</button>
+  </div>
+
+  <button class="ghostbtn" onclick="signOut()" style="color:var(--bad);border-color:var(--bad)">Sign out</button>
+  <div class="fine" id="pr-ver"></div>
+  <button class="cancel" onclick="closeSheet('sh-profile')">Close</button>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
+<script>
+const APP_VERSION = 'v3 — 2026-08-14';
+const SUPA_URL = 'https://fmnghbldrepksatggpdj.supabase.co';
+const SUPA_KEY = 'sb_publishable_kHvM1R3vOHnE2I1Rt7C7EA_DDmv9MZu';
+
+let sb=null, me=null, courses=[], holes=[], routing=false;
+
+const FORMATS=[
+ {key:'stableford_individual',name:'Individual Stableford',teams:false,hcp:true,
+  blurb:'Everyone plays their own ball for points. A shocking hole costs you two points, not your round.'},
+ {key:'stroke_individual',name:'Stroke',teams:false,hcp:true,
+  blurb:'Count every shot, lowest nett total wins. A proper test.'},
+ {key:'bestball_stableford',name:'2-Ball Best Ball',teams:true,size:2,hcp:true,
+  blurb:'Pairs. You each play your own ball and the better score counts for the team.'},
+ {key:'bestball_match',name:'Four-Ball Match Play',teams:true,size:2,hcp:true,
+  blurb:'Two pairs head to head. Best score in each pair wins the hole — level and it’s halved. Whoever’s up after 18 takes it. Perfect for a group of four.'},
+ {key:'stableford_3man',name:'3-Man Stableford',teams:true,size:3,hcp:true,
+  blurb:'Threes. Everyone plays their own ball, best score each hole counts for the team.'},
+ {key:'ambrose_2man',name:'2-Man Ambrose',teams:true,size:2,hcp:false,
+  blurb:'Pairs. Everyone hits, best shot is taken and both play from there.'},
+ {key:'ambrose_4man',name:'4-Man Ambrose',teams:true,size:4,hcp:false,
+  blurb:'Fours. Everyone hits, best shot chosen, all play from there. Nobody gets left behind.'}
+];
+
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(m,e){const t=$('toast');t.textContent=m;t.className='toast show'+(e?' err':'');
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2800)}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  $('nav').style.display=(id==='v-out'||id==='v-name'||id==='v-est'||id==='v-review')
+    ?'none':'grid';window.scrollTo(0,0)}
+function openSheet(i){$(i).classList.add('open')}
+function closeSheet(i){$(i).classList.remove('open')}
+function outside(e,i){if(e.target.id===i)closeSheet(i)}
+
+// ---------- auth ----------
+let auMode='signup';
+function togglePw(){
+  const i=$('auth-pass'), b=$('au-eye');
+  const show=i.type==='password';
+  i.type=show?'text':'password';
+  b.textContent=show?'Hide':'Show';
+  b.setAttribute('aria-label',show?'Hide password':'Show password');
+}
+function authMode(m){
+  auMode=m;
+  $('au-t-up').classList.toggle('on',m==='signup');
+  $('au-t-in').classList.toggle('on',m==='signin');
+  $('au-title').textContent=(m==='signup')?'Join GolfComp.':'Welcome back.';
+  $('au-sub').textContent=(m==='signup')
+    ?'Start building your GolfComp Handicap and running comps with your mates.'
+    :'Sign in to pick up your handicap and comps.';
+  $('au-go').textContent=(m==='signup')?'Create my free account →':'Sign in →';
+  $('auth-pass').setAttribute('autocomplete',m==='signup'?'new-password':'current-password');
+  $('au-forgot').style.display=(m==='signin')?'block':'none';
+  $('auth-msg').innerHTML='';
+}
+
+async function doAuth(){
+  const em=$('auth-email').value.trim(), pw=$('auth-pass').value;
+  if(!em||em.indexOf('@')<0){toast('Enter a valid email',true);return}
+  if(!pw||pw.length<6){toast('Password needs at least 6 characters',true);return}
+  $('auth-msg').innerHTML='<div class="fine" style="margin-top:10px"><span class="spin"></span></div>';
+
+  if(auMode==='signup'){
+    const {data,error}=await sb.auth.signUp({email:em,password:pw,
+      options:{emailRedirectTo:location.origin+location.pathname}});
+    if(error){
+      // Already registered? Nudge them to sign in rather than dead-ending
+      if(/already/i.test(error.message)){
+        $('auth-msg').innerHTML='<div class="note"><strong>That email already has an account.</strong> '
+          +'<a onclick="authMode(\'signin\')" style="color:var(--green);font-weight:900;'
+          +'text-decoration:underline;cursor:pointer">Sign in instead</a></div>';
+        return;
+      }
+      $('auth-msg').innerHTML='<div class="note err">'+esc(error.message)+'</div>'; return;
+    }
+    if(data && data.session){ $('auth-msg').innerHTML=''; closeSheet('sh-signup'); route(); return; }
+    // Supabase is set to confirm emails
+    $('auth-msg').innerHTML='<div class="note lock"><strong>Almost there.</strong> '
+      +'We’ve emailed '+esc(em)+' to confirm it’s you. Tap the link and you’re in.</div>';
+    return;
+  }
+
+  const {error}=await sb.auth.signInWithPassword({email:em,password:pw});
+  if(error){
+    $('auth-msg').innerHTML='<div class="note err">'
+      +(/invalid/i.test(error.message)?'Email or password not right. Try again, or use a sign-in link.'
+        :esc(error.message))+'</div>';
+    return;
+  }
+  $('auth-msg').innerHTML=''; closeSheet('sh-signup'); route();
+}
+
+async function resetPassword(){
+  const em=$('auth-email').value.trim();
+  if(!em||em.indexOf('@')<0){toast('Enter your email first',true);return}
+  const {error}=await sb.auth.resetPasswordForEmail(em,
+    {redirectTo:location.origin+location.pathname});
+  if(error){toast(error.message,true);return}
+  $('auth-msg').innerHTML='<div class="note lock"><strong>Check your email.</strong> '
+    +'We’ve sent a link to reset your password.</div>';
+}
+
+async function sendMagicLink(){
+  const em=$('auth-email').value.trim();
+  if(!em||em.indexOf('@')<0){toast('Enter a valid email',true);return}
+  $('auth-msg').innerHTML='<div class="fine" style="margin-top:10px"><span class="spin"></span></div>';
+  const {error}=await sb.auth.signInWithOtp({email:em,
+    options:{emailRedirectTo:location.origin+location.pathname}});
+  if(error){$('auth-msg').innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
+  $('auth-msg').innerHTML='<div class="note lock"><strong>Check your email.</strong> Sign-in link sent to '
+    +esc(em)+'. Works on any device.</div>';
+}
+async function signOut(){if(!confirm('Sign out?'))return;await sb.auth.signOut();
+  me=null;closeSheet('sh-profile');show('v-out')}
+
+// ---------- email ----------
+function toggleEmailForm(){
+  const f=$('pr-emform'), open=f.style.display!=='none';
+  f.style.display=open?'none':'block';
+  $('pr-embtn').textContent=open?'Update email':'Cancel email change';
+  $('pr-emmsg').innerHTML='';
+  if(!open){ $('pr-email-in').value=(me.email_is_placeholder?'':(me.email||'')); $('pr-email-in').focus() }
+}
+async function changeEmail(){
+  const v=$('pr-email-in').value.trim().toLowerCase(), m=$('pr-emmsg');
+  if(!v||v.indexOf('@')<1){m.innerHTML='<div class="note err">That doesn’t look like an email address.</div>';return}
+  if(v===(me.email||'').toLowerCase()){m.innerHTML='<div class="note">That’s already your address.</div>';return}
+  m.innerHTML='<div class="note">Saving…</div>';
+
+  // Change it on the login first — if that's rejected, don't touch our copy
+  const {error:ae}=await sb.auth.updateUser({email:v});
+  if(ae){m.innerHTML='<div class="note err">'+esc(ae.message)+'</div>';return}
+  const {error}=await sb.rpc('gc_update_email',{p_email:v});
+  if(error){m.innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
+
+  await loadMe(); renderHome();
+  m.innerHTML='<div class="note lock"><strong>Email updated.</strong> '
+    +'Verify it whenever suits — nothing stops working in the meantime.</div>';
+  toast('Email updated');
+}
+async function sendVerify(){
+  if(me.email_is_placeholder){toast('Add a real email address first',true);return}
+  $('pr-verifybox').style.display='block';
+  const box=$('pr-otpmsg');
+  box.innerHTML='<div class="note">Sending…</div>';
+  const {error}=await sb.auth.signInWithOtp({email:me.email,
+    options:{shouldCreateUser:false}});
+  if(error){box.innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
+  box.innerHTML='<div class="note">Code sent to <strong>'+esc(me.email)+'</strong>. '
+    +'It’s good for an hour.</div>';
+  $('pr-otp').focus();
+}
+async function confirmCode(){
+  const code=$('pr-otp').value.trim(), box=$('pr-otpmsg');
+  if(code.length<6){box.innerHTML='<div class="note err">Enter all six digits.</div>';return}
+  box.innerHTML='<div class="note">Checking…</div>';
+  const {error}=await sb.auth.verifyOtp({email:me.email,token:code,type:'email'});
+  if(error){box.innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
+  const {data,error:me2}=await sb.rpc('gc_mark_email_verified');
+  if(me2||!data){box.innerHTML='<div class="note err">Verified the code, but couldn’t save it. '
+    +'Try again in a moment.</div>';return}
+  await loadMe(); renderHome();
+  $('pr-verifybox').style.display='none';
+  $('pr-otp').value='';
+  toast('Email verified');
+}
+
+// ---------- password ----------
+function togglePwForm(){
+  const f=$('pr-pwform'), open=f.style.display!=='none';
+  f.style.display=open?'none':'block';
+  $('pr-pwbtn').textContent=open?'Change password':'Cancel password change';
+  if(!open)$('pr-pw1').focus();
+  else{$('pr-pw1').value='';$('pr-pw2').value='';$('pr-pwmsg').innerHTML=''}
+}
+function togglePrPw(){
+  const i=$('pr-pw1'), b=$('pr-eye'), show=i.type==='password';
+  i.type=show?'text':'password'; b.textContent=show?'Hide':'Show';
+}
+async function changePassword(){
+  const a=$('pr-pw1').value, b=$('pr-pw2').value, m=$('pr-pwmsg');
+  if(a.length<8){m.innerHTML='<div class="note err">Needs to be at least 8 characters.</div>';return}
+  if(a!==b){m.innerHTML='<div class="note err">Those two don’t match.</div>';return}
+  m.innerHTML='<div class="note">Saving…</div>';
+  const {error}=await sb.auth.updateUser({password:a});
+  if(error){m.innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
+  m.innerHTML='<div class="note lock"><strong>Password updated.</strong> '
+    +'Use the new one next time you sign in.</div>';
+  $('pr-pw1').value='';$('pr-pw2').value='';
+  toast('Password updated');
+}
+
+// ---------- onboarding ----------
+async function saveName(){
+  const n=$('ob-name').value.trim();
+  if(!n){toast('Enter your name',true);return}
+  const {error}=await sb.rpc('gc_create_profile',{p_display_name:n});
+  if(error){toast(error.message,true);return}
+  await loadMe();
+  if(me && me.rounds_used>0){
+    // They were invited and already have rounds — straight in, handicap intact
+    renderHome(); renderFormats(); await loadCourses(); loadMyComps();
+    show('v-home');
+    toast('Welcome back — your handicap is '+Number(me.handicap).toFixed(1));
+    return;
+  }
+  show('v-est');
+}
+function previewEstimate(){
+  const v=parseInt($('ob-score').value,10),el=$('est-preview');
+  if(!v||v<50||v>200){el.textContent='';return}
+  const i=Math.min(Math.max(v-72,0),54);
+  el.innerHTML='That gives you a starting handicap of <strong style="color:var(--green);font-size:17px">'+i+'</strong>';
+}
+async function saveEstimate(){
+  const v=parseInt($('ob-score').value,10);
+  if(!v||v<50||v>200){toast('Enter a score between 50 and 200',true);return}
+  const {error}=await sb.rpc('gc_set_starting_estimate',{p_typical_score:v});
+  if(error){toast(error.message,true);return}
+  await loadMe();renderHome();toast('Handicap set — it updates itself from here');show('v-home');
+}
+async function skipEstimate(){
+  const {error}=await sb.rpc('gc_set_starting_estimate',{p_typical_score:100});
+  if(error){toast(error.message,true);return}
+  await loadMe();renderHome();toast('Started you at 28 — one round will sort it');show('v-home');
+}
+
+// ---------- me / dashboard ----------
+async function loadMe(){
+  const {data,error}=await sb.rpc('gc_me');
+  me=(error||!data||!data.length)?null:data[0];return me;
+}
+function ringPct(n){return Math.min((n||0)/5,1)*100}
+function renderHome(){
+  if(!me)return;
+  const hr=new Date().getHours();
+  $('greet').textContent=(hr<12?'Good morning, ':hr<18?'Good afternoon, ':'Good evening, ')
+    +(me.display_name||'').split(' ')[0];
+  $('av').textContent=(me.display_name||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+
+  const h=me.handicap,c=me.confidence||'estimated',n=me.rounds_used||0;
+  $('h-val').textContent=(h==null)?'—':Number(h).toFixed(1);
+  $('h-conf').textContent=c.toUpperCase();
+  $('ring').style.background='conic-gradient(var(--gold) '+ringPct(n)+'%,#e9e4da 0)';
+  $('h-label').textContent=(c==='estimated')?'Starting estimate':'Current index';
+  $('h-head').textContent=(h==null)?'—':Number(h).toFixed(1);
+  $('h-sub').textContent={
+    estimated:'Your own guess. Play one round and we’ll work out the real number.',
+    provisional:'Built from '+n+' round'+(n===1?'':'s')+'. Becomes established at 5.',
+    established:'Built from your best rounds out of the last '+n+'.',
+    verified:'Your official Golf Australia handicap.'}[c]||'';
+  $('h-trend').textContent=(c!=='estimated'&&n<5)
+    ? (5-n)+' more round'+((5-n)===1?'':'s')+' to establish it' : '';
+
+  $('pr-name').textContent=me.display_name||'Profile';
+  $('pr-email').textContent=me.email||'';
+  $('pr-hcp').innerHTML='<strong>GolfComp Handicap '+(h==null?'—':Number(h).toFixed(1))+'</strong> · '
+    +esc(c)+(n?(' · '+n+' round'+(n===1?'':'s')):'');
+  renderEmailState();
+  $('pr-ver').textContent=APP_VERSION;
+}
+
+// Verification is a nudge, never a gate — nobody gets stopped from playing
+// because they haven't opened an email.
+function renderEmailState(){
+  const el=$('pr-emailstate'); if(!el)return;
+  if(me.email_is_placeholder){
+    el.innerHTML='<div class="note warn"><strong>You’re on a stand-in address.</strong> '
+      +'Add your real email so you can sign in on a new phone and get your comp invites.</div>';
+  } else if(me.email_verified){
+    el.innerHTML='<div class="note lock"><strong>Email verified ✓</strong></div>';
+  } else {
+    el.innerHTML='<div class="note"><strong>Email not verified yet.</strong> '
+      +'Everything works without it — it just means we can get you back in if you '
+      +'ever lose your password. '
+      +'<a onclick="sendVerify()" style="color:var(--green);font-weight:900;cursor:pointer;'
+      +'text-decoration:underline">Verify now</a></div>';
+  }
+}
+
+// ---------- play golf ----------
+let partner=null, roundTee=null, roundDate=null;
+
+async function startRound(){
+  show('v-play');
+  if(!courses.length) await loadCourses();
+  const opts=courses.map(c=>'<option value="'+c.tee_id+'">'+esc(c.name)+' — '+esc(c.tee_name)
+    +' (par '+c.par+')</option>').join('');
+  $('so-tee').innerHTML=opts; $('ma-tee').innerHTML=opts;
+  const today=new Date().toISOString().slice(0,10);
+  if(!$('so-date').value)$('so-date').value=today;
+  if(!$('ma-date').value)$('ma-date').value=today;
+}
+function partnerRow(p){
+  const ini=(p.display_name||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+  const h=(p.handicap==null)?'No handicap yet':('GolfComp HCP '+Number(p.handicap).toFixed(1));
+  const nm=String(p.display_name||'').replace(/'/g,"\\'");
+  return '<div class="partner-box" onclick="pickPartner(\''+p.id+'\',\''+esc(nm)+'\','
+    +(p.handicap==null?'null':p.handicap)+',this)">'
+    +'<div class="partner-avatar">'+esc(ini)+'</div>'
+    +'<div><b>'+esc(p.display_name)+'</b><span>'+esc(h)+'</span></div></div>';
+}
+async function openMateSheet(){
+  partner=null; $('ma-results').innerHTML=''; $('ma-email').value='';
+  $('ma-recent').innerHTML='<div class="fine" style="text-align:left"><span class="spin"></span></div>';
+  openSheet('sh-mate');
+  const {data,error}=await sb.rpc('gc_recent_partners');
+  if(error||!data||!data.length){
+    $('ma-recent').innerHTML='<div class="fine" style="text-align:left;margin-top:4px">'
+      +'Nobody yet — once you’ve played with someone they’ll show up here.</div>';
+    return;
+  }
+  $('ma-recent').innerHTML='<div style="font-size:9px;font-weight:900;color:var(--muted);'
+    +'letter-spacing:.8px;margin-bottom:2px">PLAYED WITH BEFORE</div>'
+    +data.map(partnerRow).join('');
+}
+async function lookupEmail(){
+  const em=$('ma-email').value.trim();
+  if(!em||em.indexOf('@')<0){toast('Enter their full email address',true);return}
+  $('ma-results').innerHTML='<div class="fine" style="text-align:left"><span class="spin"></span></div>';
+  const {data,error}=await sb.rpc('gc_find_by_email',{p_email:em});
+  if(error){$('ma-results').innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
+  if(!data||!data.length){
+    $('ma-results').innerHTML='<div class="note"><strong>No GolfComp account on that email.</strong> '
+      +'They need one for the round to count towards their handicap — send them the app and they '
+      +'can be up and running in a minute.<br><br>'
+      +'<a onclick="inviteMate(\''+esc(em).replace(/'/g,"\\'")+'\')" '
+      +'style="color:var(--green);font-weight:900;text-decoration:underline;cursor:pointer">'
+      +'Send them an invite</a></div>';
+    return;
+  }
+  $('ma-results').innerHTML='<div style="font-size:9px;font-weight:900;color:var(--muted);'
+    +'letter-spacing:.8px;margin:10px 0 2px">FOUND</div>'+partnerRow(data[0]);
+}
+function inviteMate(em){
+  const txt='Get on GolfComp — free handicap, no club membership needed.\n\n'
+    +location.origin+'/app\n\nOnce you’re on, I can add your scores when we play.';
+  if(navigator.share)navigator.share({text:txt}).catch(()=>{});
+  else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast('Invite copied'));
+  else prompt('Send this to '+em+':',txt);
+}
+function pickPartner(id,name,hcp,el){
+  partner={id:id,name:name,hcp:hcp};
+  document.querySelectorAll('.partner-box').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  toast('Playing with '+name);
+}
+
+async function beginRound(withMate){
+  if(withMate && !partner){ toast('Pick your playing partner first', true); return; }
+  card={}; cardP={}; rdHole=1;
+  roundTee = withMate ? $('ma-tee').value : $('so-tee').value;
+  roundDate = withMate ? $('ma-date').value : $('so-date').value;
+  closeSheet('sh-solo'); closeSheet('sh-mate');
+  if(!withMate) partner=null;
+  show('v-round');
+  const c=courses.find(x=>x.tee_id===roundTee);
+  $('rd-course').textContent=c?(c.name+' · '+c.tee_name):'';
+  $('rd-hint').textContent=partner
+    ? ('Scoring for you and '+partner.name+'.')
+    : 'Enter your score for each hole.';
+  await loadHoles();
+}
+
+let card={}, cardP={}, rdHole=1;
+
+function strokesOn(hcp,si){hcp=Math.round(hcp||0);if(hcp<=0||si==null)return 0;
+  const b=Math.floor(hcp/18);return b+((si<=(hcp-b*18))?1:0)}
+function stbl(g,par,s){if(g==null)return null;return Math.max(0,2-((g-s)-par))}
+function holeOf(n){return holes.find(h=>h.hole===n)||{hole:n,par:4,si:n}}
+function ptWord(p){return p>=5?'brilliant':p===4?'eagle':p===3?'birdie':p===2?'par':p===1?'bogey':'no points'}
+
+async function loadHoles(){
+  const {data,error}=await sb.rpc('gc_tee_holes',{p_tee_id:roundTee});
+  if(error||!data){$('rd-body').innerHTML='<div class="empty">Could not load holes</div>';return}
+  holes=data; card={}; cardP={}; rdHole=1;
+  renderRoundHole();
+}
+
+function renderRoundHole(){
+  const h=holeOf(rdHole);
+  const myH=me.handicap==null?36:Number(me.handicap);
+  const rows=[{id:'me',name:(me.display_name||'You').split(' ')[0],hcp:myH,store:card}];
+  if(partner)rows.push({id:'pa',name:partner.name.split(' ')[0],hcp:partner.hcp==null?36:Number(partner.hcp),store:cardP});
+
+  let body='';
+  rows.forEach(r=>{
+    const g=r.store[rdHole];
+    const sh=strokesOn(r.hcp,h.si);
+    const pts=stbl(g,h.par,sh);
+    body+='<div class="prow">'
+      +'<div class="nm">'+esc(r.name)+'<small>'+sh+' shot'+(sh===1?'':'s')+' here</small></div>'
+      +'<div class="step">'
+      +'<button onclick="stepCard(\''+r.id+'\',-1)">−</button>'
+      +'<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
+      +'onchange="setCard(\''+r.id+'\',this.value)">'
+      +'<button onclick="stepCard(\''+r.id+'\',1)">+</button></div>'
+      +'<div class="ptsbox'+(pts>=3?' good':'')+'"><span class="v">'+(pts==null?'—':pts)
+      +'</span><span class="l">PTS</span></div></div>';
+  });
+
+  // Teach the maths on the fly — this is how a novice learns Stableford
+  const mg=card[rdHole];
+  let explain='';
+  if(mg!=null){
+    const sh=strokesOn(myH,h.si), p=stbl(mg,h.par,sh);
+    explain='<div class="explain">'+mg+' on a par '+h.par
+      +(sh?(' · you get '+sh+' shot'+(sh===1?'':'s')):' · no shots here')
+      +' · net '+(mg-sh)+' · <b>'+ptWord(p)+' = '+p+' point'+(p===1?'':'s')+'</b></div>';
+  }
+
+  const paHcp = partner ? (partner.hcp==null?36:Number(partner.hcp)) : null;
+  let t1=0,n1=0,t2=0,n2=0,pts1=0,pts2=0;
+  for(let i=1;i<=18;i++){
+    const hh=holeOf(i);
+    if(card[i]>0){
+      t1+=card[i]; n1++;
+      pts1+=stbl(card[i],hh.par,strokesOn(myH,hh.si));
+    }
+    if(partner && cardP[i]>0){
+      t2+=cardP[i]; n2++;
+      pts2+=stbl(cardP[i],hh.par,strokesOn(paHcp,hh.si));
+    }
+  }
+  const par=holes.reduce((a,b)=>a+b.par,0);
+  // One row per player: name, gross, points
+  const myName=(me.display_name||'You').split(' ')[0];
+  let totBar='<div class="tot2">'
+    +'<div class="r"><div><div class="who">'+esc(myName)+'</div>'
+    +'<div class="g">'+(n1?('gross '+t1+' · thru '+n1):'no scores yet')
+    +(n1===18?(' · '+(t1-par>0?'+':'')+(t1-par)+' vs par'):'')+'</div></div>'
+    +'<div></div><div class="p">'+pts1+'<em>PTS</em></div></div>';
+  if(partner){
+    totBar+='<div class="r"><div><div class="who">'+esc(partner.name.split(' ')[0])+'</div>'
+      +'<div class="g">'+(n2?('gross '+t2+' · thru '+n2):'no scores yet')+'</div></div>'
+      +'<div></div><div class="p">'+pts2+'<em>PTS</em></div></div>';
+  }
+  totBar+='</div>';
+
+  // Strip shows gross and points for everyone playing
+  let strip='';
+  [[1,9,'Front nine'],[10,18,'Back nine']].forEach(([a,b,lab])=>{
+    let sub=0, subP=0, subPts=0, subPtsP=0;
+    for(let i=a;i<=b;i++){
+      const hh=holeOf(i);
+      if(card[i]>0){sub+=card[i];subPts+=stbl(card[i],hh.par,strokesOn(myH,hh.si))}
+      if(partner&&cardP[i]>0){subP+=cardP[i];subPtsP+=stbl(cardP[i],hh.par,strokesOn(paHcp,hh.si))}
+    }
+    strip+='<div class="striplabel">'+lab
+      +'<span style="float:right;text-transform:none;letter-spacing:0;font-weight:800">'
+      +(sub?(sub+' · '+subPts+'pts'):'')
+      +(partner&&subP?(' &nbsp;|&nbsp; '+subP+' · '+subPtsP+'pts'):'')+'</span></div>'
+      +'<div class="strip'+(partner?' pair':'')+'">';
+    for(let i=a;i<=b;i++){
+      const hh=holeOf(i);
+      const g1=card[i]>0?card[i]:null;
+      const p1=g1==null?null:stbl(g1,hh.par,strokesOn(myH,hh.si));
+      const g2=partner&&cardP[i]>0?cardP[i]:null;
+      const p2=g2==null?null:stbl(g2,hh.par,strokesOn(paHcp,hh.si));
+      const done=partner?(g1!=null&&g2!=null):(g1!=null);
+      strip+='<div class="h '+(i===rdHole?'now':(done?'done':''))+'" onclick="jumpRound('+i+')">'
+        +'<span class="hn">'+i+'</span>'
+        +'<small>'+(g1==null?'·':(g1+'<i>'+p1+'</i>'))+'</small>'
+        +(partner?('<small class="p2">'+(g2==null?'·':(g2+'<i>'+p2+'</i>'))+'</small>'):'')
+        +'</div>';
+    }
+    strip+='</div>';
+  });
+
+  const ok=partner?(n1>=14&&n2>=14):(n1>=14);
+  $('rd-body').innerHTML=
+    '<section class="card">'
+    +'<div class="holehead"><div class="n">Hole '+rdHole+'</div>'
+    +'<div class="i">Par '+h.par+' · SI '+(h.si==null?'—':h.si)+(h.metres?('<br>'+h.metres+'m'):'')
+    +'</div></div>'
+    +body+explain
+    +totBar
+    +'</section>'
+    +'<div class="nav2">'
+    +'<button onclick="stepRound(-1)" '+(rdHole<=1?'disabled':'')+'>← PREV</button>'
+    +'<div class="ctr"><span class="b">'+rdHole+'</span><span class="s">OF 18</span></div>'
+    +'<button onclick="stepRound(1)" '+(rdHole>=18?'disabled':'')+'>NEXT →</button></div>'
+    +strip
+    +'<button class="primary" style="margin-top:14px" '+(ok?'':'disabled')+' onclick="goReview()">'
+    +(ok
+      ? 'Check the card →'
+      : (partner
+          ? ('You '+n1+' · '+esc(partner.name.split(' ')[0])+' '+n2+' of 18')
+          : (n1+' of 18 holes')))
+    +'</button>'
+    +(ok?'':'<div class="fine" style="margin-top:7px">A round needs at least 14 holes'
+      +(partner?' from each of you':'')+' before it can count towards '
+      +(partner?'your handicaps':'your handicap')+'.</div>')
+    +'<button class="ghostbtn" onclick="show(\'v-play\')">Cancel</button>';
+}
+
+// ---------- review & sign (the MiScore convention: check it, then sign it) ----------
+let signedMe=false, signedPa=false;
+
+function goReview(){
+  signedMe=false; signedPa=false;
+  $('rv-title').textContent = partner ? 'Check the card' : 'Check your card';
+  $('rv-sub').textContent = partner
+    ? 'Both of you confirm, then it’s in.' : 'One last look before it counts.';
+  show('v-review'); renderReview();
+}
+
+function renderReview(){
+  const myH=me.handicap==null?36:Number(me.handicap);
+  const paH=partner?(partner.hcp==null?36:Number(partner.hcp)):null;
+  const cols=partner?3:2;
+  const gt=(s)=>{let t=0;for(let i=1;i<=18;i++)if(s[i]>0)t+=s[i];return t};
+  const pt=(s,hcp)=>{let t=0;for(let i=1;i<=18;i++){const h=holeOf(i);
+    const p=stbl(s[i]>0?s[i]:null,h.par,strokesOn(hcp,h.si));if(p!=null)t+=p}return t};
+
+  const gridCss=partner?'grid-template-columns:34px 1fr 1fr':'grid-template-columns:34px 1fr';
+  let rows='<div class="rvhead" style="'+gridCss+'"><div>Hole</div><div>'
+    +esc((me.display_name||'You').split(' ')[0])+'</div>'
+    +(partner?('<div>'+esc(partner.name.split(' ')[0])+'</div>'):'')+'</div>';
+
+  for(let i=1;i<=18;i++){
+    const h=holeOf(i);
+    const g1=card[i], p1=stbl(g1>0?g1:null,h.par,strokesOn(myH,h.si));
+    const g2=partner?cardP[i]:null, p2=partner?stbl(g2>0?g2:null,h.par,strokesOn(paH,h.si)):null;
+    rows+='<div class="rvrow" style="'+gridCss+'">'
+      +'<div class="hn">'+i+'<div style="font-size:8.5px;font-weight:700">p'+h.par+'</div></div>'
+      +'<div><span class="sc">'+(g1>0?g1:'—')+'</span> '
+        +'<span class="pt">'+(p1==null?'':'· '+p1+'pt')+'</span></div>'
+      +(partner?('<div><span class="sc">'+(g2>0?g2:'—')+'</span> '
+        +'<span class="pt">'+(p2==null?'':'· '+p2+'pt')+'</span></div>'):'')
+      +'</div>';
+  }
+  rows+='<div class="rvrow tot" style="'+gridCss+'"><div>TOT</div>'
+    +'<div>'+gt(card)+' <span class="pt">· '+pt(card,myH)+'pts</span></div>'
+    +(partner?('<div>'+gt(cardP)+' <span class="pt">· '+pt(cardP,paH)+'pts</span></div>'):'')
+    +'</div>';
+
+  // Signing only makes sense when there's someone to verify it.
+  // A solo round is just a quick check and submit.
+  let signs='', ready=true;
+  if(partner){
+    signs='<div class="signbox'+(signedMe?' signed':'')+'">'
+      +(signedMe?'<div class="tick">✓</div>':'')
+      +'<div class="who">'+esc(me.display_name||'You')+'</div>'
+      +'<div class="st">'+(signedMe?'Confirmed':'Check your scores, then confirm')+'</div>'
+      +'<button onclick="signCard(\'me\')">'+(signedMe?'Confirmed':'That’s my card')+'</button></div>'
+      +'<div class="signbox'+(signedPa?' signed':'')+'">'
+      +(signedPa?'<div class="tick">✓</div>':'')
+      +'<div class="who">'+esc(partner.name)+'</div>'
+      +'<div class="st">'+(signedPa?'Confirmed':'Hand them the phone to check')+'</div>'
+      +'<button onclick="signCard(\'pa\')">'+(signedPa?'Confirmed':'That’s my card')+'</button></div>';
+    ready=signedMe&&signedPa;
+  }
+
+  $('rd-rev').innerHTML=
+    '<section class="card" style="overflow:hidden">'
+    +'<div class="holehead"><div class="n" style="font-size:20px">'
+    +(partner?'Check the card':'Your card')+'</div>'
+    +'<div class="i">'+esc((courses.find(c=>c.tee_id===roundTee)||{}).name||'')+'</div></div>'
+    +rows+'</section>'
+    +'<div class="note">'+(partner
+      ? 'Both of you have a quick look, then confirm. It counts towards both your handicaps.'
+      : 'Quick check before it goes in — this counts towards your handicap.')+'</div>'
+    +signs
+    +'<button class="primary" style="margin-top:14px" '+(ready?'':'disabled')+' onclick="submitRound()">'
+    +(ready?'Submit the round →':'Both players need to confirm')+'</button>'
+    +'<button class="ghostbtn" onclick="show(\'v-round\');renderRoundHole()">← Back to scoring</button>';
+}
+function signCard(who){
+  if(who==='me')signedMe=!signedMe; else signedPa=!signedPa;
+  renderReview();
+}
+function setCard(who,v){
+  const n=String(v).trim()===''?null:Math.max(1,Math.min(20,parseInt(v,10)||0));
+  const store=(who==='me')?card:cardP;
+  if(n==null)delete store[rdHole];else store[rdHole]=n;
+  renderRoundHole();
+}
+function stepCard(who,d){
+  const store=(who==='me')?card:cardP;
+  const cur=store[rdHole];
+  setCard(who,(cur==null?holeOf(rdHole).par:cur)+d);
+}
+function stepRound(d){rdHole=Math.max(1,Math.min(18,rdHole+d));renderRoundHole()}
+function jumpRound(n){rdHole=n;renderRoundHole()}
+
+async function submitRound(){
+  const mine=[]; for(let i=1;i<=18;i++)mine.push(card[i]>0?card[i]:null);
+  const entries=[{profile_id:me.profile_id,scores:mine}];
+  if(partner){
+    const theirs=[]; for(let i=1;i<=18;i++)theirs.push(cardP[i]>0?cardP[i]:null);
+    entries.push({profile_id:partner.id,scores:theirs});
+  }
+  toast('Saving your round…');
+  const {data,error}=await sb.rpc('gc_submit_casual_round',{
+    p_tee_id:roundTee, p_played_on:roundDate, p_entries:entries});
+  if(error){toast(error.message,true);return}
+
+  const mineRes=data.find(r=>r.profile_id===me.profile_id)||data[0];
+  const prev=mineRes.previous_index;
+  $('rs-val').textContent=Number(mineRes.new_index).toFixed(1);
+  $('rs-ring').style.background='conic-gradient(var(--gold) '+ringPct(mineRes.rounds_used)+'%,#e9e4da 0)';
+  $('rs-sub').textContent='Gross '+mineRes.gross+' · adjusted '+mineRes.adjusted
+    +' · differential '+Number(mineRes.differential).toFixed(1);
+  if(prev==null){
+    $('rs-move').textContent='Your first real handicap';
+    $('rs-note').textContent='Play four more and it becomes established.';
+  }else{
+    const d=Number(prev)-Number(mineRes.new_index);
+    $('rs-move').textContent=(d>0?'Down ':d<0?'Up ':'Steady at ')
+      +(d===0?Number(mineRes.new_index).toFixed(1):Math.abs(d).toFixed(1))
+      +(d!==0?(' to '+Number(mineRes.new_index).toFixed(1)):'');
+    $('rs-note').textContent=mineRes.rounds_used<5
+      ?((5-mineRes.rounds_used)+' more round'+((5-mineRes.rounds_used)===1?'':'s')+' to establish it')
+      :'Established, from your best rounds out of the last '+mineRes.rounds_used+'.';
+  }
+  const other=data.find(r=>r.profile_id!==me.profile_id);
+  $('rs-title').textContent=other?'Both rounds saved.':'Round saved.';
+  const extra=$('rs-other');
+  if(other&&extra){
+    const od=(other.previous_index==null)?null:(Number(other.previous_index)-Number(other.new_index));
+    extra.style.display='block';
+    extra.innerHTML='<strong>'+esc(other.display_name)+'</strong> · gross '+other.gross
+      +' → handicap '+Number(other.new_index).toFixed(1)
+      +(od==null?' (first round)':(od>0?' (down '+od.toFixed(1)+')':od<0?' (up '+Math.abs(od).toFixed(1)+')':' (unchanged)'));
+  } else if(extra) extra.style.display='none';
+
+  partner=null;
+  await loadMe(); renderHome();
+  openSheet('sh-result');
+}
+
+// ---------- rounds list ----------
+async function showRounds(){
+  show('v-rounds');
+  const b=$('rounds-body');
+  b.innerHTML='<div class="empty"><span class="spin"></span></div>';
+  const {data,error}=await sb.from('gc_handicap_rounds')
+    .select('played_on,gross,adjusted_gross,differential,source,gc_courses(name)')
+    .eq('profile_id',me.profile_id).order('played_on',{ascending:false});
+  if(error){b.innerHTML='<div class="empty">'+esc(error.message)+'</div>';return}
+  if(!data.length){b.innerHTML='<div class="empty">No rounds yet.<br>Tap <b>Play Golf</b> and enter a card.</div>';return}
+
+  // The best 8 of the last 20 are what actually set the index — mark them.
+  const recent=data.slice(0,20);
+  const n=recent.length;
+  const useCount=n<6?1:n<9?2:n<12?3:n<15?4:n<17?5:n<19?6:n===19?7:8;
+  const best=recent.slice().sort((a,b2)=>Number(a.differential)-Number(b2.differential))
+    .slice(0,useCount).map(r=>r.differential+'|'+r.played_on);
+
+  let h='<table class="t"><thead><tr><th>Date</th><th>Course</th><th class="num">Gross</th>'
+    +'<th class="num">Adj</th><th class="num">Diff</th></tr></thead><tbody>';
+  data.forEach(r=>{
+    const counted=best.indexOf(r.differential+'|'+r.played_on)>=0;
+    h+='<tr'+(counted?' style="background:#f3f7f2"':'')+'><td>'
+      +new Date(r.played_on).toLocaleDateString('en-AU',{day:'numeric',month:'short'})
+      +'</td><td style="font-size:11px">'+esc((r.gc_courses&&r.gc_courses.name)||'—')
+      +(r.source==='comp'?'<br><span style="font-size:9px;color:var(--muted)">comp</span>':'')
+      +'</td><td class="num">'+r.gross+'</td><td class="num">'+r.adjusted_gross
+      +'</td><td class="num"'+(counted?' style="font-weight:900;color:var(--green)"':'')+'>'
+      +Number(r.differential).toFixed(1)+'</td></tr>'});
+  b.innerHTML=h+'</tbody></table>'
+    +'<div class="note" style="margin-top:12px"><strong>Shaded rows are the ones counting.</strong> '
+    +'Your index is the average of your best '+useCount+' differential'+(useCount===1?'':'s')
+    +' from your last '+n+' round'+(n===1?'':'s')
+    +(n<5?' — under 5 rounds it stays provisional and carries a starting allowance.':'.')
+    +'<br><br><strong>Differential</strong> is the score adjusted for how hard the course '
+    +'plays: (adjusted gross − course rating) × 113 ÷ slope. That’s what makes a 90 at a '
+    +'brutal course worth more than a 90 at an easy one.</div>';
+}
+
+// ---------- mates ----------
+let matesView='feed';
+function showMates(){ show('v-mates'); matesTab(matesView) }
+function matesTab(t){
+  matesView=t;
+  ['feed','list'].forEach(k=>{
+    const b=$('mt-tab-'+k); if(!b)return;
+    b.style.background=(k===t)?'var(--green)':'';
+    b.style.color=(k===t)?'#fff':'';
+    b.style.borderColor=(k===t)?'var(--green)':'';
+  });
+  (t==='feed')?loadFeed():loadMates();
+}
+function ago(ts){
+  const s=(Date.now()-new Date(ts).getTime())/1000;
+  if(s<3600)return Math.max(1,Math.round(s/60))+'m ago';
+  if(s<86400)return Math.round(s/3600)+'h ago';
+  const d=Math.round(s/86400);
+  return d===1?'yesterday':(d+'d ago');
+}
+async function loadFeed(){
+  const b=$('mates-body');
+  b.innerHTML='<div class="empty"><span class="spin"></span></div>';
+  const {data,error}=await sb.rpc('gc_mates_feed');
+  if(error){b.innerHTML='<div class="empty">'+esc(error.message)+'</div>';return}
+  if(!data||!data.length){
+    b.innerHTML='<div class="empty">Nothing yet.<br>Once your mates play a round it shows up here.</div>';
+    return;
+  }
+  b.innerHTML=data.map(r=>{
+    if(r.kind==='live'){
+      return '<section class="card" style="padding:13px;margin-bottom:9px;'
+        +'border-left:3px solid var(--good)">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
+        +'<div><div style="font-size:9.5px;font-weight:900;color:var(--good);'
+        +'text-transform:uppercase;letter-spacing:.7px">● Playing now</div>'
+        +'<b style="font-size:13.5px">'+esc(r.display_name)+'</b>'
+        +'<div class="small">'+esc(r.comp_name||'')+' · '+esc(r.course_name||'')
+        +' · thru '+(r.holes_done||0)+'</div></div>'
+        +'<button class="ghostbtn" style="margin:0;width:auto;padding:8px 13px;font-size:11px"'
+        +' onclick="location.href=\'/c/'+r.comp_id+'\'">Watch</button>'
+        +'</div></section>';
+    }
+    return '<section class="card" style="padding:13px;margin-bottom:9px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
+      +'<div><b style="font-size:13.5px">'+esc(r.display_name)+'</b>'
+      +'<div class="small">'+esc(r.course_name||'a round')+' · '+ago(r.happened_at)+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:19px;font-weight:900;'
+      +'color:var(--green);line-height:1">'+r.gross+'</div>'
+      +'<div style="font-size:9.5px;font-weight:800;color:var(--muted)">off '
+      +(r.new_index==null?'—':Number(r.new_index).toFixed(1))+'</div></div>'
+      +'</div></section>';
+  }).join('');
+}
+async function loadMates(){
+  const b=$('mates-body');
+  b.innerHTML='<div class="empty"><span class="spin"></span></div>';
+  const {data,error}=await sb.rpc('gc_mates');
+  if(error){b.innerHTML='<div class="empty">'+esc(error.message)+'</div>';return}
+  if(!data||!data.length){
+    b.innerHTML='<div class="empty">No mates yet.<br>Play a comp with someone and they’ll appear here.</div>';
+    return;
+  }
+  b.innerHTML=data.map(m=>
+    '<section class="card" style="padding:12px 13px;margin-bottom:8px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
+    +'<div><b style="font-size:13px">'+esc(m.display_name)+'</b>'
+    +'<div class="small">'+(m.index_value==null
+        ? 'No handicap yet'
+        : ('Handicap '+Number(m.index_value).toFixed(1)
+           +(m.confidence==='provisional'?' · provisional':'')))
+    +(m.played_together?(' · '+m.played_together+' comp'+(m.played_together===1?'':'s')+' together'):'')
+    +'</div></div>'
+    +'<button class="ghostbtn" style="margin:0;width:auto;padding:8px 14px;font-size:11px;'
+    +(m.following?'background:var(--green);color:#fff;border-color:var(--green)':'')+'"'
+    +' onclick="toggleFollow(\''+m.profile_id+'\','+(m.following?'false':'true')+')">'
+    +(m.following?'Following':'Follow')+'</button>'
+    +'</div></section>').join('')
+    +'<div class="note"><strong>Following someone</strong> puts their rounds and live comps '
+    +'in your Activity feed. Anyone you’ve played a comp with is already there.</div>';
+}
+async function toggleFollow(pid,on){
+  const {error}=await sb.rpc('gc_follow',{p_profile_id:pid,p_on:on});
+  if(error){toast(error.message,true);return}
+  toast(on?'Following':'Unfollowed');
+  loadMates();
+}
+
+// ---------- comps ----------
+function renderFormats(){ if(!ncDays.length)ncDays=[blankDay(0)]; renderDays() }
+// ---------- the rules ----------
+// Plain-language explanation of each format, for anyone who's nodded along at
+// the first tee without really knowing what they were playing.
+const RULES={
+ stableford_individual:{
+  tag:'Individual · highest points wins',
+  gist:'Points for each hole instead of one running total. A blow-up hole costs you '
+      +'almost nothing — pick up, walk to the next tee, start again.',
+  how:['Play your own ball.',
+       'Your shots come off hole by hole, based on the stroke index.',
+       'A net par is 2 points. Better scores more, worse scores less.',
+       'Two over net or worse is nothing — so there’s no point grinding out a 9.'],
+  table:[['Net albatross','6'],['Net 3 under','5'],['Net eagle','4'],['Net birdie','3'],
+         ['Net par','2'],['Net bogey','1'],['Net double or worse','0']],
+  tip:'The kindest format for a new player. One disaster ruins a stroke round; here it '
+     +'costs two points.',
+  when:'Mixed abilities, beginners in the group, or you just want everyone finished before dark.'
+ },
+ stroke_individual:{
+  tag:'Individual · lowest nett wins',
+  gist:'Count every shot for 18 holes. Handicap comes off at the end, lowest nett wins.',
+  how:['Play your own ball and hole out on every hole.',
+       'Every stroke counts, including penalties.',
+       'Your full course handicap comes off the total at the end.'],
+  tip:'Be warned — one nightmare hole can wreck an otherwise good round. If anyone in the '
+     +'group is new, Stableford is a much friendlier day out.',
+  when:'Similar abilities, everyone’s played a bit, and you want a proper contest.'
+ },
+ bestball_stableford:{
+  tag:'Pairs · highest points wins',
+  gist:'You each play your own ball. On every hole the team takes whichever of you did better.',
+  how:['Both of you play your own ball the whole way round.',
+       'Each hole, the better of your two Stableford scores counts for the team.',
+       'You both still get your own shots off your own handicap.',
+       'If you’ve set a minimum, each player’s score has to count on that many holes.'],
+  tip:'Takes the pressure right off. Make a mess of a hole and your partner has almost '
+     +'certainly covered you.',
+  when:'Pairs of mixed ability who still want to play their own game.'
+ },
+ bestball_match:{
+  tag:'Pairs · most holes won',
+  gist:'Same as best ball, but every hole is its own little contest rather than a running total.',
+  how:['Both of you play your own ball; the better score is your pair’s score for the hole.',
+       'Lower pair score takes the hole. Level and it’s halved.',
+       'A match ends the moment one pair is further ahead than there are holes left — '
+        +'that’s what “3 & 2” means.',
+       'GolfComp runs three matches at once: the front nine, the back nine, and the '
+        +'full eighteen.'],
+  tip:'Because the back nine is its own match, the day still means something even after '
+     +'the overall has gone.',
+  when:'Two pairs, a bit of needle, and you want it to stay alive as long as possible.'
+ },
+ stableford_3man:{
+  tag:'Threes · highest points wins',
+  gist:'Three of you play your own ball and the best score on each hole counts for the team.',
+  how:['All three play your own ball.',
+       'Each hole, the best Stableford score counts.',
+       'With a minimum set, every player’s score has to count on that many holes.',
+       'On a tied hole somebody has to be credited — the team keeps the points either way, '
+        +'but the credit goes to a named player.'],
+  tip:'If someone’s short on contributions late in the round, take their score on a hole '
+     +'even when it isn’t the best. Costs a point now, keeps you legal at the end.',
+  when:'Three-ball groups, mixed abilities, and you want everyone to actually matter.'
+ },
+ ambrose_2man:{
+  tag:'Pairs · one ball · lowest nett wins',
+  gist:'Everyone tees off, you pick the best shot, and you both play your next from there. '
+      +'Repeat until it’s holed.',
+  how:['Both tee off, then choose the better ball.',
+       'The other player lifts and drops within one club-length of that spot — '
+        +'one putter head on the green, no nearer the hole.',
+       'Both play from there, and you keep choosing the best until it’s in.',
+       'One score per hole for the team.'],
+  hcp:'Team handicap = both course handicaps added together, divided by 4.',
+  tip:'Use a nervous player’s drive early. Gets it out of the way and they can enjoy the '
+     +'rest of the round.',
+  when:'Complete beginners, big social days, corporate golf, or anyone anxious about holding people up.'
+ },
+ ambrose_4man:{
+  tag:'Fours · one ball · lowest nett wins',
+  gist:'All four tee off, you pick the best shot, everyone plays their next from there.',
+  how:['All four tee off and the team picks the best ball.',
+       'Everyone else lifts and plays from within one club-length of it.',
+       'Keep taking the best until it’s holed.',
+       'One score per hole for the team.'],
+  hcp:'Team handicap = all four course handicaps added together, divided by 8.',
+  tip:'With a minimum drives rule, keep an eye on it from the turn. Leaving someone on '
+     +'nought with three holes left is how teams get disqualified.',
+  when:'Corporate days, charity days, and anywhere you’ve got very mixed abilities.'
+ }
+};
+function showRules(key){
+  const f=FORMATS.find(x=>x.key===key)||FORMATS[0];
+  const r=RULES[key]||{};
+  let h='<h2 style="margin-bottom:2px">'+esc(f.name)+'</h2>'
+    +'<p class="sub" style="margin-bottom:14px">'+esc(r.tag||'')+'</p>';
+  if(r.gist)h+='<div class="note lock" style="margin-bottom:13px">'+esc(r.gist)+'</div>';
+  if(r.how){
+    h+='<div style="font-size:9.5px;font-weight:900;color:var(--muted);text-transform:uppercase;'
+      +'letter-spacing:.8px;margin:0 0 7px">How it works</div><ol style="margin:0 0 14px;'
+      +'padding-left:19px;font-size:12.5px;line-height:1.65;color:var(--ink)">'
+      +r.how.map(x=>'<li style="margin-bottom:5px">'+esc(x)+'</li>').join('')+'</ol>';
+  }
+  if(r.table){
+    h+='<div style="font-size:9.5px;font-weight:900;color:var(--muted);text-transform:uppercase;'
+      +'letter-spacing:.8px;margin:0 0 7px">The points</div>'
+      +'<table class="t" style="margin-bottom:14px"><tbody>'
+      +r.table.map(x=>'<tr><td>'+esc(x[0])+'</td><td class="num" style="font-weight:900;'
+        +'color:var(--green)">'+esc(x[1])+'</td></tr>').join('')
+      +'</tbody></table>';
+  }
+  if(r.hcp)h+='<div class="note" style="margin-bottom:12px"><strong>Handicap.</strong> '
+    +esc(r.hcp)+'</div>';
+  if(r.tip)h+='<div class="note" style="margin-bottom:12px"><strong>Worth knowing.</strong> '
+    +esc(r.tip)+'</div>';
+  if(r.when)h+='<div class="fine" style="text-align:left"><strong>Good for:</strong> '
+    +esc(r.when)+'</div>';
+  h+='<div class="fine" style="text-align:left;margin-top:10px">'
+    +(f.hcp?'Rounds in this format <strong style="color:var(--good)">count towards your '
+      +'handicap</strong> — you play your own ball all the way.'
+     :'This format <strong>won’t count towards handicaps</strong> — you’re hitting from '
+      +'someone else’s spot rather than playing your own round.')+'</div>';
+  $('rules-body').innerHTML=h;
+  openSheet('sh-rules');
+}
+
+// ---------- days ----------
+// A comp is a list of days. One day is the common case; a trip is several,
+// each with its own course and format.
+let ncDays=[];
+// Everyone has to pull their weight. Ambrose counts drives; the best-ball
+// formats count holes where your score is the one that counts.
+// 2s → 6 each, 3s → 4 each, 4s → 3 each.
+function defaultMin(key,size){
+  const f=FORMATS.find(x=>x.key===key);
+  if(!f||!f.teams)return 0;
+  const n=size||f.size||2;
+  return Math.round(18/(n*1.5));
+}
+function minLabel(key){
+  return (key.indexOf('ambrose')===0)
+    ? 'Minimum drives per player'
+    : 'Minimum scoring holes per player';
+}
+function minBlurb(key){
+  return (key.indexOf('ambrose')===0)
+    ? 'Everyone has to contribute this many tee shots over the 18, so one big hitter '
+      +'can’t carry the round. Set 0 for no requirement.'
+    : 'Everyone has to be the counting score on at least this many holes, so nobody can '
+      +'just make up the numbers. Set 0 for no requirement.';
+}
+function blankDay(n){
+  const iso=new Date(Date.now()+n*86400000).toISOString().slice(0,10);
+  return {date:iso,tee:'',format:'stableford_individual',size:1,min:0};
+}
+function addDay(){
+  const last=ncDays[ncDays.length-1];
+  const d=blankDay(ncDays.length);
+  if(last){ d.tee=last.tee; d.format=last.format; d.size=last.size; d.min=last.min }
+  ncDays.push(d);
+  renderDays();
+}
+function removeDay(i){ ncDays.splice(i,1); renderDays() }
+function dayField(i,k,v){
+  const d=ncDays[i]; if(!d)return;
+  if(k==='format'){
+    const f=FORMATS.find(x=>x.key===v);
+    d.format=v;
+    d.size=f&&f.teams?(f.size||2):1;
+    d.min=defaultMin(v,d.size);
+  } else if(k==='size'){
+    d.size=parseInt(v,10)||2;
+    d.min=defaultMin(d.format,d.size);
+  } else if(k==='min'){ d.min=parseInt(v,10)||0 }
+  else d[k]=v;
+  renderDays();
+}
+function renderDays(){
+  const wrap=$('nc-days'); if(!wrap)return;
+  if(!ncDays.length)ncDays=[blankDay(0)];
+  const multi=ncDays.length>1;
+
+  wrap.innerHTML=ncDays.map((d,i)=>{
+    const f=FORMATS.find(x=>x.key===d.format)||FORMATS[0];
+    const c=courses.find(x=>x.tee_id===d.tee);
+    return '<div style="border:1.5px solid var(--line);border-radius:15px;padding:13px;'
+      +'margin-top:11px;background:#fff">'
+      +(multi?('<div style="display:flex;justify-content:space-between;align-items:center;'
+        +'margin-bottom:4px"><div style="font-size:9.5px;font-weight:900;color:var(--green);'
+        +'text-transform:uppercase;letter-spacing:.8px">Day '+(i+1)+'</div>'
+        +(ncDays.length>1?('<a onclick="removeDay('+i+')" style="font-size:10.5px;font-weight:800;'
+          +'color:var(--muted);text-decoration:underline;cursor:pointer">Remove</a>'):'')
+        +'</div>'):'')
+      +'<label>Date</label>'
+      +'<input type="date" value="'+esc(d.date)+'" onchange="dayField('+i+',\'date\',this.value)">'
+      +'<label>Course</label>'
+      +'<select onchange="dayField('+i+',\'tee\',this.value)">'
+      +'<option value="">Pick a course…</option>'
+      +courses.map(x=>'<option value="'+x.tee_id+'"'+(x.tee_id===d.tee?' selected':'')+'>'
+        +esc(x.name)+' — '+esc(x.tee_name)+' (par '+x.par+')</option>').join('')
+      +'</select>'
+      +((c&&!c.has_stroke_index)
+        ?'<div class="fine" style="text-align:left;margin-top:6px">This course still needs '
+         +'stroke indexes — you can add them after you play.</div>':'')
+      +'<div style="display:flex;justify-content:space-between;align-items:baseline">'
+      +'<label style="flex:1">Format</label>'
+      +'<a onclick="showRules(\''+d.format+'\')" style="font-size:10.5px;font-weight:900;'
+      +'color:var(--green);cursor:pointer;text-decoration:underline;padding:4px 0">'
+      +'How it works</a></div>'
+      +'<select onchange="dayField('+i+',\'format\',this.value)">'
+      +FORMATS.map(x=>'<option value="'+x.key+'"'+(x.key===d.format?' selected':'')+'>'
+        +esc(x.name)+'</option>').join('')
+      +'</select>'
+      +'<div class="fine" style="text-align:left;margin-top:8px">'+esc(f.blurb)
+      +(f.hcp?' <strong style="color:var(--good)">Builds handicaps.</strong>'
+             :' <strong style="color:var(--muted)">Won’t count towards handicaps.</strong>')
+      +' <a onclick="showRules(\''+d.format+'\')" style="color:var(--green);font-weight:900;'
+      +'cursor:pointer;text-decoration:underline">Read the rules</a></div>'
+      +(f.teams?('<label>Players per team</label>'
+        +'<input type="number" min="2" max="4" value="'+d.size+'" '
+        +'onchange="dayField('+i+',\'size\',this.value)">'):'')
+      +(f.teams?('<label>'+minLabel(d.format)+'</label>'
+        +'<input type="number" min="0" max="18" value="'+d.min+'" '
+        +'onchange="dayField('+i+',\'min\',this.value)">'
+        +'<div class="fine" style="text-align:left;margin-top:6px">'+minBlurb(d.format)
+        +'</div>'):'')
+      +'</div>';
+  }).join('');
+
+  $('nc-days-note').innerHTML=multi
+    ? '<strong>'+ncDays.length+' days.</strong> Teams carry over from the day before, and the '
+      +'winner is the combined total across all of them.'
+    : 'Playing over more than one day? Add a day and each gets its own course and format.';
+}
+
+async function loadCourses(){
+  const {data,error}=await sb.rpc('gc_search_courses',{p_query:''});
+  if(error||!data)return;
+  courses=data;
+  if(ncDays.length&&!ncDays[0].tee&&courses.length)ncDays[0].tee=courses[0].tee_id;
+  renderDays();
+}
+async function createComp(){
+  const name=$('nc-name').value.trim();
+  if(!name){toast('Give the comp a name',true);return}
+  for(let i=0;i<ncDays.length;i++){
+    const d=ncDays[i], lab=(ncDays.length>1?('Day '+(i+1)+': '):'');
+    if(!d.date){toast(lab+'pick a date',true);return}
+    if(!d.tee){toast(lab+'pick a course',true);return}
+  }
+  let gid=me.group_id;
+  if(!gid){
+    const {data:g,error:ge}=await sb.rpc('gc_create_group',{p_name:'My Golf Group'});
+    if(ge){toast(ge.message,true);return}
+    gid=g;
+  }
+  const first=courses.find(x=>x.tee_id===ncDays[0].tee);
+  const d0=new Date(ncDays[0].date);
+  const subtitle=(ncDays.length>1)
+    ? (d0.toLocaleDateString('en-AU',{day:'numeric',month:'short'})+'–'
+       +new Date(ncDays[ncDays.length-1].date).toLocaleDateString('en-AU',
+           {day:'numeric',month:'short'})+' · '+ncDays.length+' days')
+    : (d0.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})
+       +' · '+(first?first.name:''));
+
+  const days=ncDays.map((d,i)=>{
+    const c=courses.find(x=>x.tee_id===d.tee);
+    const f=FORMATS.find(x=>x.key===d.format);
+    return {name:(ncDays.length>1?('Day '+(i+1)+(c?(' · '+c.name):'')):'Round 1'),
+      played_on:d.date, tee_id:d.tee, course_id:c?c.id:null,
+      format:d.format, team_size:(f&&f.teams)?d.size:1, min_contributions:d.min};
+  });
+
+  const {data,error}=await sb.rpc('gc_create_comp_multi',{
+    p_group_id:gid, p_name:name, p_subtitle:subtitle, p_days:days});
+  if(error){toast(error.message,true);return}
+  const comp=data[0];
+  closeSheet('sh-newcomp');
+  loadMyComps();
+  await openComp(comp.comp_id);
+  toast(ncDays.length>1?('Comp created — '+ncDays.length+' days'):'Comp created — now add your mates');
+}
+// ---------- comp setup ----------
+let cs=null, csPin='', csTab='recent', csRoundId=null;
+
+async function openComp(id, pin){
+  // Admin rights come from being signed in as the organiser, not from a code
+  csPin = null;
+  show('v-comp');
+  $('cs-body').innerHTML='<div class="empty"><span class="spin"></span></div>';
+  const {data,error}=await sb.rpc('gc_comp_setup',{p_comp_id:id,p_pin:csPin});
+  if(error){ $('cs-body').innerHTML='<div class="note err">'+esc(error.message)+'</div>'; return; }
+  cs=data;
+  // Keep the day you were looking at; otherwise open on the first unfinished one
+  const rs=(cs.rounds&&cs.rounds.length)?cs.rounds:[cs.round];
+  if(!csRoundId||!rs.some(x=>x.id===csRoundId)){
+    csRoundId=(rs.find(x=>x.started)||rs[0]).id;
+  }
+  renderComp();
+}
+
+function fmtOf(k){return FORMATS.find(f=>f.key===k)||FORMATS[0]}
+
+function csRounds(){ return (cs.rounds&&cs.rounds.length)?cs.rounds:[cs.round] }
+function csDay(){
+  const rs=csRounds();
+  return rs.find(x=>x.id===csRoundId) || rs[0];
+}
+function csPickDay(id){ csRoundId=id; renderComp() }
+
+function renderComp(){
+  const c=cs.comp, ps=cs.players||[];
+  const rs=csRounds();
+  const r=csDay();
+  const ts=(r.teams!==undefined)?(r.teams||[]):(cs.teams||[]);
+  const f=fmtOf(r.format);
+  const multi=rs.length>1;
+  $('cs-kicker').textContent=rs.some(x=>x.started)?'Live now':'Setting up';
+  $('cs-name').textContent=c.name;
+  $('cs-sub').innerHTML=esc(c.subtitle||'')+(multi?'':(' · '+esc(f.name)))
+    +' · <a onclick="showRules(\''+r.format+'\')" style="color:inherit;font-weight:900;'
+    +'text-decoration:underline;cursor:pointer">rules</a>';
+
+  // 1. Players
+  let h='<div class="section"><h2><span class="stepnum'+(ps.length>1?' done':'')+'">1</span>'
+    +'Who’s playing</h2><span class="small">'+ps.length+'</span></div>';
+  h+='<section class="card" style="padding:13px">';
+  h+='<div class="plist">'+ps.map(p=>{
+    const ini=(p.name||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+    return '<div class="p"><div class="av"'+(p.joined?'':' style="background:#f6efe0"')+'>'
+      +esc(ini)+'</div>'
+      +'<div class="nm">'+esc(p.name)+'<small>'
+      +(placeholderEmail(p.email)
+        ? '<span style="color:var(--gold)">Placeholder email</span> · needs a real one'
+        : (p.joined
+          ? ('On GolfComp · handicap '+Number(p.hcp_index==null?p.playing_hcp:p.hcp_index).toFixed(1))
+          : ('<span style="color:var(--gold)">Invited</span> · '+esc(p.email||''))))
+      +'</small></div>'
+      +'<div class="hc">'+Math.round(p.playing_hcp)+'</div>'
+      +'<button class="x" onclick="removePlayer(\''+p.id+'\')">×</button></div>';
+  }).join('')+'</div>';
+
+  h+='<div class="tabs" style="grid-template-columns:1fr 1fr">'
+    +'<button class="'+(csTab==='recent'?'on':'')+'" onclick="csSetTab(\'recent\')">Played with</button>'
+    +'<button class="'+(csTab==='email'?'on':'')+'" onclick="csSetTab(\'email\')">Invite by email</button>'
+    +'</div><div id="cs-add"></div>';
+  const pending=ps.filter(p=>!p.joined&&!placeholderEmail(p.email)).length;
+  if(pending)h+='<div class="fine" style="text-align:left;margin-top:9px">'
+    +'<strong>'+pending+' still to join.</strong> They can be in the comp now — their scores and '
+    +'handicap are waiting for them the moment they sign up with that email.</div>';
+  const holding=ps.filter(p=>placeholderEmail(p.email));
+  if(holding.length)h+='<div class="note warn" style="margin-top:9px">'
+    +'<strong>'+holding.length+' on a placeholder email:</strong> '
+    +holding.map(p=>esc(p.name)).join(', ')+'. They can score, but they can’t be sent a '
+    +'sign-in link or reset a password. Swap in their real address when you have it.</div>';
+  h+='</section>';
+
+  // 2. The days
+  if(multi){
+    h+='<div class="section"><h2><span class="stepnum done">2</span>The days</h2>'
+      +'<span class="small">'+rs.length+'</span></div>'
+      +'<div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:11px">'
+      +rs.map(x=>{
+        const on=(x.id===r.id), xf=fmtOf(x.format);
+        return '<button onclick="csPickDay(\''+x.id+'\')" style="flex:0 0 auto;'
+          +'border:2px solid '+(on?'var(--green)':'#e2dbcd')+';background:'+(on?'var(--green)':'#fff')
+          +';color:'+(on?'#fff':'var(--ink)')+';border-radius:13px;padding:9px 13px;'
+          +'font-size:11.5px;font-weight:900;text-align:left">Day '+x.round_no
+          +(x.started?' ●':'')
+          +'<span style="display:block;font-size:9px;font-weight:700;opacity:.75;margin-top:2px">'
+          +esc((x.course_name||'').split(' ')[0])+' · '+esc(xf.name.split(' ')[0])+'</span></button>';
+      }).join('')+'</div>';
+  }
+
+  // 3. Teams (only for team formats)
+  const stepTeams=multi?3:2;
+  if(f.teams){
+    const built=ts.length>0;
+    const prev=multi?rs.find(x=>x.round_no===r.round_no-1):null;
+    const prevHasTeams=prev&&(prev.teams||[]).length>0;
+    h+='<div class="section"><h2><span class="stepnum'+(built?' done':'')+'">'+stepTeams+'</span>'
+      +'Teams'+(multi?(' · Day '+r.round_no):'')+'</h2>'
+      +'<span class="small">'+(built?(ts.length+' teams'):'not set')+'</span></div>';
+    h+='<section class="card" style="padding:13px">';
+    if(ps.length<2){
+      h+='<div class="empty">Add players first.</div>';
+    } else {
+      if(prevHasTeams&&!built){
+        h+='<button class="primary" onclick="copyTeams(\''+prev.id+'\')">'
+          +'Same teams as Day '+prev.round_no+'</button>'
+          +'<div class="fine" style="text-align:left;margin:7px 0 11px">Most trips keep the same '
+          +'pairings all weekend. Or build fresh ones below.</div>';
+      }
+      h+='<button class="'+(prevHasTeams&&!built?'ghostbtn':'primary')+'" onclick="autoTeams()">'
+        +(built?'Rebuild teams — balanced by handicap':'Build teams — balanced by handicap')+'</button>'
+        +'<div class="fine" style="text-align:left;margin-top:7px">Pairs the strongest with the '
+        +'weakest so the teams are even. You can change anyone below.</div>';
+      if(built){
+        // Build the option list per slot so the current pick is actually selected
+        const optsFor=(sel)=>'<option value="">—</option>'+ps.map(p=>
+          '<option value="'+p.id+'"'+(p.id===sel?' selected':'')+'>'
+          +esc(p.name)+' ('+Math.round(p.playing_hcp)+')</option>').join('');
+        ts.forEach((t,ti)=>{
+          const mem=t.members||[];
+          const sum=mem.reduce((a,id)=>{const p=ps.find(x=>x.id===id);
+            return a+(p?Number(p.playing_hcp):0)},0);
+          const isAmb=f.key.indexOf('ambrose')===0;
+          const thc=Math.round(sum/((mem.length||r.team_size)*2));
+          h+='<div class="tbox"><div class="th"><span class="tn">Team '+(t.team_no+1)+'</span>'
+            +'<span class="thc">'+(isAmb?('team H/C '+thc):('combined '+Math.round(sum)))+'</span></div>';
+          for(let s=0;s<r.team_size;s++){
+            h+='<select onchange="setSlot('+ti+','+s+',this.value)">'+optsFor(mem[s]||'')+'</select>';
+          }
+          h+='</div>';
+        });
+      }
+    }
+    h+='</section>';
+  }
+
+  // 4. Playing groups — who actually walks round together
+  const stepGroups=stepTeams+(f.teams?1:0);
+  const gs=(r.groups||[]);
+  h+='<div class="section"><h2><span class="stepnum'+(gs.length?' done':'')+'">'+stepGroups
+    +'</span>Playing groups'+(multi?(' · Day '+r.round_no):'')+'</h2>'
+    +'<span class="small">'+(gs.length?(gs.length+(gs.length===1?' group':' groups')):'not set')+'</span></div>';
+  h+='<section class="card" style="padding:13px">';
+  if(ps.length<2){
+    h+='<div class="empty">Add players first.</div>';
+  } else {
+    h+='<div class="fine" style="text-align:left;margin-bottom:9px">Who tees off together. '
+      +'Separate from the teams — a four-ball is usually two teams walking round together, '
+      +'and you’ll see their score on your card.</div>'
+      +'<div style="display:flex;gap:7px">'
+      +'<button class="ghostbtn" style="flex:1;margin:0" onclick="autoGroups(3)">Threes</button>'
+      +'<button class="primary" style="flex:1;margin:0" onclick="autoGroups(4)">Four-balls</button>'
+      +'</div>';
+    if(gs.length){
+      const inGroup={};
+      gs.forEach(g=>(g.members||[]).forEach(m=>{inGroup[m]=g.id}));
+      const loose=ps.filter(p=>!inGroup[p.id]);
+      gs.forEach((g,gi)=>{
+        h+='<div class="tbox" style="margin-top:11px"><div class="th">'
+          +'<span class="tn">Group '+(g.group_no+1)+'</span>'
+          +'<span class="thc"><input type="time" value="'+esc(g.tee_time||'')+'" '
+          +'onchange="setTee(\''+g.id+'\',this.value)" style="border:1px solid var(--line);'
+          +'border-radius:8px;padding:4px 7px;font-size:10.5px;font-weight:800;width:auto;'
+          +'margin:0;background:#fff"></span></div>';
+        (g.members||[]).forEach(pid=>{
+          const p=ps.find(x=>x.id===pid); if(!p)return;
+          const tno=teamNoOf(ts,pid);
+          h+='<div style="display:flex;align-items:center;gap:8px;padding:7px 2px;'
+            +'border-bottom:1px solid var(--line)">'
+            +'<div style="flex:1;font-size:12px;font-weight:800">'+esc(p.name)
+            +(tno!=null?('<span style="color:var(--muted);font-weight:700"> · Team '+(tno+1)+'</span>'):'')
+            +'</div>'
+            +'<select onchange="moveToGroup(\''+pid+'\',this.value)" style="width:auto;margin:0;'
+            +'padding:6px 9px;font-size:10.5px">'
+            +gs.map(x=>'<option value="'+x.id+'"'+(x.id===g.id?' selected':'')+'>Group '
+              +(x.group_no+1)+'</option>').join('')
+            +'</select></div>';
+        });
+        if(!(g.members||[]).length)h+='<div class="fine" style="text-align:left;padding:8px 2px">Empty.</div>';
+        h+='</div>';
+      });
+      if(loose.length)h+='<div class="note warn" style="margin-top:10px"><strong>Not in a group:</strong> '
+        +loose.map(p=>esc(p.name)).join(', ')+'. They can still score — they just won’t see '
+        +'anyone else’s card.</div>';
+    }
+  }
+  h+='</section>';
+
+  // 5. Share
+  const stepShare=stepGroups+1;
+  h+='<div class="section"><h2><span class="stepnum done">'+stepShare+'</span>Share it</h2></div>';
+  h+='<section class="card" style="padding:13px">'
+    +'<div class="fine" style="text-align:left">Send everyone the link. They sign in — or '
+    +'create a free account in about twenty seconds — and go straight to their card. '
+    +'No codes to pass around, and everyone who plays picks up a handicap.</div>'
+    +'<button class="primary" onclick="shareThisComp()">Send the link →</button>'
+    +'<button class="ghostbtn" onclick="location.href=\'/c/'+c.id+'\'">Open the scorecard</button>'
+    +'</section>';
+
+  // 5. Start — each day is started on its own
+  const stepStart=stepShare+1;
+  h+='<div class="section"><h2><span class="stepnum'+(r.started?' done':'')+'">'+stepStart+'</span>'
+    +'Tee off'+(multi?(' · Day '+r.round_no):'')+'</h2></div>';
+  h+='<section class="card" style="padding:13px">';
+  if(r.started){
+    h+='<div class="note lock"><strong>Day '+r.round_no+' is live.</strong> Everyone can score now.</div>'
+      +'<button class="ghostbtn" onclick="startComp(false)">Pause scoring</button>';
+  } else {
+    const ready=ps.length>=1&&(!f.teams||ts.length>0);
+    h+='<div class="fine" style="text-align:left;margin-bottom:9px">Until you start it, players '
+      +'see a “not started yet” message and can’t enter scores'
+      +(multi?'. Start each day when you get to the first tee.':'.')+'</div>'
+      +'<button class="primary" '+(ready?'':'disabled')+' onclick="startComp(true)">'
+      +(ready
+        ? (multi ? ('Start Day '+r.round_no) : 'Start the round')
+        : ('Add players'+(f.teams?' and build teams':'')+' first'))
+      +'</button>';
+  }
+  h+='</section>';
+
+  // Players with no handicap of their own are quietly playing off 36
+  const guessed=ps.filter(p=>p.hcp_index==null);
+  if(guessed.length)h+='<div class="note warn" style="margin-top:14px">'
+    +'<strong>'+guessed.map(p=>esc(p.name)).join(', ')
+    +(guessed.length===1?' has':' have')+' no handicap yet.</strong> '
+    +'They’re playing off 36 until they record some rounds. If you know what they play off, '
+    +'it’s worth setting before you start.</div>';
+
+  h+='<button class="ghostbtn" style="color:var(--bad);border-color:rgba(179,38,30,.35);'
+    +'margin-top:16px" onclick="deleteComp()">Delete this comp</button>';
+
+  $('cs-body').innerHTML=h;
+  csRenderAdd();
+}
+
+function csSetTab(t){csTab=t;csRenderAdd()}
+async function csRenderAdd(){
+  const el=$('cs-add'); if(!el)return;
+  if(csTab==='email'){
+    el.innerHTML='<div class="addrow" style="margin-top:10px">'
+      +'<input type="email" id="cs-email" placeholder="their@email.com" inputmode="email">'
+      +'<button onclick="invitePlayer()">Add</button></div>'
+      +'<div class="addrow" style="margin-top:6px">'
+      +'<input type="text" id="cs-iname" placeholder="Their name (optional)"><span></span></div>'
+      +'<div id="cs-found"></div>'
+      +'<div class="fine" style="text-align:left;margin-top:7px">Already on GolfComp? They come '
+      +'straight in with their handicap. New to it? They join the comp now and pick up their '
+      +'free account when they sign up with that email.</div>';
+    return;
+  }
+  el.innerHTML='<div class="fine" style="text-align:left"><span class="spin"></span></div>';
+  const {data}=await sb.rpc('gc_recent_partners');
+  const have=(cs.players||[]).map(p=>p.profile_id).filter(Boolean);
+  const list=(data||[]).filter(p=>have.indexOf(p.id)<0);
+  el.innerHTML=list.length
+    ? list.map(p=>{
+        const ini=(p.display_name||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+        return '<div class="partner-box" onclick="addProfile(\''+p.id+'\')">'
+          +'<div class="partner-avatar">'+esc(ini)+'</div><div><b>'+esc(p.display_name)+'</b>'
+          +'<span>'+(p.handicap==null?'No handicap yet':('HCP '+Number(p.handicap).toFixed(1)))
+          +'</span></div></div>';
+      }).join('')
+    : '<div class="fine" style="text-align:left">Nobody yet — add by email or as a guest.</div>';
+}
+
+async function addProfile(pid){
+  const {error}=await sb.rpc('gc_add_player',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_profile_id:pid,p_guest_name:null,p_handicap:null});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin); toast('Added');
+}
+async function invitePlayer(){
+  const em=$('cs-email').value.trim();
+  const nm=$('cs-iname').value.trim();
+  if(!em||em.indexOf('@')<0){toast('Enter their email address',true);return}
+  const {data,error}=await sb.rpc('gc_invite_player',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_email:em,p_name:nm||null,p_handicap:null});
+  if(error){toast(error.message,true);return}
+  const r=data[0];
+  const compId=cs.comp.id, compName=cs.comp.name;
+  await openComp(compId,csPin);
+  if(r.out_already_joined){ toast('Added — they’re already on GolfComp'); }
+  else {
+    toast('Added. Send them the invite so they can join.');
+    setTimeout(()=>{
+      if(confirm('They don’t have a GolfComp account yet.\n\nSend them an invite now?')){
+        const txt=compName+'\n\nYou’re in — I’ve added you to the comp.\n\n'
+          +'Grab a free GolfComp account (30 seconds, just your email) and your scores and '
+          +'handicap are waiting:\n'+location.origin+'/app\n\nUse '+em+' when you sign up.';
+        if(navigator.share)navigator.share({text:txt}).catch(()=>{});
+        else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast('Invite copied'));
+        else prompt('Send this to them:',txt);
+      }
+    },400);
+  }
+}
+async function removePlayer(id){
+  if(!confirm('Remove them from the comp?'))return;
+  const {error}=await sb.rpc('gc_remove_player',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_comp_player_id:id});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin);
+}
+async function autoTeams(){
+  const r=csDay();
+  const {error}=await sb.rpc('gc_auto_teams',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_round_id:r.id,p_team_size:r.team_size});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin); toast('Teams built');
+}
+// A stand-in address so someone can play before you've chased their real one.
+// Nothing can be delivered to it, so it's worth calling out.
+function placeholderEmail(e){
+  return !!e && /@player\.golfcomp\.com\.au$/i.test(e);
+}
+function teamNoOf(ts,pid){
+  for(let i=0;i<ts.length;i++){ if((ts[i].members||[]).indexOf(pid)>=0)return ts[i].team_no }
+  return null;
+}
+async function autoGroups(size){
+  const r=csDay();
+  const {error}=await sb.rpc('gc_auto_playing_groups',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_round_id:r.id,p_size:size});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin);
+  toast('Groups built — teams kept together');
+}
+async function setTee(gid,v){
+  const {error}=await sb.rpc('gc_set_tee_time',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_group_id:gid,p_tee_time:v||null});
+  if(error){toast(error.message,true);return}
+  const r=csDay();
+  (r.groups||[]).forEach(g=>{if(g.id===gid)g.tee_time=v});
+  toast(v?('Tee time '+v):'Tee time cleared');
+}
+async function moveToGroup(pid,gid){
+  const r=csDay();
+  const gs=(r.groups||[]).map(g=>({tee_time:g.tee_time||'',
+    members:(g.members||[]).filter(m=>m!==pid)}));
+  const target=(r.groups||[]).findIndex(g=>g.id===gid);
+  if(target<0)return;
+  gs[target].members.push(pid);
+  const {error}=await sb.rpc('gc_set_playing_groups',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_round_id:r.id,p_groups:gs});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin);
+}
+async function copyTeams(fromId){
+  const r=csDay();
+  const {error}=await sb.rpc('gc_copy_teams',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_from_round:fromId,p_to_round:r.id});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin); toast('Same teams carried over');
+}
+async function setSlot(ti,slot,pid){
+  const r=csDay();
+  const cur=(r.teams!==undefined)?(r.teams||[]):(cs.teams||[]);
+  const teams=cur.map(t=>(t.members||[]).slice());
+  while(teams[ti].length<r.team_size)teams[ti].push(null);
+  // if that player is already somewhere else, take them out first
+  teams.forEach((t,i)=>t.forEach((v,j)=>{if(v===pid&&!(i===ti&&j===slot))teams[i][j]=null}));
+  teams[ti][slot]=pid||null;
+  const payload=teams.map(t=>t.filter(Boolean));
+  const {error}=await sb.rpc('gc_set_teams',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_round_id:r.id,p_teams:payload});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin);
+}
+async function startComp(v){
+  const r=csDay(), f=fmtOf(r.format);
+  const cur=(r.teams!==undefined)?(r.teams||[]):(cs.teams||[]);
+  // Individual formats still need an entry per player so the scorecard has
+  // something to pick from — build them as teams of one.
+  if(v && !f.teams && cur.length===0){
+    const {error:te}=await sb.rpc('gc_auto_teams',{p_comp_id:cs.comp.id,p_pin:csPin,
+      p_round_id:r.id,p_team_size:1});
+    if(te){toast(te.message,true);return}
+  }
+  const {error}=await sb.rpc('gc_set_round_started',{p_comp_id:cs.comp.id,p_pin:csPin,
+    p_round_id:r.id,p_started:v});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin);
+  toast(v?'Live — go play':'Scoring paused');
+}
+async function deleteComp(){
+  const nm=cs.comp.name;
+  if(!confirm('Delete “'+nm+'”?\n\nThe comp and its scores go. Any rounds already played still '
+    +'count towards everyone’s handicap.'))return;
+  const {error}=await sb.rpc('gc_delete_comp',{p_comp_id:cs.comp.id,p_pin:csPin});
+  if(error){toast(error.message,true);return}
+  cs=null; show('v-home'); loadMyComps(); toast(nm+' deleted');
+}
+function shareThisComp(){
+  const c=cs.comp;
+  const txt=c.name+'\n'+(c.subtitle||'')+'\n\nTap to score:\n'+location.origin+'/c/'+c.id
+    +'\n\nFree account, takes twenty seconds — and you get a handicap out of it.';
+  if(navigator.share)navigator.share({text:txt}).catch(()=>{});
+  else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast('Invite copied'));
+  else prompt('Copy:',txt);
+}
+
+function inviteText(){const c=window._nc||{};
+  return c.name+'\n\nTap to score:\n'+location.origin+'/c/'+c.id
+    +'\n\nFree account, takes twenty seconds — and you get a handicap out of it.'}
+function shareComp(){const t=inviteText();
+  if(navigator.share)navigator.share({text:t}).catch(()=>{});
+  else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast('Invite copied'));
+  else prompt('Copy:',t)}
+async function loadMyComps(){
+  const {data,error}=await sb.rpc('gc_my_comps');
+  const el=$('my-comps');
+  if(error||!data||!data.length){
+    el.innerHTML='<section class="card"><div class="empty">No comps yet.<br>'
+      +'Create one and share the link with your mates.</div></section>';
+    $('live-wrap').innerHTML='';return;
+  }
+  el.innerHTML=data.map(c=>{
+    // Tapping the card always goes to scoring — that's what people want.
+    // Organisers get a separate Manage link so setup is still one tap away.
+    return '<section class="card" style="padding:15px 16px;margin-bottom:9px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;'
+      +'cursor:pointer" onclick="location.href=\'/c/'+c.id+'\'">'
+      +'<div><b style="font-size:13.5px">'+esc(c.name)+'</b>'
+      +'<div class="small" style="margin-top:2px">'+esc(c.subtitle||'')+'</div></div>'
+      +'<span class="pill'+(c.status==='live'?' good':'')+'">'+statusLabel(c)+'</span></div>'
+      +(c.is_organiser
+        ? '<div style="border-top:1px solid var(--line);margin-top:11px;padding-top:9px;'
+          +'display:flex;gap:14px">'
+          +'<a onclick="location.href=\'/c/'+c.id+'\'" style="font-size:11px;font-weight:900;'
+          +'color:var(--green);cursor:pointer">'+(done(c)?'Results →':'Score →')+'</a>'
+          +(done(c)?'':('<a onclick="openComp(\''+c.id+'\')" style="font-size:11px;'
+            +'font-weight:900;color:var(--muted);cursor:pointer">Manage</a>'))
+          +'</div>'
+        : '')
+      +'</section>';
+  }).join('');
+
+  // Show whatever's actually on: a live comp first, then one still being set up,
+  // and only fall back to a finished one if that's all there is.
+  const live=data.find(c=>c.status==='live')
+          || data.find(c=>c.status==='setup')
+          || data.find(c=>c.status!=='archived')
+          || data[0];
+  const fin=done(live);
+  const buttons = fin
+    ? '<button class="primary" onclick="location.href=\'/c/'+live.id+'\'">See the results →</button>'
+    : (live.is_organiser
+      ? '<button class="primary" onclick="location.href=\'/c/'+live.id+'\'">Score now →</button>'
+        +'<button class="ghostbtn" onclick="openComp(\''+live.id+'\')">Manage the comp</button>'
+      : '<button class="primary" onclick="location.href=\'/c/'+live.id+'\'">Score now →</button>');
+
+  $('live-wrap').innerHTML=
+    '<div class="section"><h2>'+(fin?'Last comp':'Current comp')+'</h2>'
+    +'<button onclick="location.href=\'/c/'+live.id+'\'">Leaderboard →</button></div>'
+    +'<section class="card live"><div class="live-head"><div>'
+    +'<div class="live-kicker">'+esc(live.subtitle||'')+'</div><h3>'+esc(live.name)+'</h3>'
+    +'<div class="small">'+esc((FORMATS.find(f=>f.key===live.format)||{}).name||'')+'</div></div>'
+    +'<div class="pill'+(live.status==='live'?' good':'')+'">'+statusLabel(live)+'</div></div>'
+    +'<div class="live-bottom">'+buttons+'</div></section>';
+}
+function done(c){ return !!c && (c.status==='complete'||c.status==='archived') }
+// Status is worked out from the scores themselves, so a finished comp can't
+// sit there claiming it hasn't started.
+function statusLabel(c){
+  const days=c.day_count||1;
+  if(c.status==='complete')return 'Complete';
+  if(c.status==='archived')return 'Archived';
+  if(c.status==='live'){
+    if(days>1)return 'Live · Day '+(c.live_day||1)+' of '+days;
+    const done=c.holes_done||0, tot=c.holes_total||0;
+    if(tot>0)return 'Live · thru '+Math.min(18,Math.floor(done/Math.max(1,tot/18)));
+    return 'Live';
+  }
+  return days>1?('Not started · '+days+' days'):'Not started';
+}
+function joinComp(){
+  const v=$('join-code').value.trim();
+  const m=v.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+  if(m){location.href='/c/'+m[1];return}
+  $('join-msg').innerHTML='<div class="note err">Couldn’t read that. Paste the whole link.</div>';
+}
+
+// ---------- routing ----------
+async function route(){
+  if(routing)return;routing=true;
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session){show('v-out');return}
+    await loadMe();
+    if(!me){show('v-name');return}
+    // Someone who already has rounds has a real handicap — don't ask them to guess
+    if(!me.estimate_locked && !(me.rounds_used>0)){show('v-est');return}
+    renderHome();renderFormats();await loadCourses();loadMyComps();
+    show('v-home');
+  }catch(e){console.error(e);toast('Something went wrong loading',true)}
+  finally{routing=false}
+}
+function boot(){
+  if(typeof supabase==='undefined'){setTimeout(boot,100);return}
+  sb=supabase.createClient(SUPA_URL,SUPA_KEY,
+    {auth:{detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});
+  sb.auth.onAuthStateChange(ev=>{
+    if(ev==='SIGNED_IN'||ev==='INITIAL_SESSION')route();
+    if(ev==='SIGNED_OUT')show('v-out');
+  });
+  route();
+}
+boot();
+</script>
+</body>
+</html>

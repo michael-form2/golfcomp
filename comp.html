@@ -1,0 +1,1523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#082f25">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>GolfComp — Comp</title>
+<style>
+:root{--green:#082f25;--green2:#14523f;--cream:#f4f0e8;--ink:#122019;--gold:#d8b45c;
+      --muted:#6f7b74;--line:rgba(18,32,25,.09);--bad:#b3261e;--good:#25704d}
+*{box-sizing:border-box}
+html{overflow-x:hidden;width:100%;overscroll-behavior:none}
+html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#082f25;color:var(--ink);-webkit-text-size-adjust:100%}
+body{overflow-x:hidden;max-width:100vw;overscroll-behavior-y:contain}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{width:min(430px,100vw);min-height:100vh;margin:auto;background:var(--cream);
+  position:relative;overflow:hidden}
+
+.top{padding:calc(18px + env(safe-area-inset-top)) 18px 24px;color:#fff;
+  background:linear-gradient(180deg,rgba(3,28,21,.10),rgba(4,35,27,.90)),
+  url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgMTIwMCI+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InNreSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiM3ODk4OGMiLz48c3RvcCBvZmZzZXQ9Ii40NSIgc3RvcC1jb2xvcj0iI2I4YzJhYSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2RmYzg5NyIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0ibGFuZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiM2Mzg0NWYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyMjRiMzciLz48L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxyZWN0IHdpZHRoPSI5MDAiIGhlaWdodD0iMTIwMCIgZmlsbD0idXJsKCNza3kpIi8+CjxjaXJjbGUgY3g9IjcwMCIgY3k9IjIyMCIgcj0iMTEwIiBmaWxsPSIjZjNkOTllIiBvcGFjaXR5PSIuNSIvPgo8cGF0aCBkPSJNMCA1MTAgQzE3MCA0NTAgMzAwIDQ5NSA0MzAgNDUwIEM1OTAgMzk1IDc0MCA0NDUgOTAwIDM4NSBMOTAwIDEyMDAgTDAgMTIwMFoiIGZpbGw9IiMyOTRkMzkiLz4KPHBhdGggZD0iTTAgNjMwIEMxODAgNTIwIDM0MCA1NzAgNDcwIDUyMCBDNjMwIDQ1NSA3NjAgNTEwIDkwMCA0NTUgTDkwMCAxMjAwIEwwIDEyMDBaIiBmaWxsPSJ1cmwoI2xhbmQpIi8+CjxwYXRoIGQ9Ik0tNTAgODUwIEMxNjAgNjYwIDM0MCA2NDAgNTEwIDY2NSBDNzAwIDY5NSA4MTAgODEwIDk1MCA4OTAgTDk1MCAxMjAwIEwtNTAgMTIwMFoiIGZpbGw9IiM2ZTkzNjciLz4KPGVsbGlwc2UgY3g9IjY1MCIgY3k9IjgyMCIgcng9IjkwIiByeT0iMjgiIGZpbGw9IiNkZGNjOWQiLz4KPHBhdGggZD0iTTUzNSA4MTUgTDU0MCA1OTAiIHN0cm9rZT0iI2Y2ZjJlOCIgc3Ryb2tlLXdpZHRoPSI3Ii8+CjxwYXRoIGQ9Ik01NDAgNTkwIEw2MzAgNjIyIEw1NDAgNjUwWiIgZmlsbD0iI2Q3YjI1YSIvPgo8L3N2Zz4=") center 48%/cover no-repeat;
+  position:relative}
+.toprow{display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:900}
+.mark{width:32px;height:32px;border-radius:11px;background:linear-gradient(145deg,#f0d787,#cba447);
+  display:grid;place-items:center;color:var(--green);font-size:15px}
+.backbtn{width:38px;height:38px;border:0;border-radius:13px;background:rgba(255,255,255,.93);
+  color:var(--green);font-size:18px;font-weight:900}
+.livepill{background:rgba(255,255,255,.16);color:#fff;padding:6px 10px;border-radius:99px;
+  font-size:8.5px;font-weight:900;text-transform:uppercase;letter-spacing:.7px;
+  display:inline-flex;align-items:center;gap:5px}
+.livepill i{width:7px;height:7px;border-radius:50%;background:#7fe0a8;display:block}
+.livepill.off i{background:var(--gold)}
+.hcopy{margin-top:20px}
+.hcopy small{font-size:9px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:#efd78b}
+.hcopy h1{font-size:26px;line-height:1.05;letter-spacing:-.9px;margin:5px 0 4px}
+.hcopy p{font-size:11.5px;color:rgba(255,255,255,.72);margin:0}
+
+.content{padding:0 15px 110px;margin-top:-13px;position:relative;z-index:2}
+.card{background:#fff;border-radius:22px;border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 13px 34px rgba(8,47,37,.10);margin-bottom:11px}
+.section{display:flex;justify-content:space-between;align-items:center;margin:20px 3px 9px}
+.section h2{font-size:16px;margin:0;letter-spacing:-.3px}
+.section span{font-size:10px;font-weight:900;color:var(--muted)}
+
+/* hole header */
+.holehead{background:var(--green);color:#fff;border-radius:22px 22px 0 0;padding:15px 17px;
+  display:flex;justify-content:space-between;align-items:center}
+.holehead .n{font-size:26px;font-weight:900;letter-spacing:-.8px}
+.holehead .i{font-size:10.5px;opacity:.8;text-align:right;line-height:1.5}
+
+/* player rows */
+.prow{display:grid;grid-template-columns:minmax(0,1fr) 118px 54px;gap:7px;align-items:center;
+  padding:11px 10px;border-bottom:1px solid var(--line)}
+.prow:last-of-type{border-bottom:none}
+.prow .nm{font-weight:800;font-size:13px;min-width:0;overflow:hidden}
+.prow .nm small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;margin-top:2px}
+.prow .nm .tag{display:block;font-size:8.5px;font-weight:900;letter-spacing:.5px;margin-top:3px;
+  color:#a8861e}
+.prow.counts{background:#fdf8ea}
+.step{display:grid;grid-template-columns:36px minmax(0,1fr) 36px;gap:3px;align-items:center;
+  min-width:0}
+.step button{border:0;background:var(--green);color:#fff;border-radius:11px;height:46px;
+  font-size:19px;font-weight:900;padding:0;min-width:0}
+.step button:active{background:var(--green2)}
+/* number inputs carry an intrinsic min-width — without this they blow the grid out */
+.step input{border:1px solid #e2dbcd;border-radius:11px;height:46px;text-align:center;
+  font-size:18px;font-weight:900;padding:0 2px;background:#fff;outline:none;
+  min-width:0;width:100%;-moz-appearance:textfield}
+.step input::-webkit-outer-spin-button,
+.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.use{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;
+  min-width:0;min-height:50px;border-radius:13px;border:2px dashed #ddd5c7;background:#fff;
+  color:var(--muted);padding:4px 1px;line-height:1.1}
+.use .v{font-size:17px;font-weight:900;color:var(--ink)}
+.use .l{font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.2px;margin-top:2px}
+@media (max-width:380px){
+  .prow{grid-template-columns:minmax(0,1fr) 104px 48px;gap:5px;padding:11px 8px}
+  .step{grid-template-columns:31px minmax(0,1fr) 31px}
+  .step button{font-size:17px}
+  .step input{font-size:16px}
+}
+.use.on{background:linear-gradient(145deg,#d9b45d,#efd58a);border:2px solid var(--green);color:var(--green)}
+.use.on .v{color:var(--green)}
+.use.pick{border-color:var(--bad);color:var(--bad);animation:nud 1.4s ease-in-out infinite}
+.use:disabled{opacity:.4;animation:none}
+@keyframes nud{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+.teamtot{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;
+  background:var(--green);color:#fff;border-radius:0 0 22px 22px}
+.teamtot .l{font-size:8.5px;text-transform:uppercase;letter-spacing:.9px;opacity:.8}
+.teamtot .v{font-size:23px;font-weight:900}
+
+.nav2{display:flex;gap:9px;padding:0 2px;margin-top:12px}
+.nav2 button{flex:1;border:0;border-radius:15px;background:var(--green);color:#fff;
+  min-height:52px;font-size:14px;font-weight:900}
+.nav2 button:disabled{background:#ded7c9;color:#9aa39c}
+.nav2 .ctr{flex:0 0 70px;background:#fff;border:2px solid var(--green);color:var(--green);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.nav2 .ctr .b{font-size:20px;font-weight:900}
+.nav2 .ctr .s{font-size:8px;font-weight:900;color:var(--muted);margin-top:2px}
+
+.striplabel{font-size:8.5px;font-weight:900;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.7px;margin:12px 0 4px}
+.strip{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
+.strip .h{background:#fff;border:1px solid #e6ded0;border-radius:9px;min-height:38px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;
+  font-weight:900;color:var(--muted);line-height:1.1}
+.strip .h small{font-size:9px;font-weight:900;margin-top:1px}
+.strip .h.done{background:var(--green);border-color:var(--green);color:#fff}
+.strip .h.now{background:var(--gold);border-color:var(--green);color:var(--green)}
+/* whose drive was used on that hole */
+.strip .h i{font-style:normal;font-size:7.5px;font-weight:900;letter-spacing:.3px;
+  margin-top:1px;padding:1px 4px;border-radius:99px;background:rgba(0,0,0,.09);
+  text-transform:uppercase}
+.strip .h.done i{background:rgba(255,255,255,.24);color:#fff}
+.strip .h.now i{background:rgba(19,45,33,.16);color:var(--green)}
+.strip .h.nodrive{border-color:#d9b45d;border-width:2px}
+
+table.lb{width:100%;border-collapse:collapse;font-size:12.5px}
+table.lb th,table.lb td{padding:11px 8px;text-align:left;border-bottom:1px solid var(--line)}
+table.lb th{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;
+  font-weight:900;background:#f7f4ee}
+table.lb td.num,table.lb th.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:900}
+table.lb tr.win td{background:#fdf8ea}
+table.lb tr:last-child td{border-bottom:none}
+.pos{font-weight:900;color:var(--green)}
+
+.who-else{display:flex;align-items:center;gap:9px;background:#eef4f0;border:1px solid #cfe0d6;
+  border-radius:13px;padding:10px 12px;margin-bottom:10px;font-size:11.5px;color:#1d5c42}
+.who-else .dot{width:8px;height:8px;border-radius:50%;background:#2b9463;flex-shrink:0;
+  animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.who-else b{font-weight:900}
+.saved{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#1d5c42;color:#fff;
+  padding:7px 14px;border-radius:99px;font-size:10.5px;font-weight:900;z-index:45;opacity:0;
+  transition:.25s;pointer-events:none}
+.saved.show{opacity:1}
+.note{background:rgba(216,180,92,.16);border:1px solid var(--gold);border-radius:14px;
+  padding:12px 14px;font-size:11px;margin:11px 0;line-height:1.55}
+.note.warn{background:rgba(179,38,30,.09);border-color:var(--bad)}
+.note.lock{background:rgba(37,112,77,.10);border-color:var(--good)}
+.empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:11.5px;line-height:1.6}
+
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100vw);
+  display:grid;grid-template-columns:1fr 1fr;padding:9px 12px calc(11px + env(safe-area-inset-bottom));
+  background:rgba(250,248,244,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line);z-index:10}
+.bnav{text-align:center;font-size:9.5px;color:#7b867f;font-weight:900;border:0;background:none;padding:6px 0}
+.bnav b{display:block;font-size:17px;margin-bottom:2px}
+.bnav.on{color:var(--green)}
+
+.gate{position:fixed;inset:0;z-index:50;background:var(--green);display:flex;
+  align-items:center;justify-content:center;padding:20px}
+.gatecard{width:min(390px,100%);background:var(--cream);border-radius:24px;padding:24px 20px;
+  text-align:center;max-height:90vh;overflow-y:auto}
+.gatecard .mk{width:56px;height:56px;border-radius:19px;margin:0 auto 13px;
+  background:linear-gradient(145deg,#f0d787,#cba447);display:grid;place-items:center;
+  font-size:26px;color:var(--green)}
+.gatecard h2{font-size:22px;margin:0 0 4px;letter-spacing:-.6px}
+.gatecard p{font-size:11.5px;color:var(--muted);margin:0 0 16px;line-height:1.5}
+.gatecard input[type=text],.gatecard input[type=email],.gatecard input[type=password]{
+  width:100%;border:1.5px solid var(--line);background:#fff;border-radius:13px;
+  padding:13px 14px;font-size:14px;font-weight:700;font-family:inherit;color:var(--ink);
+  margin-bottom:9px;-webkit-appearance:none}
+.gatecard input:focus{outline:0;border-color:var(--green)}
+.gtabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#efe9dc;padding:4px;
+  border-radius:13px;margin-bottom:13px}
+.gtabs button{border:0;background:none;border-radius:10px;padding:9px;font-size:11.5px;
+  font-weight:900;color:var(--muted);font-family:inherit;cursor:pointer}
+.gtabs button.on{background:#fff;color:var(--green);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.gfine{font-size:10.5px;color:var(--muted);line-height:1.5;margin-top:9px}
+.gpick{display:grid;gap:7px;margin-bottom:14px}
+.gpick button{border:1.5px solid #ddd5c7;background:#fff;border-radius:14px;padding:12px;
+  text-align:left;font-size:12.5px;font-weight:800;color:var(--ink)}
+.gpick button b{display:block;font-size:8.5px;color:var(--gold);letter-spacing:.7px;margin-bottom:2px}
+input.pin{width:100%;border:1.5px solid #ddd5c7;border-radius:14px;padding:15px;
+  font-size:24px;font-weight:900;text-align:center;letter-spacing:.25em;outline:none}
+.primary{width:100%;border:0;border-radius:14px;padding:15px;background:var(--green);color:#fff;
+  font-size:13px;font-weight:900;margin-top:11px}
+.ghostbtn{width:100%;border:1px solid #dcd4c7;background:transparent;color:var(--green);
+  border-radius:14px;padding:13px;font-weight:900;font-size:11.5px;margin-top:9px}
+.linkbtn{border:0;background:none;color:var(--muted);font-size:10.5px;font-weight:800;
+  text-decoration:underline;padding:10px}
+
+.screen{display:none}.screen.on{display:block}
+.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(14px);opacity:0;
+  background:#122019;color:#fff;border-radius:12px;padding:11px 15px;font-size:11px;transition:.2s;
+  z-index:60;max-width:88vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--bad)}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid var(--line);
+  border-top-color:var(--green);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* rules sheet */
+.sheet-wrap{position:fixed;inset:0;z-index:70;background:rgba(10,20,15,.5);
+  display:none;align-items:flex-end;justify-content:center}
+.sheet-wrap.on{display:flex}
+.sheet{width:min(430px,100%);max-height:88vh;overflow-y:auto;background:var(--cream);
+  border-radius:24px 24px 0 0;padding:10px 18px 26px}
+.sheet .handle{width:38px;height:4px;border-radius:99px;background:#d9d2c4;margin:0 auto 14px}
+.sheet h2{font-size:21px;margin:0 0 4px;letter-spacing:-.5px}
+.sheet .sub{font-size:11px;color:var(--muted);margin:0}
+.sheet .cancel{width:100%;border:0;background:none;color:var(--muted);font-size:12px;
+  font-weight:900;padding:14px;margin-top:6px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ============ SCORE ============ -->
+<div id="v-score" class="screen on">
+  <header class="top">
+    <div class="toprow">
+      <div style="display:flex;align-items:center;gap:9px">
+        <button class="backbtn" onclick="location.href='/app'" aria-label="Dashboard">←</button>
+        <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+      </div>
+      <span class="livepill" id="conn"><i></i><span id="conn-t">Live</span></span>
+    </div>
+    <div class="hcopy">
+      <small id="sc-kicker">—</small>
+      <h1 id="sc-name">—</h1>
+      <p id="sc-sub">—</p>
+    </div>
+  </header>
+  <main class="content">
+    <div id="sc-body"></div>
+  </main>
+</div>
+
+<!-- ============ LEADERBOARD ============ -->
+<div id="v-board" class="screen">
+  <header class="top">
+    <div class="toprow">
+      <div style="display:flex;align-items:center;gap:9px">
+        <button class="backbtn" onclick="location.href='/app'" aria-label="Dashboard">←</button>
+        <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+      </div>
+      <span class="livepill" id="conn2"><i></i><span>Live</span></span>
+    </div>
+    <div class="hcopy">
+      <small id="lb-kicker">Leaderboard</small>
+      <h1 id="lb-name">—</h1>
+      <p id="lb-sub">—</p>
+    </div>
+  </header>
+  <main class="content"><div id="lb-body"></div></main>
+</div>
+
+<nav class="bottom" id="nav">
+  <button class="bnav on" id="nav-score" onclick="show('v-score')"><b>✎</b>Score</button>
+  <button class="bnav" id="nav-board" onclick="show('v-board');renderBoard()"><b>▦</b>Leaderboard</button>
+</nav>
+</div>
+
+<!-- ============ GATE ============ -->
+<div class="sheet-wrap" id="sh-rules" onclick="if(event.target===this)closeRules()">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div id="rules-body"></div>
+    <button class="cancel" onclick="closeRules()">Close</button>
+  </div>
+</div>
+
+<div class="gate" id="gate">
+  <div class="gatecard">
+    <div class="mk">⛳</div>
+    <h2 id="g-name">Loading…</h2>
+    <p id="g-sub">—</p>
+
+    <!-- sign in / create account -->
+    <div id="g-auth">
+      <div class="gtabs">
+        <button id="g-tab-up" class="on" onclick="gAuthMode('up')">Create account</button>
+        <button id="g-tab-in" onclick="gAuthMode('in')">Sign in</button>
+      </div>
+      <div id="g-namewrap">
+        <input type="text" id="g-fullname" placeholder="Your name" autocomplete="name">
+      </div>
+      <input type="email" id="g-email" placeholder="your@email.com" inputmode="email"
+             autocomplete="email">
+      <div style="position:relative">
+        <input type="password" id="g-pass" placeholder="Password" autocomplete="current-password">
+        <button type="button" id="g-eye" onclick="gTogglePw()"
+          style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;
+          border:0;font-size:11px;font-weight:900;color:var(--green);cursor:pointer">Show</button>
+      </div>
+      <div id="g-err" style="display:none;color:var(--bad);font-size:11px;font-weight:800;
+        margin-top:9px;line-height:1.45"></div>
+      <button class="primary" id="g-go" onclick="gAuth()">Create account &amp; score →</button>
+      <button class="linkbtn" onclick="gMagic()">Email me a sign-in link instead</button>
+      <div class="gfine">Free account. No club membership, no joining fee — and your
+        handicap builds from every round you play.</div>
+    </div>
+
+    <!-- signed in, but not in this comp -->
+    <div id="g-join" style="display:none">
+      <button class="primary" onclick="joinThisComp()">Join this comp →</button>
+      <div class="gfine">You'll be added as a player and can start scoring straight away.</div>
+      <button class="linkbtn" onclick="location.href='/app'">Back to my dashboard</button>
+    </div>
+
+    <!-- signed in and in the comp, but on a team-less format -->
+    <div class="gpick" id="g-pick"></div>
+
+    <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:8px">
+      <button class="linkbtn" onclick="showRules()">New to this format? Read the rules</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="saved" id="saved">Saved</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
+<script>
+const APP_VERSION='comp-v1 — 2026-08-14';
+const SUPA_URL='https://fmnghbldrepksatggpdj.supabase.co';
+const SUPA_KEY='sb_publishable_kHvM1R3vOHnE2I1Rt7C7EA_DDmv9MZu';
+
+const FMT={
+ ambrose_2man:{label:'2-Man Ambrose',entry:'team',agg:'nett',hcpDiv:4,drives:true,low:true},
+ ambrose_4man:{label:'4-Man Ambrose',entry:'team',agg:'nett',hcpDiv:8,drives:true,low:true},
+ bestball_stableford:{label:'2-Ball Best Ball',entry:'player',agg:'points',low:false},
+ bestball_match:{label:'Four-Ball Match Play',entry:'player',agg:'match',low:false},
+ stableford_3man:{label:'3-Man Stableford',entry:'player',agg:'points',low:false},
+ stableford_individual:{label:'Individual Stableford',entry:'player',agg:'individual',low:false},
+ stroke_individual:{label:'Stroke',entry:'player',agg:'stroke_individual',low:true}
+};
+
+let sb=null, compId=null, comp=null, round=null, players=[], holes=[], teams=[],
+    scores={}, teamScores={}, noms={}, locks={},
+    myTeam=null, pin='', isAdmin=false, hole=1, watch=false, pollT=null,
+    myPlace=null,   // set when a signed-in player is in this comp
+    allRounds=[], allHoles=[], dayNo=null, boardTab='day', groups=[], allGroups=[];
+
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(m,e){const t=$('toast');t.textContent=m;t.className='toast show'+(e?' err':'');
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600)}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  $('nav-score').classList.toggle('on',id==='v-score');
+  $('nav-board').classList.toggle('on',id==='v-board');
+  window.scrollTo(0,0);
+}
+function fmt(){return FMT[round?round.format:'stableford_individual']||FMT.stableford_individual}
+function pname(id){const p=players.find(x=>x.id===id);return p?p.name:'?'}
+function strokes(h,si){h=Math.round(h||0);if(h<=0||si==null)return 0;
+  const b=Math.floor(h/18);return b+((si<=(h-b*18))?1:0)}
+function stbl(g,par,s){if(g==null)return null;return Math.max(0,2-((g-s)-par))}
+function holeOf(n){return holes.find(h=>h.hole===n)||{hole:n,par:4,si:n}}
+
+// ---------- data ----------
+// Signed out, all we're allowed is enough to recognise the comp on the gate.
+// Names, scores and emails need a login.
+async function loadTeaser(){
+  const {data,error}=await sb.rpc('gc_comp_teaser',{p_comp_id:compId});
+  if(error||!data||!data.length)return false;
+  const t=data[0];
+  comp={id:compId,name:t.name,subtitle:t.subtitle};
+  round={format:t.format,course_name:t.course_name};
+  players=new Array(t.player_count||0).fill(null);
+  allRounds=[]; teams=[];
+  return true;
+}
+async function loadAll(){
+  const {data,error}=await sb.rpc('gc_comp_detail',{p_comp_id:compId});
+  if(error||!data||!data.comp){document.body.innerHTML=
+    '<div style="color:#fff;padding:40px;text-align:center;font-family:sans-serif">'
+    +'Comp not found.</div>';return false}
+  comp=data.comp; players=data.players||[];
+  allRounds=(data.rounds||[]).slice().sort((a,b)=>a.round_no-b.round_no);
+  allHoles=data.holes||[];
+
+  // Stay on the day you were on; otherwise the live one, else the last
+  if(!dayNo||!allRounds.some(r=>r.round_no===dayNo)){
+    const live=allRounds.filter(r=>r.started);
+    dayNo=(live.length?live[live.length-1]:allRounds[0]).round_no;
+  }
+  round=allRounds.find(r=>r.round_no===dayNo)||allRounds[0];
+  holes=allHoles.filter(h=>h.round_no===(round?round.round_no:1))
+    .map(h=>({hole:h.hole,par:h.par,si:h.si,metres:h.metres}));
+  allGroups=data.groups||[];
+  groups=allGroups.filter(g=>g.round_no===(round?round.round_no:1));
+  const [t,s,ts,n,l]=await Promise.all([
+    sb.from('gc_teams').select('id,team_no,name').eq('round_id',round.id).order('team_no'),
+    sb.from('gc_scores').select('comp_player_id,hole,gross').eq('round_id',round.id),
+    sb.from('gc_team_scores').select('team_id,hole,gross,drive_by').eq('round_id',round.id),
+    sb.from('gc_nominations').select('team_id,hole,comp_player_id').eq('round_id',round.id),
+    sb.from('gc_round_locks').select('team_id,locked').eq('round_id',round.id)
+  ]);
+  teams=t.data||[];
+  const tm=await sb.from('gc_team_members').select('team_id,comp_player_id,slot');
+  const byTeam={}; (tm.data||[]).forEach(m=>{(byTeam[m.team_id]=byTeam[m.team_id]||[]).push(m)});
+  teams.forEach(x=>{x.members=(byTeam[x.id]||[]).sort((a,b)=>a.slot-b.slot).map(m=>m.comp_player_id)});
+  scores={}; (s.data||[]).forEach(r=>{(scores[r.comp_player_id]=scores[r.comp_player_id]||{})[r.hole]=r.gross});
+  teamScores={}; (ts.data||[]).forEach(r=>{(teamScores[r.team_id]=teamScores[r.team_id]||{})[r.hole]={g:r.gross,d:r.drive_by}});
+  noms={}; (n.data||[]).forEach(r=>{(noms[r.team_id]=noms[r.team_id]||{})[r.hole]=r.comp_player_id});
+  locks={}; (l.data||[]).forEach(r=>{locks[r.team_id]=r.locked});
+  return true;
+}
+
+// ---------- scoring maths ----------
+// Course handicap for the day being scored. On a trip the courses differ, so
+// the same index gives you a different number of shots on each.
+function phcp(p,r){
+  if(!p)return 0;
+  r=r||round;
+  const ix=(p.hcp_index==null)?null:Number(p.hcp_index);
+  if(ix==null||!r||r.slope_rating==null)return Number(p.playing_hcp||0);
+  const par=r.par||72;
+  const rating=(r.course_rating==null)?par:Number(r.course_rating);
+  return Math.round(ix*((r.slope_rating||113)/113)+(rating-par));
+}
+function playerPts(pid,n){
+  const g=(scores[pid]||{})[n]; if(g==null)return null;
+  const h=holeOf(n), p=players.find(x=>x.id===pid);
+  return stbl(g,h.par,strokes(phcp(p),h.si));
+}
+function teamHole(tid,n){
+  const f=fmt(), t=teams.find(x=>x.id===tid);
+  if(f.entry==='team'){const r=(teamScores[tid]||{})[n];return{gross:r?r.g:null,drive:r?r.d:null,pts:null,credited:[],tied:[]}}
+  const rs=(t?t.members:[]).map(pid=>({pid,pts:playerPts(pid,n)})).filter(r=>r.pts!=null);
+  if(!rs.length)return{gross:null,pts:null,credited:[],tied:[]};
+  const mx=Math.max.apply(null,rs.map(r=>r.pts));
+  const tied=rs.filter(r=>r.pts===mx).map(r=>r.pid);
+  const nm=(noms[tid]||{})[n];
+  if(nm){const hit=rs.find(r=>r.pid===nm);
+    if(hit)return{gross:null,pts:hit.pts,credited:[nm],tied,nominated:nm,belowBest:hit.pts<mx,autoBest:mx}}
+  return{gross:null,pts:mx,credited:(tied.length===1?[tied[0]]:[]),tied,needsPick:tied.length>1,autoBest:mx};
+}
+// Your index is the number you carry around; the course handicap is what you
+// actually play off here, once the slope and rating of this tee are applied.
+function hcpTag(p){
+  if(!p)return '';
+  const ch=phcp(p);
+  const ix=(p.hcp_index==null)?null:Number(p.hcp_index);
+  if(ch==null)return '';
+  if(ix==null||Math.round(ix)===ch)return ' · off '+ch;
+  return ' · '+ix.toFixed(1)+' → off '+ch+' here';
+}
+function teamHcp(tid){
+  const f=fmt(), t=teams.find(x=>x.id===tid); if(!t)return 0;
+  const sum=t.members.reduce((a,pid)=>{const p=players.find(x=>x.id===pid);return a+phcp(p)},0);
+  return Math.round(sum/(f.hcpDiv||1));
+}
+function teamTotals(tid){
+  const f=fmt(); let g=0,p=0,n=0,unres=0; const contribs={};
+  const t=teams.find(x=>x.id===tid); if(t)t.members.forEach(pid=>contribs[pid]=0);
+  for(let i=1;i<=18;i++){
+    const r=teamHole(tid,i);
+    if(f.entry==='team'){
+      if(r.gross!=null){g+=r.gross;n++}
+      // On Ambrose the contribution that matters is whose drive got used
+      if(f.drives&&r.drive!=null)contribs[r.drive]=(contribs[r.drive]||0)+1;
+    }
+    else if(r.pts!=null){p+=r.pts;n++;if(r.needsPick)unres++;r.credited.forEach(c=>contribs[c]=(contribs[c]||0)+1)}
+  }
+  const hc=teamHcp(tid);
+  return{gross:g,nett:g-hc,pts:p,holes:n,hcp:hc,contribs,unres};
+}
+
+// ---------- the rules ----------
+// Same explanations as the app. Most useful here, because the people scoring
+// often aren't the person who set the comp up.
+const RULES={
+ stableford_individual:{tag:'Individual · highest points wins',
+  gist:'Points for each hole instead of one running total. A blow-up hole costs you almost '
+      +'nothing — pick up, walk to the next tee, start again.',
+  how:['Play your own ball.','Your shots come off hole by hole, based on the stroke index.',
+       'A net par is 2 points. Better scores more, worse scores less.',
+       'Two over net or worse is nothing — no point grinding out a 9.'],
+  table:[['Net albatross','6'],['Net 3 under','5'],['Net eagle','4'],['Net birdie','3'],
+         ['Net par','2'],['Net bogey','1'],['Net double or worse','0']]},
+ stroke_individual:{tag:'Individual · lowest nett wins',
+  gist:'Count every shot for 18 holes. Handicap comes off at the end, lowest nett wins.',
+  how:['Play your own ball and hole out on every hole.','Every stroke counts, including penalties.',
+       'Your full course handicap comes off the total.']},
+ bestball_stableford:{tag:'Pairs · highest points wins',
+  gist:'You each play your own ball. On every hole the team takes whichever of you did better.',
+  how:['Both play your own ball all the way round.',
+       'Each hole, the better of your two Stableford scores counts.',
+       'You each get your own shots off your own handicap.',
+       'With a minimum set, each player’s score has to count on that many holes.'],
+  tip:'Tap a partner’s points box to take their score even when it isn’t the best — that’s '
+     +'how you top someone up if they’re short.'},
+ bestball_match:{tag:'Pairs · most holes won',
+  gist:'Every hole is its own contest rather than a running total.',
+  how:['The better score in each pair takes the hole. Level and it’s halved.',
+       'A match ends once a pair is further ahead than there are holes left — that’s “3 & 2”.',
+       'Three matches run at once: front nine, back nine, and the full eighteen.'],
+  tip:'The back nine is its own match, so the day still means something after the overall’s gone.'},
+ stableford_3man:{tag:'Threes · highest points wins',
+  gist:'Three of you play your own ball and the best score on each hole counts.',
+  how:['All three play your own ball.','Each hole, the best Stableford score counts.',
+       'With a minimum set, everyone’s score has to count on that many holes.',
+       'On a tied hole somebody has to be credited — the points stand either way.'],
+  tip:'If someone’s short late on, take their score even when it isn’t the best. Costs a '
+     +'point now, keeps you legal at the end.'},
+ ambrose_2man:{tag:'Pairs · one ball · lowest nett wins',
+  gist:'Everyone tees off, pick the best shot, both play the next from there.',
+  how:['Both tee off, then choose the better ball.',
+       'The other player lifts and drops within a club-length — a putter head on the green, '
+        +'no nearer the hole.','Keep taking the best until it’s holed.','One score per hole.'],
+  hcp:'Team handicap = both course handicaps added, divided by 4.',
+  tip:'Use a nervous player’s drive early. Gets it out of the way and they enjoy the rest.'},
+ ambrose_4man:{tag:'Fours · one ball · lowest nett wins',
+  gist:'All four tee off, pick the best shot, everyone plays their next from there.',
+  how:['All four tee off and pick the best ball.',
+       'Everyone else lifts and plays from within a club-length.',
+       'Keep taking the best until it’s holed.','One score per hole.'],
+  hcp:'Team handicap = all four course handicaps added, divided by 8.',
+  tip:'Watch the drives count from the turn. Leaving someone on nought with three to play '
+     +'is how teams get disqualified.'}
+};
+function showRules(){
+  const f=fmt(), key=(round&&round.format)||'stableford_individual';
+  const r=RULES[key]||{};
+  let h='<h2 style="margin-bottom:2px">'+esc(f.label)+'</h2>'
+    +'<p class="sub" style="margin-bottom:14px">'+esc(r.tag||'')+'</p>';
+  if(r.gist)h+='<div class="note lock" style="margin-bottom:13px">'+esc(r.gist)+'</div>';
+  if(r.how)h+='<div style="font-size:9.5px;font-weight:900;color:var(--muted);'
+    +'text-transform:uppercase;letter-spacing:.8px;margin:0 0 7px">How it works</div>'
+    +'<ol style="margin:0 0 14px;padding-left:19px;font-size:12.5px;line-height:1.65">'
+    +r.how.map(x=>'<li style="margin-bottom:5px">'+esc(x)+'</li>').join('')+'</ol>';
+  if(r.table)h+='<table class="lb" style="margin-bottom:14px"><tbody>'
+    +r.table.map(x=>'<tr><td>'+esc(x[0])+'</td><td class="num" style="font-weight:900;'
+      +'color:var(--green)">'+esc(x[1])+'</td></tr>').join('')+'</tbody></table>';
+  if(r.hcp)h+='<div class="note" style="margin-bottom:12px"><strong>Handicap.</strong> '+esc(r.hcp)+'</div>';
+  const need=minNeeded();
+  if(need>0)h+='<div class="note warn" style="margin-bottom:12px"><strong>This comp has a '
+    +'minimum.</strong> Everyone needs '+need+' '+(f.drives?'drive':'scoring hole')
+    +(need===1?'':'s')+' over the 18.</div>';
+  if(r.tip)h+='<div class="note"><strong>Worth knowing.</strong> '+esc(r.tip)+'</div>';
+  $('rules-body').innerHTML=h;
+  $('sh-rules').classList.add('on');
+}
+function closeRules(){ $('sh-rules').classList.remove('on') }
+
+// ---------- the banter ----------
+// Deliberately a mix — plenty of these get played by juniors, so it can't
+// all be about the bar. Same line shows for everyone, picked off the comp id
+// so it doesn't reshuffle every time the board refreshes.
+const WIN_LINES=[
+ 'Somehow you’ve done it. Try not to bring it up for the rest of the day.',
+ 'Winner winner. First round’s on someone else.',
+ 'Enjoy it. The handicap has taken notes.',
+ 'Well played. Insufferable until next week, but well played.',
+ 'That’ll do. Bragging rights until the next tee.',
+ 'Take the win. Nobody needs the hole-by-hole retelling.',
+ 'Great stuff. Sportsmanship says you buy the first one anyway.',
+ 'Champion. The rematch is already being planned without you.'
+];
+const LOSE_LINES=[
+ 'Bad luck. The drinks appear to be on you.',
+ 'Tough day. Blame the greens, everyone else will.',
+ 'Not your week. There’s always the back nine of your life.',
+ 'Close, in the sense that you were on the same course.',
+ 'Unlucky. Somewhere in there was a good shot.',
+ 'That’s golf. Same time next week for another go?',
+ 'Beaten fair and square. Your shout, apparently.',
+ 'Chin up — the handicap will be kinder next time.'
+];
+const HALVED_LINES=[
+ 'All square. Nobody buys, everybody argues.',
+ 'Dead level. The only fair result, according to both of you.',
+ 'Halved. Straight to a rematch then.',
+ 'Level pegging. Sudden death at the bar.'
+];
+function banter(list){
+  // stable pick per comp so it doesn't change on every refresh
+  let seed=0; const s=String(compId||'x');
+  for(let i=0;i<s.length;i++)seed=(seed*31+s.charCodeAt(i))>>>0;
+  return list[seed%list.length];
+}
+
+// ---------- match play ----------
+// Two pairs head to head: best score in each pair wins the hole, level is halved.
+// Played as a Nassau — three separate matches: front nine, back nine, overall.
+function matchState(from,to){
+  from=from||1; to=to||18;
+  const a=teams[0], b=teams[1];
+  if(!a||!b) return null;
+  let up=0, played=0, last=0;
+  const holes=[];
+  for(let i=from;i<=to;i++){
+    const ra=teamHole(a.id,i), rb=teamHole(b.id,i);
+    if(ra.pts==null||rb.pts==null){holes.push(null);continue}
+    played++; last=i;
+    if(ra.pts>rb.pts){up++;holes.push('a')}
+    else if(rb.pts>ra.pts){up--;holes.push('b')}
+    else holes.push('h');
+  }
+  const left=(last===0)?(to-from+1):(to-last);
+  const lead=Math.abs(up);
+  const over=lead>left;
+  const aN=a.members.map(pname).join(' & '), bN=b.members.map(pname).join(' & ');
+  let status, detail;
+  if(played===0){ status='Not started'; detail=''; }
+  else if(over){
+    status=(up>0?aN:bN)+' win';
+    detail=(left===0)?(lead+' up'):(lead+' & '+left);
+  } else if(up===0){
+    status='All square'; detail='through '+played;
+  } else {
+    status=(up>0?aN:bN)+' '+lead+' up';
+    detail='through '+played;
+  }
+  return {a,b,aN,bN,up,played,last,left,over,status,detail,holes,from,to};
+}
+
+// The three matches that make up a Nassau
+function nassau(){
+  return { out: matchState(1,9), in: matchState(10,18), overall: matchState(1,18) };
+}
+
+// ---------- render: score ----------
+function renderScore(){
+  const f=fmt();
+  $('sc-kicker').innerHTML=esc(comp.subtitle||'')+' · '+esc(f.label)
+    +' · <a onclick="showRules()" style="color:inherit;font-weight:900;text-decoration:underline;'
+    +'cursor:pointer">rules</a>';
+  $('sc-name').textContent=comp.name;
+  const t=teams.find(x=>x.id===myTeam);
+  if(watch){ $('sc-sub').textContent='Watching'; }
+  else if(myPlace){
+    // Signed in and in the comp — say plainly whose card this is
+    const mates=t?t.members.filter(id=>id!==myPlace.comp_player_id).map(pname):[];
+    $('sc-sub').textContent='Scoring as '+myPlace.display_name
+      +(mates.length?(' · with '+mates.join(' & ')):'');
+  } else {
+    $('sc-sub').textContent=t?(t.members.map(pname).join(' & ')||('Team '+(t.team_no+1))):'';
+  }
+  if(watch){show('v-board');renderBoard();return}
+  // Every card handed in on every day — there's nothing left to score, so the
+  // result is the useful thing to show.
+  if(compFinished()&&!isAdmin){
+    show('v-board');renderBoard();return;
+  }
+  if(!round.started&&!isAdmin){
+    $('sc-body').innerHTML='<section class="card"><div class="empty">'
+      +'<b style="color:var(--green);font-size:14px">The round hasn’t started yet.</b><br>'
+      +'The organiser will kick it off from their phone.</div></section>';
+    return;
+  }
+  const locked=!!locks[myTeam];
+  const tot=teamTotals(myTeam);
+  const h=holeOf(hole), th=teamHole(myTeam,hole);
+  let rows='';
+  if(f.entry==='team'){
+    const g=th.gross;
+    rows='<div style="padding:14px 13px">'
+      +'<div class="step">'
+      +'<button onclick="stepTeam(-1)" '+(locked?'disabled':'')+'>−</button>'
+      +'<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
+      +'onchange="setTeam(this.value)" '+(locked?'disabled':'')+'>'
+      +'<button onclick="stepTeam(1)" '+(locked?'disabled':'')+'>+</button></div>';
+    if(f.drives){
+      const t2=teams.find(x=>x.id===myTeam);
+      const counts={}; Object.values(teamScores[myTeam]||{}).forEach(r=>{if(r.d)counts[r.d]=(counts[r.d]||0)+1});
+      const need=minNeeded();
+      rows+='<div style="font-size:9.5px;font-weight:900;color:var(--muted);text-transform:uppercase;'
+        +'letter-spacing:.7px;margin:13px 0 6px">Whose drive?'
+        +(need?('<span style="float:right;text-transform:none;letter-spacing:0;font-weight:700">'
+          +need+' each minimum</span>'):'')
+        +'</div><div style="display:flex;gap:7px;flex-wrap:wrap">'
+        +(t2?t2.members:[]).map(pid=>{
+          const on=(th.drive===pid), used=counts[pid]||0, met=(need>0&&used>=need);
+          return '<button onclick="setDrive(\''+pid+'\')" '
+          +'style="flex:1;min-width:90px;border:2px solid '+(on?'var(--green)':(need&&!met?'#d9b45d':'#e2dbcd'))
+          +';background:'+(on?'var(--green)':'#fff')+';color:'+(on?'#fff':'var(--ink)')
+          +';border-radius:13px;padding:10px;font-size:11.5px;font-weight:900">'+esc(pname(pid).split(' ')[0])
+          +'<span style="display:block;font-size:9px;font-weight:700;opacity:.7;margin-top:2px">'
+          +used+(need?('/'+need+(met?' ✓':'')):' used')+'</span></button>'}).join('')+'</div>';
+    }
+    rows+='</div>';
+  } else {
+    const t2=teams.find(x=>x.id===myTeam);
+    const mem=(f.agg==='individual'||f.agg==='stroke_individual')
+      ? (t2?t2.members:[]) : (t2?t2.members:[]);
+    rows=mem.map(pid=>{
+      const p=players.find(x=>x.id===pid)||{};
+      const g=(scores[pid]||{})[hole], pts=playerPts(pid,hole);
+      const sh=strokes(phcp(p),h.si);
+      const counts=th.credited.indexOf(pid)>=0;
+      const tied=(th.tied||[]).indexOf(pid)>=0;
+      const team=(f.agg!=='individual'&&f.agg!=='stroke_individual');
+      let tag='';
+      if(team&&counts)tag='<span class="tag">'+(th.nominated===pid?'NOMINATED':'COUNTS')+'</span>';
+      // How they're tracking against the minimum, so you can see who still owes holes
+      const need=minNeeded();
+      let mintag='';
+      if(team&&need>0){
+        const got=tot.contribs[pid]||0, met=got>=need;
+        mintag='<span class="tag" style="background:'+(met?'rgba(45,106,79,.12)':'rgba(217,180,93,.22)')
+          +';color:'+(met?'var(--good)':'#8a6d1f')+'">'+got+'/'+need+(met?' ✓':'')+'</span>';
+      }
+      return '<div class="prow'+(counts&&team?' counts':'')+'">'
+        +'<div class="nm">'+esc(p.name||'?')+'<small>'+sh+' shot'+(sh===1?'':'s')+' here'
+        +hcpTag(p)+'</small>'+tag+mintag+'</div>'
+        +'<div class="step"><button onclick="stepPlayer(\''+pid+'\',-1)" '+(locked?'disabled':'')+'>−</button>'
+        +'<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
+        +'onchange="setPlayer(\''+pid+'\',this.value)" '+(locked?'disabled':'')+'>'
+        +'<button onclick="stepPlayer(\''+pid+'\',1)" '+(locked?'disabled':'')+'>+</button></div>'
+        +(team
+          ? '<button class="use'+(counts?' on':'')+((tied&&th.needsPick)?' pick':'')+'" '
+            +(locked||pts==null?'disabled':'')+' onclick="nominate(\''+pid+'\')">'
+            +'<span class="v">'+(pts==null?'—':pts)+'</span>'
+            +'<span class="l">'+(counts?'USING':((tied&&th.needsPick)?'PICK':'USE'))+'</span></button>'
+          : '<div class="use" style="border-style:solid;border-color:#e6ded0">'
+            +'<span class="v">'+(pts==null?'—':pts)+'</span><span class="l">PTS</span></div>')
+        +'</div>';
+    }).join('');
+  }
+
+  let totLine;
+  if(f.agg==='match'){
+    const n=nassau(), m=n.overall;
+    const sign=(s)=>{ if(!s||s.played===0)return '—';
+      const mine=(s.a.id===myTeam?s.up:-s.up);
+      return mine===0?'A/S':(Math.abs(mine)+(mine>0?' up':' dn')); };
+    const mineNow=m?(m.a.id===myTeam?m.up:-m.up):0;
+    totLine={l:'Out '+sign(n.out)+' · In '+sign(n['in']),
+      v:(!m||m.played===0)?'—':(mineNow===0?'ALL SQUARE'
+        :(Math.abs(mineNow)+(mineNow>0?' UP':' DOWN')))};
+  } else if(f.agg==='nett'){
+    totLine={l:'Team total · H/C '+tot.hcp, v:(tot.holes?tot.nett+' nett':'—')};
+  } else {
+    totLine={l:'Team total · through '+tot.holes+'/18', v:tot.pts+' pts'};
+  }
+
+  // Initials for the drive/credit markers, kept unique within the team so you
+  // can tell a Mick from a Matteo at a glance.
+  const initials=(()=>{
+    const t2=teams.find(x=>x.id===myTeam), out={};
+    (t2?t2.members:[]).forEach(pid=>{
+      const nm=pname(pid)||'?';
+      let ini=nm.trim()[0].toUpperCase(), n=1;
+      while(Object.values(out).indexOf(ini)>=0 && n<nm.length){ ini=nm.slice(0,++n).toUpperCase() }
+      out[pid]=ini;
+    });
+    return out;
+  })();
+
+  let strip='';
+  [[1,9,'Front nine'],[10,18,'Back nine']].forEach(([a,b,lab])=>{
+    strip+='<div class="striplabel">'+lab+'</div><div class="strip">';
+    for(let i=a;i<=b;i++){
+      const r=teamHole(myTeam,i);
+      const has=(f.entry==='team')?(r.gross!=null):(r.pts!=null);
+      const v=(f.entry==='team')?(r.gross==null?'':r.gross):(r.pts==null?'':r.pts);
+      // Who got the credit on this hole — the drive on Ambrose, the counting
+      // score everywhere else. Scored but unattributed gets a gold outline.
+      let who=null;
+      if(f.drives)who=r.drive;
+      else if((r.credited||[]).length===1)who=r.credited[0];
+      const owed=has&&!who&&(f.drives||minNeeded()>0);
+      strip+='<div class="h '+(i===hole?'now':(has?'done':''))+(owed?' nodrive':'')
+        +'" onclick="jump('+i+')">'+i
+        +'<small>'+v+'</small>'
+        +(who?('<i>'+esc(initials[who]||'?')+'</i>'):'')
+        +'</div>';
+    }
+    strip+='</div>';
+  });
+
+  let notes='';
+  if(hole===1&&round&&round.slope_rating){
+    notes+='<div class="note"><strong>Playing off the '+esc(round.tee_name||'')+' tees.</strong> '
+      +'Slope '+round.slope_rating+', rating '+Number(round.course_rating).toFixed(1)
+      +' against par '+round.par+'. Your handicap index is converted to a course '
+      +'handicap for this tee, which is where the shots on each hole come from.'
+      +(round.rating_source==='estimated'
+        ? ' <em>The rating for this course is our estimate — tell us if you know the official one.</em>':'')
+      +'</div>';
+  }
+  if(th.needsPick)notes+='<div class="note warn"><strong>Tied on '+th.autoBest+' points.</strong> '
+    +'Tap a player’s points to choose whose score counts for the team on this hole.</div>';
+  else if(th.belowBest)notes+='<div class="note"><strong>Using a lower score.</strong> '
+    +'Taking '+th.pts+' when '+th.autoBest+' was available. '
+    +'<a onclick="clearNom()" style="color:var(--green);font-weight:900;text-decoration:underline;cursor:pointer">Use the best instead</a></div>';
+  if(minNeeded()>0){
+    const need=minNeeded(), drv=!!f.drives;
+    const word=drv?'drive':'counted score';
+    // For drives, "left" is holes with no drive picked yet — not holes unplayed,
+    // because you can go back and set a drive on a hole already scored.
+    let left=0;
+    if(drv){ for(let i=1;i<=18;i++){ if(teamHole(myTeam,i).drive==null)left++ } }
+    else left=18-tot.holes;
+
+    const ids=Object.keys(tot.contribs);
+    const short=ids.filter(p=>(tot.contribs[p]||0)<need);
+    const impossible=short.filter(p=>((tot.contribs[p]||0)+left)<need);
+
+    if(impossible.length){
+      notes+='<div class="note warn"><strong>Minimum can’t be met.</strong> '
+        +impossible.map(p=>esc(pname(p))+' on '+(tot.contribs[p]||0)).join(', ')
+        +' — everyone needs '+need+' '+word+(need===1?'':'s')+' and there '
+        +(left===1?'is':'are')+' only '+left+' hole'+(left===1?'':'s')+' left to give.</div>';
+    } else if(short.length){
+      notes+='<div class="note"><strong>'+need+' '+word+(need===1?'':'s')+' each.</strong> '
+        +'Still short: '+short.map(p=>esc(pname(p))+' '+(tot.contribs[p]||0)+'/'+need).join(' · ')
+        +'</div>';
+    } else if(ids.length){
+      notes+='<div class="note lock"><strong>Minimum '+word+'s met</strong> — everyone’s on '
+        +need+' or more.</div>';
+    }
+  }
+
+  // The other team(s) in your four-ball — the ones you're actually needling.
+  let rivals='';
+  // Match on any of my team's players — works whether or not I'm signed in
+  const myMem=(teams.find(x=>x.id===myTeam)||{}).members||[];
+  const myGroup=groups.find(g=>(g.members||[]).some(m=>myMem.indexOf(m)>=0));
+  if(myGroup){
+    const others=teams.filter(t=>t.id!==myTeam
+      && (t.members||[]).some(m=>(myGroup.members||[]).indexOf(m)>=0));
+    if(others.length){
+      const mine=tot;
+      rivals='<div class="striplabel">In your group</div>'
+        +'<section class="card" style="overflow:hidden;margin-bottom:11px">';
+      others.forEach((t,i)=>{
+        const o=teamTotals(t.id);
+        const nm=(t.members||[]).map(pname).join(' & ')||('Team '+(t.team_no+1));
+        let mineV, theirV, lead;
+        if(f.agg==='nett'){ mineV=mine.nett; theirV=o.nett;
+          lead=(o.holes===0||mine.holes===0)?null:(theirV-mineV); }   // low wins
+        else { mineV=mine.pts; theirV=o.pts;
+          lead=(o.holes===0||mine.holes===0)?null:(mineV-theirV); }   // high wins
+        rivals+='<div style="display:flex;align-items:center;gap:10px;padding:11px 13px'
+          +(i?';border-top:1px solid var(--line)':'')+'">'
+          +'<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:900;'
+          +'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(nm)+'</div>'
+          +'<div style="font-size:9.5px;color:var(--muted);font-weight:700">'
+          +(o.holes?('through '+o.holes):'not started')
+          +(f.agg==='nett'&&o.holes?(' · H/C '+o.hcp):'')+'</div></div>'
+          +'<div style="text-align:right"><div style="font-size:17px;font-weight:900;'
+          +'color:var(--green);line-height:1">'
+          +(o.holes?(f.agg==='nett'?o.nett:o.pts):'—')+'</div>'
+          +(lead==null?'':('<div style="font-size:9.5px;font-weight:900;color:'
+            +(lead>0?'var(--good)':lead<0?'var(--bad)':'var(--muted)')+'">'
+            +(lead===0?'level':(Math.abs(lead)+(lead>0?' up':' down')))+'</div>'))
+          +'</div></div>';
+      });
+      rivals+='</section>';
+    }
+  }
+
+  $('sc-body').innerHTML=
+    '<div class="who-else" id="who-else" style="display:none"></div>'
+    +'<section class="card">'
+    +'<div class="holehead"><div class="n">Hole '+hole+'</div>'
+    +'<div class="i">Par '+h.par+' · SI '+(h.si==null?'—':h.si)+(h.metres?('<br>'+h.metres+'m'):'')+'</div></div>'
+    +(f.entry!=='team'&&f.agg!=='individual'&&f.agg!=='stroke_individual'
+      ? '<div style="font-size:10px;color:var(--muted);text-align:center;padding:9px 12px 0">'
+        +'Enter each score, then tap a points box to pick whose counts.</div>':'')
+    +rows
+    +'<div class="teamtot"><div><div class="l">'+totLine.l+'</div></div>'
+    +'<div class="v">'+totLine.v+'</div></div></section>'
+    +'<div class="nav2">'
+    +'<button onclick="stepHole(-1)" '+(hole<=1?'disabled':'')+'>← PREV</button>'
+    +'<div class="ctr"><span class="b">'+hole+'</span><span class="s">OF 18</span></div>'
+    +'<button onclick="stepHole(1)" '+(hole>=18?'disabled':'')+'>NEXT →</button></div>'
+    +strip+notes+rivals
+    +(locked
+      ? (isAdmin?'<button class="ghostbtn" onclick="lockCard(false)">Unlock card (admin)</button>':'')
+      : '<button class="ghostbtn" onclick="lockCard(true)">Submit card &amp; lock</button>')
+    +(isAdmin&&!round.started?'<button class="primary" onclick="startRound()">Start the round</button>':'');
+  renderPresence();
+}
+
+// ---------- writes ----------
+async function rpc(fn,args){
+  const {data,error}=await sb.rpc(fn,Object.assign({p_comp_id:compId,p_pin:pin},args));
+  if(error){toast(error.message,true);return null}
+  flashSaved();
+  return data;
+}
+async function setPlayer(pid,v){
+  const g=String(v).trim()===''?null:Math.max(1,Math.min(20,parseInt(v,10)||0));
+  (scores[pid]=scores[pid]||{});
+  if(g==null)delete scores[pid][hole];else scores[pid][hole]=g;
+  renderScore();
+  await rpc('gc_set_score',{p_round_id:round.id,p_comp_player_id:pid,p_hole:hole,p_gross:g});
+}
+function stepPlayer(pid,d){
+  const cur=(scores[pid]||{})[hole];
+  // First tap on an empty box lands on par — most scores are within a shot or
+  // two of it, so that's the fewest presses from here.
+  setPlayer(pid,(cur==null?holeOf(hole).par:cur+d));
+}
+async function setTeam(v){
+  const g=String(v).trim()===''?null:Math.max(1,Math.min(20,parseInt(v,10)||0));
+  const prev=(teamScores[myTeam]||{})[hole]||{};
+  (teamScores[myTeam]=teamScores[myTeam]||{});
+  if(g==null)delete teamScores[myTeam][hole];else teamScores[myTeam][hole]={g,d:prev.d||null};
+  renderScore();
+  await rpc('gc_set_team_score',{p_round_id:round.id,p_team_id:myTeam,p_hole:hole,
+    p_gross:g,p_drive_by:prev.d||null});
+}
+function stepTeam(d){
+  const cur=((teamScores[myTeam]||{})[hole]||{}).g;
+  setTeam(cur==null?holeOf(hole).par:cur+d);
+}
+async function setDrive(pid){
+  const rec=(teamScores[myTeam]||{})[hole]||{g:null,d:null};
+  rec.d=(rec.d===pid)?null:pid;
+  (teamScores[myTeam]=teamScores[myTeam]||{})[hole]=rec;
+  renderScore();
+  await rpc('gc_set_team_score',{p_round_id:round.id,p_team_id:myTeam,p_hole:hole,
+    p_gross:rec.g,p_drive_by:rec.d});
+}
+async function nominate(pid){
+  if(playerPts(pid,hole)==null){toast('Enter '+pname(pid)+'’s score first',true);return}
+  const cur=(noms[myTeam]||{})[hole];
+  const next=(cur===pid)?null:pid;
+  (noms[myTeam]=noms[myTeam]||{});
+  if(next)noms[myTeam][hole]=next;else delete noms[myTeam][hole];
+  renderScore();
+  await rpc('gc_set_nomination',{p_round_id:round.id,p_team_id:myTeam,p_hole:hole,p_comp_player_id:next});
+}
+function clearNom(){nominate((noms[myTeam]||{})[hole])}
+async function lockCard(v){
+  if(v&&!confirm('Submit the card? You’ll need the organiser to unlock it.'))return;
+  const r=await rpc('gc_lock_team',{p_round_id:round.id,p_team_id:myTeam,p_locked:v});
+  if(r!==null){locks[myTeam]=v;renderScore();toast(v?'Card submitted':'Unlocked')}
+}
+async function startRound(){
+  const r=await rpc('gc_set_round_started',{p_round_id:round.id,p_started:true});
+  if(r!==null){round.started=true;renderScore();toast('Round is live')}
+}
+// The minimum lives on the day, since a trip can run Ambrose one day and best
+// ball the next. Older comps only have it at comp level.
+function minNeeded(){
+  if(round&&round.min_contributions!=null)return round.min_contributions||0;
+  return (comp&&comp.min_contributions)||0;
+}
+
+// Finished = every card on the current day submitted. Only meaningful once the
+// teams exist, so an empty comp never reads as finished.
+function dayFinished(){
+  const ids=teams.map(t=>t.id);
+  if(!ids.length)return false;
+  return ids.every(id=>locks[id]===true);
+}
+function compFinished(){
+  return round&&round.started&&dayFinished()&&
+    (allRounds.length<2 || allRounds.every(r=>!r.started||r.round_no<=dayNo)) &&
+    dayNo===allRounds[allRounds.length-1].round_no;
+}
+function stepHole(d){hole=Math.max(1,Math.min(18,hole+d));renderScore()}
+function jump(n){hole=n;renderScore()}
+
+// ---------- days ----------
+function dayTabs(active){
+  if(allRounds.length<2)return '';
+  let h='<div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:5px;margin-bottom:11px">';
+  allRounds.forEach(r=>{
+    const on=(active==='day'&&r.round_no===dayNo);
+    h+='<button onclick="pickDay('+r.round_no+')" style="flex:0 0 auto;border:2px solid '
+      +(on?'var(--green)':'#e2dbcd')+';background:'+(on?'var(--green)':'#fff')
+      +';color:'+(on?'#fff':'var(--ink)')+';border-radius:12px;padding:8px 13px;'
+      +'font-size:11px;font-weight:900">Day '+r.round_no
+      +'<span style="display:block;font-size:8.5px;font-weight:700;opacity:.75">'
+      +esc((r.course_name||'').split(' ')[0])+'</span></button>';
+  });
+  const on=(active==='overall');
+  h+='<button onclick="showOverall()" style="flex:0 0 auto;border:2px solid '
+    +(on?'var(--gold)':'#e2dbcd')+';background:'+(on?'var(--gold)':'#fff')
+    +';color:'+(on?'var(--green)':'var(--ink)')+';border-radius:12px;padding:8px 13px;'
+    +'font-size:11px;font-weight:900">Overall'
+    +'<span style="display:block;font-size:8.5px;font-weight:700;opacity:.75">'
+    +allRounds.length+' days</span></button>';
+  return h+'</div>';
+}
+async function pickDay(n){
+  if(n===dayNo&&boardTab==='day')return;
+  dayNo=n; boardTab='day';
+  await loadAll();
+  hole=1;
+  renderBoard();
+}
+async function showOverall(){
+  boardTab='overall';
+  const b=$('lb-body');
+  b.innerHTML=dayTabs('overall')+'<div class="empty"><span class="spin"></span></div>';
+  const {data,error}=await sb.rpc('gc_overall_leaderboard',{p_comp_id:compId});
+  if(error){b.innerHTML=dayTabs('overall')+'<div class="empty">'+esc(error.message)+'</div>';return}
+  const rows=data||[];
+  if(!rows.length){
+    b.innerHTML=dayTabs('overall')
+      +'<div class="empty">No scores in yet.<br>The combined table fills in as you play.</div>';
+    return;
+  }
+  const low=rows[0].out_low_wins;
+  const allIn=rows.every(r=>r.out_complete);
+  let h=dayTabs('overall');
+
+  if(allIn){
+    const w=rows[0];
+    h+='<section class="card" style="overflow:hidden;margin-bottom:11px">'
+      +'<div style="background:linear-gradient(145deg,#d9b45d,#efd58a);color:var(--green);'
+      +'padding:24px 18px;text-align:center">'
+      +'<div style="font-size:36px;line-height:1">🏆</div>'
+      +'<div style="font-size:11px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;'
+      +'margin-top:7px;opacity:.75">Champions</div>'
+      +'<div style="font-size:21px;font-weight:900;margin-top:3px">'+esc(w.out_label)+'</div>'
+      +'<div style="font-size:13px;font-weight:800;margin-top:3px;opacity:.85">'
+      +w.out_total+(low?' combined nett':' points')+'</div></div></section>';
+  }
+
+  h+='<section class="card" style="overflow:hidden"><table class="lb"><thead><tr>'
+    +'<th>#</th><th>Team</th>'
+    +allRounds.map(r=>'<th class="num">D'+r.round_no+'</th>').join('')
+    +'<th class="num">Total</th></tr></thead><tbody>';
+
+  let pos=0, prev=null, shown=0;
+  rows.forEach(r=>{
+    shown++;
+    if(prev===null||Number(r.out_total)!==prev){pos=shown;prev=Number(r.out_total)}
+    const perDay={}; (r.out_per_day||[]).forEach(d=>{perDay[d.day]=d});
+    h+='<tr'+(pos===1&&allIn?' class="win"':'')+'><td>'+pos+'</td><td>'+esc(r.out_label)+'</td>'
+      +allRounds.map(rr=>{
+        const d=perDay[rr.round_no];
+        return '<td class="num">'+(d?(d.holes>=18?d.score:(d.holes?('('+d.score+')'):'—')):'—')+'</td>';
+      }).join('')
+      +'<td class="num" style="font-weight:900">'+r.out_total+'</td></tr>';
+  });
+  h+='</tbody></table></section>';
+
+  const partial=rows.some(r=>!r.out_complete);
+  h+='<div class="note">'+(partial
+    ? '<strong>Still going.</strong> Numbers in brackets are days not yet finished, so the '
+      +'total will move.'
+    : '<strong>All in.</strong> '+(low?'Lowest combined nett wins.':'Most points wins.'))
+    +'<br><br>Each day is scored on its own course and format, then added together.</div>'
+    +'<button class="ghostbtn" onclick="location.href=\'/app\'">← Back to dashboard</button>';
+  b.innerHTML=h;
+}
+
+// ---------- leaderboard ----------
+function renderBoard(){
+  if(boardTab==='overall'&&allRounds.length>1){showOverall();return}
+  const f=fmt();
+  $('lb-name').textContent=comp.name;
+  $('lb-sub').textContent=(comp.subtitle||'')
+    +(allRounds.length>1?(' · Day '+dayNo+' · '+(round.course_name||'')):'')+' · '+f.label;
+
+  // Match play has its own board — holes won, not points totalled
+  if(f.agg==='match'){
+    const n=nassau();
+    if(!n.overall){$('lb-body').innerHTML='<section class="card"><div class="empty">'
+      +'Match play needs two pairs. Ask the organiser to set the teams.</div></section>';return}
+    const m=n.overall, aN=esc(m.aN), bN=esc(m.bN);
+
+    // Who's won what across the three matches
+    const pts=(who)=>['out','in','overall'].reduce((a,k)=>{
+      const s=n[k]; if(!s||!s.over)return a;
+      return a + ((who==='a'&&s.up>0)||(who==='b'&&s.up<0) ? 1 : 0);
+    },0);
+
+    // Always shown from your own side: "2 up" or "1 down"
+    const mineTeam = myTeam || m.a.id;
+    const myName = (mineTeam===m.a.id) ? aN : bN;
+    const rel = (s)=> (mineTeam===s.a.id) ? s.up : -s.up;
+
+    const panel=(label,s)=>{
+      const d=rel(s);
+      let big, sub;
+      if(s.played===0){ big='—'; sub='to play'; }
+      else if(d===0){ big='All square'; sub=s.over?'halved':('thru '+s.played); }
+      else {
+        big=Math.abs(d)+(d>0?' up':' down');
+        sub=s.over?(d>0?'won '+s.detail.replace(/^\d+ /,''):'lost'):('thru '+s.played);
+        if(s.over&&s.detail.indexOf('&')>0)sub=(d>0?'won ':'lost ')+s.detail;
+        else if(s.over)sub=(d>0?'won':'lost');
+      }
+      return '<div style="flex:1;padding:14px 8px;text-align:center;'
+        +(s.over?'background:#fdf8ea;':'')+'">'
+        +'<div style="font-size:8.5px;font-weight:900;letter-spacing:.9px;color:var(--muted);'
+        +'text-transform:uppercase">'+label+'</div>'
+        +'<div style="font-size:16px;font-weight:900;margin-top:6px;line-height:1.2;color:'
+        +(d>0?'var(--good)':d<0?'var(--bad)':'var(--green)')+'">'+big+'</div>'
+        +'<div style="font-size:9.5px;color:var(--muted);margin-top:3px">'+esc(sub)+'</div></div>';
+    };
+
+    const od=rel(m);
+    let h='<section class="card" style="overflow:hidden">'
+      +'<div style="background:var(--green);color:#fff;padding:20px 16px;text-align:center">'
+      +'<div style="font-size:9px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;'
+      +'color:var(--gold);margin-bottom:6px">'+myName+'</div>'
+      +'<div style="font-size:26px;font-weight:900;line-height:1.15">'
+      +(m.played===0?'Not started':(od===0?'All square'
+        :(Math.abs(od)+(od>0?' up':' down'))))+'</div>'
+      +'<div style="font-size:12px;opacity:.8;margin-top:5px">'
+      +(m.played===0?'':(m.over?((od>0?'Match won ':'Match lost ')+esc(m.detail))
+        :('through '+m.played+' · v '+(mineTeam===m.a.id?bN:aN))))+'</div></div>'
+      +'<div style="display:flex;border-top:1px solid var(--line)">'
+      +panel('Out',n.out)
+      +'<div style="width:1px;background:var(--line)"></div>'
+      +panel('In',n['in'])
+      +'<div style="width:1px;background:var(--line)"></div>'
+      +panel('Overall',n.overall)
+      +'</div></section>';
+
+    // Where each of the three matches stands, for both pairs
+    const decided=['out','in','overall'].filter(k=>n[k].over).length;
+    // cell for one pair in one match: won / lost / live position / not started
+    const cell=(s,isA)=>{
+      const d=isA?s.up:-s.up;
+      if(s.played===0) return '<span style="color:#c9c1b4">–</span>';
+      if(s.over) return d>0
+        ? '<span style="color:var(--good);font-size:15px">✓</span>'
+        : (d===0?'<span style="color:var(--muted);font-size:11px">½</span>'
+                :'<span style="color:#c9c1b4">–</span>');
+      if(d===0) return '<span style="color:var(--muted);font-weight:800;font-size:11px">A/S</span>';
+      return '<span style="color:'+(d>0?'var(--good)':'var(--bad)')+';font-weight:900;'
+        +'font-size:11px">'+Math.abs(d)+(d>0?' up':' dn')+'</span>';
+    };
+    h+='<div class="section"><h2>The three matches</h2><span>'
+      +(decided===0?'still all to play for':decided+' of 3 decided')+'</span></div>'
+      +'<section class="card" style="overflow:hidden"><table class="lb"><thead><tr>'
+      +'<th>Pair</th><th class="num">Out</th><th class="num">In</th><th class="num">Overall</th>'
+      +'<th class="num">Pts</th></tr></thead><tbody>'
+      +'<tr'+(pts('a')>pts('b')?' class="win"':'')+'><td>'+aN+'</td>'
+      +'<td class="num">'+cell(n.out,true)+'</td>'
+      +'<td class="num">'+cell(n['in'],true)+'</td>'
+      +'<td class="num">'+cell(n.overall,true)+'</td>'
+      +'<td class="num">'+pts('a')+'</td></tr>'
+      +'<tr'+(pts('b')>pts('a')?' class="win"':'')+'><td>'+bN+'</td>'
+      +'<td class="num">'+cell(n.out,false)+'</td>'
+      +'<td class="num">'+cell(n['in'],false)+'</td>'
+      +'<td class="num">'+cell(n.overall,false)+'</td>'
+      +'<td class="num">'+pts('b')+'</td></tr>'
+      +'</tbody></table>'
+      +'<div style="font-size:9.5px;color:var(--muted);padding:9px 12px;'
+      +'border-top:1px solid var(--line)">Live position while a match is running, '
+      +'✓ once it’s won. A point each for the front, the back and the overall.</div>'
+      +'</section>';
+
+    // hole-by-hole trail, from your side
+    h+='<div class="striplabel">Front nine <span style="float:right;text-transform:none;'
+      +'letter-spacing:0;font-weight:800">W = you won it · L = lost · ½ = halved</span></div>'
+      +'<div class="strip">';
+    for(let i=1;i<=9;i++)h+=matchCell(m,i);
+    h+='</div><div class="striplabel">Back nine</div><div class="strip">';
+    for(let i=10;i<=18;i++)h+=matchCell(m,i);
+    h+='</div>';
+    // All three decided? Time for the wrap-up
+    if(decided===3||m.over){
+      const myPts=(mineTeam===m.a.id)?pts('a'):pts('b');
+      const theirPts=(mineTeam===m.a.id)?pts('b'):pts('a');
+      const line=(myPts>theirPts)?banter(WIN_LINES)
+                :(myPts<theirPts)?banter(LOSE_LINES):banter(HALVED_LINES);
+      const head=(myPts>theirPts)?'You’ve won it'
+                :(myPts<theirPts)?'Beaten':'Honours even';
+      h='<section class="card" style="overflow:hidden;margin-bottom:11px">'
+        +'<div style="background:'+(myPts>theirPts?'linear-gradient(145deg,#d9b45d,#efd58a)'
+          :'var(--green)')+';color:'+(myPts>theirPts?'var(--green)':'#fff')
+        +';padding:26px 18px;text-align:center">'
+        +'<div style="font-size:40px;line-height:1">'+(myPts>theirPts?'🏆':myPts<theirPts?'⛳':'🤝')+'</div>'
+        +'<div style="font-size:24px;font-weight:900;margin-top:8px">'+head+'</div>'
+        +'<div style="font-size:14px;font-weight:800;margin-top:4px;opacity:.85">'
+        +myPts+' – '+theirPts+' on points</div>'
+        +'<div style="font-size:12.5px;line-height:1.55;margin-top:12px;opacity:.9;'
+        +'max-width:280px;margin-left:auto;margin-right:auto">'+esc(line)+'</div>'
+        +'</div></section>'+h;
+    }
+
+    h+='<div class="note"><strong>Three matches in one round.</strong> The front nine, the back '
+      +'nine and the full eighteen are each their own match — so the back nine still means '
+      +'something even if the overall is gone.<br><br>'
+      +'Better score in each pair takes the hole, level is halved. A match ends once a pair is '
+      +'further ahead than there are holes left — that’s where “3 &amp; 2” comes from.</div>'
+      +'<button class="ghostbtn" onclick="location.href=\'/app\'">← Back to dashboard</button>';
+    $('lb-body').innerHTML=dayTabs('day')+h;
+    return;
+  }
+
+  let rows=[];
+  if(f.agg==='individual'||f.agg==='stroke_individual'){
+    rows=players.map(p=>{
+      let pts=0,g=0,n=0;
+      const ch=phcp(p);
+      for(let i=1;i<=18;i++){const v=(scores[p.id]||{})[i];
+        if(v!=null){g+=v;n++;pts+=stbl(v,holeOf(i).par,strokes(ch,holeOf(i).si))}}
+      return{label:p.name,hcp:ch,primary:(f.agg==='individual'?pts:g-ch),
+             holes:n,low:f.low,gross:g};
+    }).filter(r=>r.holes>0);
+  } else {
+    rows=teams.map(t=>{
+      const tt=teamTotals(t.id);
+      return{label:t.members.map(pname).join(' & ')||('Team '+(t.team_no+1)),
+             hcp:tt.hcp,primary:(f.agg==='nett'?tt.nett:tt.pts),gross:tt.gross,
+             holes:tt.holes,low:f.low,unres:tt.unres};
+    }).filter(r=>r.holes>0);
+  }
+  rows.sort((a,b)=>f.low?(a.primary-b.primary):(b.primary-a.primary));
+  const done=rows.length&&rows.every(r=>r.holes===18);
+
+  if(!rows.length){
+    $('lb-body').innerHTML='<section class="card"><div class="empty">'
+      +'<b style="color:var(--green);font-size:14px">No scores yet.</b><br>'
+      +'The board fills in as everyone plays.</div></section>';
+    return;
+  }
+  let h='<section class="card" style="overflow:hidden"><table class="lb"><thead><tr>'
+    +'<th>Pos</th><th>'+((f.agg==='individual'||f.agg==='stroke_individual')?'Player':'Team')+'</th>'
+    +(f.agg==='nett'||f.agg==='stroke_individual'?'<th class="num">Gross</th><th class="num">H/C</th>':'')
+    +'<th class="num">'+(f.low?'Nett':'Pts')+'</th><th class="num">Thru</th></tr></thead><tbody>';
+  let pos=0,last=null;
+  rows.forEach((r,i)=>{
+    if(last===null||r.primary!==last){pos=i+1;last=r.primary}
+    h+='<tr class="'+(done&&i===0?'win':'')+'"><td><span class="pos">'+(done&&i===0?'🏆 ':'')+pos+'</span></td>'
+      +'<td>'+esc(r.label)+'</td>'
+      +(f.agg==='nett'||f.agg==='stroke_individual'?'<td class="num">'+r.gross+'</td><td class="num">'+Math.round(r.hcp)+'</td>':'')
+      +'<td class="num">'+r.primary+'</td><td class="num">'+r.holes+'</td></tr>';
+  });
+  h+='</tbody></table></section>';
+  const unres=rows.reduce((a,r)=>a+(r.unres||0),0);
+  if(unres)h+='<div class="note warn"><strong>'+unres+' tied hole'+(unres===1?'':'s')
+    +' still to pick.</strong> The team keeps the points, but nobody is credited until '
+    +'the scorer taps a player.</div>';
+
+  if(done){
+    // Am I the winner, or watching someone else take it?
+    const meRow=rows.findIndex(r=>r.idx!=null&&r.idx===
+      (teams.find(t=>t.id===myTeam)||{}).team_no);
+    const iWon=(meRow===0)||(myTeam&&rows[0].idx===
+      (teams.find(t=>t.id===myTeam)||{}).team_no);
+    const line=watch?'':(iWon?banter(WIN_LINES):banter(LOSE_LINES));
+    h='<section class="card" style="overflow:hidden;margin-bottom:11px">'
+      +'<div style="background:'+(iWon&&!watch?'linear-gradient(145deg,#d9b45d,#efd58a)'
+        :'var(--green)')+';color:'+(iWon&&!watch?'var(--green)':'#fff')
+      +';padding:26px 18px;text-align:center">'
+      +'<div style="font-size:40px;line-height:1">🏆</div>'
+      +'<div style="font-size:12px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;'
+      +'margin-top:8px;opacity:.75">Winner</div>'
+      +'<div style="font-size:23px;font-weight:900;margin-top:3px;line-height:1.2">'
+      +esc(rows[0].label)+'</div>'
+      +'<div style="font-size:13px;font-weight:800;margin-top:4px;opacity:.85">'
+      +rows[0].primary+(f.low?' nett':' points')+'</div>'
+      +(line?('<div style="font-size:12.5px;line-height:1.55;margin-top:12px;opacity:.9;'
+        +'max-width:280px;margin-left:auto;margin-right:auto">'+esc(line)+'</div>'):'')
+      +'</div></section>'+h;
+  }
+  h+='<button class="ghostbtn" onclick="location.href=\'/app\'">← Back to dashboard</button>';
+  $('lb-body').innerHTML=dayTabs('day')+h;
+}
+
+function matchCell(m,i){
+  const r=m.holes[i-m.from];
+  const ra=teamHole(m.a.id,i), rb=teamHole(m.b.id,i);
+  // Shown from the viewer's side: won, lost or halved
+  const mineIsA = (myTeam||m.a.id)===m.a.id;
+  let bg='',fg='',lab='·';
+  if(r==='h'){bg='#e6ded0';fg='var(--ink)';lab='½'}
+  else if(r){
+    const iWon=(r==='a')===mineIsA;
+    bg=iWon?'var(--good)':'var(--bad)'; fg='#fff'; lab=iWon?'W':'L';
+  }
+  const mine=mineIsA?ra.pts:rb.pts, theirs=mineIsA?rb.pts:ra.pts;
+  return '<div class="h" style="'+(bg?('background:'+bg+';border-color:'+bg+';color:'+fg):'')+'">'
+    +'<span style="font-size:9px;opacity:.75">'+i+'</span>'
+    +'<small style="font-size:13px">'+lab+'</small>'
+    +'<small style="font-size:8px;opacity:.8;font-weight:700">'
+    +(mine==null?'':mine)+'–'+(theirs==null?'':theirs)+'</small></div>';
+}
+
+// ---------- gate ----------
+// Scoring needs an account. A PIN let people score all day and never become a
+// user — no handicap, no history, nothing to come back to.
+let gMode='up';
+
+function gShow(which){
+  ['g-auth','g-join','g-pick'].forEach(id=>{
+    const e=$(id); if(e)e.style.display=(id===which)
+      ?(id==='g-pick'?'grid':'block'):'none';
+  });
+}
+function gAuthMode(m){
+  gMode=m;
+  $('g-tab-up').className=(m==='up')?'on':'';
+  $('g-tab-in').className=(m==='in')?'on':'';
+  $('g-namewrap').style.display=(m==='up')?'block':'none';
+  $('g-pass').setAttribute('autocomplete',m==='up'?'new-password':'current-password');
+  $('g-go').textContent=(m==='up')?'Create account & score →':'Sign in & score →';
+  $('g-err').style.display='none';
+}
+function gTogglePw(){
+  const i=$('g-pass'), b=$('g-eye'), s=i.type==='password';
+  i.type=s?'text':'password'; b.textContent=s?'Hide':'Show';
+}
+function gErr(m){ const e=$('g-err'); e.innerHTML=m; e.style.display='block' }
+
+function renderGate(){
+  $('g-name').textContent=comp?comp.name:'Comp';
+  const n=players.length;
+  $('g-sub').textContent=comp
+    ? ((comp.subtitle||'')+' · '+fmt().label+(n?(' · '+n+' playing'):''))
+    : '';
+  gShow('g-auth');
+  gAuthMode('up');
+}
+
+async function gAuth(){
+  const em=$('g-email').value.trim(), pw=$('g-pass').value;
+  const nm=$('g-fullname').value.trim();
+  if(!em||em.indexOf('@')<0){gErr('Enter your email address');return}
+  if(pw.length<6){gErr('Password needs at least 6 characters');return}
+  if(gMode==='up'&&!nm){gErr('Enter your name so your mates know whose card it is');return}
+  $('g-go').disabled=true; $('g-go').textContent='One moment…';
+
+  let res;
+  if(gMode==='up'){
+    res=await sb.auth.signUp({email:em,password:pw});
+    // Already registered? Just sign them in instead of making them start again.
+    if(res.error&&/already|registered|exists/i.test(res.error.message)){
+      res=await sb.auth.signInWithPassword({email:em,password:pw});
+    }
+  } else {
+    res=await sb.auth.signInWithPassword({email:em,password:pw});
+  }
+  $('g-go').disabled=false; gAuthMode(gMode);
+
+  if(res.error){
+    gErr(esc(res.error.message)
+      +(gMode==='in'?'<br><a onclick="gMagic()" style="color:var(--green);cursor:pointer;'
+        +'text-decoration:underline">Email me a link instead</a>':''));
+    return;
+  }
+  if(!res.data||!res.data.session){
+    gErr('Check your email to confirm the account, then come back to this link.');
+    return;
+  }
+  if(gMode==='up'&&nm){
+    await sb.rpc('gc_create_profile',{p_display_name:nm}).catch(()=>{});
+  }
+  await afterSignIn();
+}
+async function gMagic(){
+  const em=$('g-email').value.trim();
+  if(!em||em.indexOf('@')<0){gErr('Enter your email address first');return}
+  const {error}=await sb.auth.signInWithOtp({email:em,
+    options:{emailRedirectTo:location.href}});
+  if(error){gErr(esc(error.message));return}
+  gErr('<span style="color:var(--green)">Link sent to '+esc(em)
+    +'. Open it on this phone and you’ll come straight back here.</span>');
+}
+function watchBoard(){
+  watch=true; $('gate').style.display='none';
+  show('v-board'); renderBoard();
+}
+async function joinThisComp(){
+  const {error}=await sb.rpc('gc_join_comp',{p_comp_id:compId});
+  if(error){toast(error.message,true);return}
+  await loadAll();
+  await afterSignIn();
+}
+
+// Work out where a signed-in person belongs and let them in.
+async function afterSignIn(){
+  await loadAll();
+  const {data:place}=await sb.rpc('gc_my_place',{p_comp_id:compId});
+  if(place&&place.length){
+    myPlace=place[0];
+    isAdmin=!!myPlace.is_organiser;
+    // Only ever put someone on their OWN team. Falling back to teams[0] hands
+    // them a stranger's card and lets them score over the top of it.
+    myTeam=(myPlace.team_id&&teams.some(t=>t.id===myPlace.team_id))?myPlace.team_id:null;
+
+    if(myTeam){
+      $('gate').style.display='none';
+      renderScore(); startSync();
+      toast('Scoring as '+myPlace.display_name);
+      return;
+    }
+    // In the comp, but not in a team for this day
+    $('g-sub').textContent='You’re in this comp, but not in a team yet.';
+    gShow('g-pick');
+    $('g-pick').innerHTML='<div class="note warn"><strong>No team for you yet.</strong><br>'
+      +'You’re on the player list, but the organiser hasn’t put you in a team for '
+      +(allRounds.length>1?('Day '+dayNo):'this round')+'. Give them a nudge — you’ll be '
+      +'able to score the moment they do.</div>'
+      +(isAdmin
+        ? '<button class="primary" onclick="location.href=\'/app\'">Open comp setup</button>'
+        : '<button class="ghostbtn" onclick="watchBoard()">Watch the leaderboard</button>');
+    startSync();
+    return;
+  }
+  // Signed in but not a player
+  const a=await sb.rpc('gc_is_organiser',{p_comp_id:compId});
+  if(a&&a.data){
+    isAdmin=true;
+    watch=true; $('gate').style.display='none';
+    show('v-board'); renderBoard(); startSync();
+    toast('Organiser view');
+    return;
+  }
+  $('g-sub').textContent='You’re signed in, but you’re not in this comp yet.';
+  gShow('g-join');
+  startSync();
+}
+
+// ---------- sync ----------
+function setConn(ok){
+  ['conn','conn2'].forEach(id=>{const e=$(id);if(e)e.className='livepill'+(ok?'':' off')});
+  const t=$('conn-t');if(t)t.textContent=ok?'Live':'Offline';
+}
+let chan=null, others=[];
+
+function startSync(){
+  if(pollT)clearInterval(pollT);
+  pollT=setInterval(async()=>{ if(document.hidden)return;
+    try{await loadAll();
+      if($('v-board').classList.contains('on'))renderBoard();else if(!watch)renderScore();
+      setConn(true);
+    }catch(e){setConn(false)}
+  },15000);
+  document.addEventListener('visibilitychange',async()=>{
+    if(!document.hidden){await loadAll();
+      if($('v-board').classList.contains('on'))renderBoard();else if(!watch)renderScore()}
+  });
+
+  const meKey = myPlace ? myPlace.display_name : (myTeam?('Team '+((teams.find(t=>t.id===myTeam)||{}).team_no+1)):'Someone');
+
+  chan = sb.channel('comp-'+compId, {config:{presence:{key: meKey+'|'+Math.random().toString(36).slice(2,7)}}})
+    .on('postgres_changes',{event:'*',schema:'public',table:'gc_scores'},refresh)
+    .on('postgres_changes',{event:'*',schema:'public',table:'gc_team_scores'},refresh)
+    .on('postgres_changes',{event:'*',schema:'public',table:'gc_nominations'},refresh)
+    .on('postgres_changes',{event:'*',schema:'public',table:'gc_round_locks'},refresh)
+    .on('presence',{event:'sync'},()=>{
+      // Who else has this same card open right now?
+      const st=chan.presenceState();
+      const seen={};
+      others=[];
+      Object.values(st).forEach(arr=>arr.forEach(p=>{
+        if(!p||!p.name)return;
+        if(p.team!==myTeam)return;
+        if(p.name===meKey.split('|')[0])return;
+        if(seen[p.name])return;
+        seen[p.name]=1; others.push(p.name);
+      }));
+      const el=$('who-else'); if(el)renderPresence();
+    })
+    .subscribe(async s=>{
+      setConn(s==='SUBSCRIBED');
+      if(s==='SUBSCRIBED'&&!watch){
+        await chan.track({name:meKey.split('|')[0], team:myTeam, at:Date.now()});
+      }
+    });
+}
+
+function renderPresence(){
+  const el=$('who-else'); if(!el)return;
+  if(!others.length){ el.style.display='none'; return; }
+  el.style.display='flex';
+  el.innerHTML='<span class="dot"></span><span><b>'+esc(others.join(' and '))
+    +'</b> '+(others.length>1?'are':'is')+' on this card too — scores sync as you both go.</span>';
+}
+
+function flashSaved(){
+  const s=$('saved'); if(!s)return;
+  s.classList.add('show');
+  clearTimeout(s._h); s._h=setTimeout(()=>s.classList.remove('show'),900);
+}
+let rt=null, editing=null;
+function refresh(){
+  clearTimeout(rt);
+  rt=setTimeout(async()=>{
+    await loadAll();
+    if($('v-board').classList.contains('on')){renderBoard();return}
+    if(watch)return;
+    // Don't yank the keyboard out from under someone mid-typing
+    if(editing && document.activeElement && document.activeElement.tagName==='INPUT'){
+      setTimeout(refresh,1500); return;
+    }
+    renderScore();
+  },400);
+}
+document.addEventListener('focusin',e=>{if(e.target.tagName==='INPUT')editing=true});
+document.addEventListener('focusout',()=>{setTimeout(()=>{editing=false},200)});
+
+// ---------- init ----------
+async function init(){
+  const m=location.pathname.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i)
+    || location.search.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+  if(!m){document.body.innerHTML='<div style="color:#fff;padding:40px;text-align:center;'
+    +'font-family:sans-serif">No comp in this link.</div>';return}
+  compId=m[1];
+  sb=supabase.createClient(SUPA_URL,SUPA_KEY,{
+    auth:{detectSessionInUrl:true,persistSession:true,autoRefreshToken:true},
+    realtime:{params:{eventsPerSecond:8}}
+  });
+  // Clear out anything left from the PIN days
+  localStorage.removeItem('gc_pin_'+compId);
+  localStorage.removeItem('gc_team_'+compId);
+
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){
+    if(!await loadAll())return;
+    await afterSignIn();
+    return;
+  }
+
+  // Signed out — teaser only, and no polling until they're in
+  if(!await loadTeaser()){
+    document.body.innerHTML=
+      '<div style="color:#fff;padding:40px;text-align:center;font-family:sans-serif">'
+      +'Comp not found.</div>';
+    return;
+  }
+  renderGate();
+}
+(function boot(){ if(typeof supabase==='undefined'){setTimeout(boot,100);return} init() })();
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+# Dev-only files — don't ship these
+*.bat
+*.md
+*.sql
+project-json-backup.txt
+
+# Superseded apps (kept locally as backups, not deployed)
+may-open.html
+may-open-legacy.html
+may-open-local.html
+ritchie-cup.html
+
+# The old v13 app. index.html is a byte-for-byte copy of it, and Vercel serves
+# the filesystem before rewrites — so leaving it here would put the legacy app
+# on golfcomp.com.au/ and nothing would appear to have changed.
+golf-comp.html
+index.html
+
+# Year folders (legacy comp data)
+2018 Echuca/
+2019 Brissy/
+2020 Rye/
+2021 Brissy/
+2022 Adelaide/
+2023 Yarrawonga/
+2024 Goldie/
+2026 Penninsula/
+Artwork/
+
+# Excel + PDFs from past events
+*.xlsx
+*.pdf

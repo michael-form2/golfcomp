@@ -1,0 +1,33 @@
+# Vercel's local link (contains project + org ids)
+.vercel
+project-json-backup.txt
+
+# Local scratch
+*.bat
+*.log
+.DS_Store
+Thumbs.db
+
+# Past comp data — spreadsheets and scorecards with people's names in them.
+# Keep these off a public repo.
+*.xlsx
+*.xls
+*.pdf
+2018*/
+2019*/
+2020*/
+2021*/
+2022*/
+2023*/
+2024*/
+2025*/
+2026*/
+Artwork/
+
+# Superseded apps. Kept locally as a fallback, no reason to publish them.
+golf-comp.html
+index.html
+may-open.html
+may-open-legacy.html
+may-open-local.html
+ritchie-cup.html
