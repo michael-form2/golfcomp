@@ -2,18 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#082f25">
 <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+  <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <!-- iOS ignores SVG for the home screen icon, which is why it fell back to a
+       plain "G". It needs a real PNG at 180x180, full bleed — iOS rounds it itself. -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="apple-mobile-web-app-title" content="GolfComp">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>GolfComp</title>
 <style>
 :root{--green:#082f25;--green2:#14523f;--cream:#f4f0e8;--ink:#122019;--gold:#d8b45c;
       --muted:#6f7b74;--line:rgba(18,32,25,.09);--bad:#b3261e;--good:#25704d}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#082f25;color:var(--ink);-webkit-text-size-adjust:100%}
+  background:#082f25;color:var(--ink);-webkit-text-size-adjust:100%;overflow-x:hidden;
+  overscroll-behavior-x:none;touch-action:pan-y pinch-zoom}
+/* the few genuinely sideways-scrolling strips opt back in */
+.hscroll{touch-action:pan-x pinch-zoom}
 button{font:inherit;cursor:pointer}
-.app{width:min(430px,100vw);min-height:100vh;margin:auto;background:var(--cream);
+.app{width:100%;max-width:430px;min-height:100vh;margin:auto;background:var(--cream);
   position:relative;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.28)}
 
 /* ---------- hero ---------- */
@@ -24,18 +37,24 @@ button{font:inherit;cursor:pointer}
 .top.tall{height:330px}
 .toprow{display:flex;justify-content:space-between;align-items:center}
 .brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:900;letter-spacing:-.5px}
-.mark{width:36px;height:36px;border-radius:13px;background:linear-gradient(145deg,#f0d787,#cba447);
-  display:grid;place-items:center;color:var(--green);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.mark{width:36px;height:36px;border-radius:9px;display:block;flex:0 0 auto;object-fit:contain}
 .avatar{width:40px;height:40px;border-radius:14px;background:#fff;color:var(--green);
   display:grid;place-items:center;font-size:12px;font-weight:900;border:0}
 .welcome{position:absolute;left:18px;right:18px;bottom:28px}
 .welcome small{font-size:9px;font-weight:900;letter-spacing:1.25px;text-transform:uppercase;color:#f0d88f}
 .welcome h1{font-size:29px;line-height:1.03;letter-spacing:-1px;margin:5px 0 5px}
 .welcome p{font-size:12px;color:rgba(255,255,255,.72);margin:0}
-.welcome .cta{margin-top:15px;width:100%;border:0;border-radius:15px;padding:14px;background:#fff;
-  color:var(--green);font-size:12.5px;font-weight:900;box-shadow:0 12px 28px rgba(0,0,0,.15)}
-.welcome .alt{text-align:center;margin-top:8px;font-size:10px;color:rgba(255,255,255,.65)}
-.welcome .alt button{border:0;background:none;color:#fff;font-weight:900;padding:0}
+.welcome .cta{margin-top:15px;width:100%;border:0;border-radius:15px;padding:16px;background:#fff;
+  color:var(--green);font-size:15px;font-weight:900;box-shadow:0 12px 28px rgba(0,0,0,.15)}
+/* Sign in was 10px at 65% opacity on dark green — a nine-year-old couldn't find
+   it. It's a real button now, same size as Create account. */
+.welcome .alt{margin-top:10px}
+.welcome .alt button{width:100%;border:2px solid rgba(255,255,255,.55);background:none;
+  border-radius:15px;padding:15px;color:#fff;font-size:15px;font-weight:900;
+  font-family:inherit;cursor:pointer}
+.welcome .alt button:active{background:rgba(255,255,255,.12)}
+.welcome .alt small{display:block;text-align:center;margin-top:9px;font-size:12px;
+  color:rgba(255,255,255,.8)}
 
 .content{padding:0 15px 108px;margin-top:-14px;position:relative;z-index:2}
 .card{background:rgba(255,255,255,.97);border-radius:22px;border:1px solid rgba(255,255,255,.7);
@@ -97,11 +116,11 @@ button{font:inherit;cursor:pointer}
 .live-bottom{padding:12px 15px 15px}
 .format{font-size:10.5px;color:var(--muted);margin-bottom:10px}
 .format b{color:var(--green)}
-.primary{width:100%;border:0;border-radius:14px;padding:14px;background:var(--green);color:#fff;
-  font-size:12px;font-weight:900}
+.primary{width:100%;border:0;border-radius:14px;padding:15px;background:var(--green);color:#fff;
+  font-size:14px;font-weight:900}
 .primary:disabled{opacity:.4}
 .ghostbtn{width:100%;border:1px solid #dcd4c7;background:transparent;color:var(--green);
-  border-radius:14px;padding:13px;font-weight:900;font-size:11.5px;margin-top:9px}
+  border-radius:14px;padding:14px;font-weight:900;font-size:13px;margin-top:9px}
 
 /* ---------- trips ---------- */
 .trip{overflow:hidden}
@@ -118,10 +137,14 @@ button{font:inherit;cursor:pointer}
   font-size:10px;font-weight:900}
 
 /* ---------- bottom nav ---------- */
-.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100vw);
+/* No backdrop-filter and no transform on a fixed element. Both make iOS Safari
+   detach it during scroll — the nav ends up floating in the middle of the page
+   instead of pinned to the bottom. Centre it with auto margins instead, and the
+   background was already 96% opaque so the blur was barely visible anyway. */
+.bottom{position:fixed;bottom:0;left:0;right:0;margin:0 auto;width:100%;max-width:430px;
   display:grid;grid-template-columns:1fr 1fr 68px 1fr 1fr;align-items:end;
-  padding:9px 12px calc(11px + env(safe-area-inset-bottom));background:rgba(250,248,244,.96);
-  backdrop-filter:blur(18px);border-top:1px solid var(--line);z-index:10}
+  padding:9px 12px calc(11px + env(safe-area-inset-bottom));background:#faf8f4;
+  border-top:1px solid var(--line);z-index:10}
 .nav{text-align:center;font-size:9px;color:#7b867f;font-weight:800;border:0;background:none;padding:0}
 .nav b{display:block;font-size:18px;margin-bottom:2px}
 .nav.on{color:var(--green)}
@@ -129,19 +152,59 @@ button{font:inherit;cursor:pointer}
   font-size:24px;margin:-26px auto 0;box-shadow:0 12px 24px rgba(8,47,37,.27)}
 
 /* ---------- sheets ---------- */
-.sheet-wrap{display:none;position:fixed;inset:0;z-index:30;background:rgba(3,20,15,.55);
-  align-items:flex-end;justify-content:center}
+/* A full-screen panel, not a bottom sheet.
+   A bottom sheet has a bottom edge, and on iOS the keyboard never stops moving
+   that edge — the sheet slid off the top, then floated mid-page, then vanished.
+   A panel pinned to all four corners has no edge to lose and needs no viewport
+   arithmetic at all. Header and buttons are pinned, only the middle scrolls. */
+.sheet-wrap{display:none;position:fixed;inset:0;z-index:30;background:var(--cream);
+  align-items:stretch;justify-content:center}
 .sheet-wrap.open{display:flex}
-.sheet{width:min(430px,100vw);background:var(--cream);border-radius:25px 25px 0 0;
-  padding:12px 17px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -20px 55px rgba(0,0,0,.22);
-  max-height:92vh;overflow-y:auto}
-.handle{width:43px;height:5px;border-radius:99px;background:#cfc7ba;margin:0 auto 17px}
+/* the page behind simply stops scrolling — no position:fixed, so nothing shifts */
+body.locked{overflow:hidden}
+.sheettop{display:flex;align-items:center;gap:10px;margin:0 0 4px}
+.sheetback{flex:0 0 auto;width:38px;height:38px;border-radius:12px;border:1.5px solid var(--line);
+  background:#fff;color:var(--green);font-size:17px;font-weight:900;font-family:inherit;
+  cursor:pointer;line-height:1}
+.sheettop h2{margin:0}
+/* One wizard step on screen at a time. Named wzstep, NOT step — .step is already
+   the score stepper further down this sheet, and it won on source order, so all
+   four panels rendered at once as green 3-column grids. */
+.wzstep{display:none}
+.wzstep.on{display:block}
+.wzdots{display:flex;align-items:center;gap:6px;margin:0 0 14px;padding-left:48px}
+.wzdots i{width:22px;height:4px;border-radius:99px;background:#ded7c9;transition:background .18s}
+.wzdots i.on{background:var(--green)}
+.wzdots span{margin-left:6px;font-size:9px;font-weight:900;letter-spacing:.9px;
+  text-transform:uppercase;color:var(--muted)}
+.wzrecap{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);
+  border-radius:12px;padding:9px 11px;font-size:12px;font-weight:800;margin-bottom:6px}
+.wzrecap span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wzrecap b{color:var(--muted);font-weight:900;font-size:9px;letter-spacing:.8px;
+  text-transform:uppercase;flex:0 0 auto}
+.sheet{width:100%;max-width:430px;background:var(--cream);
+  display:flex;flex-direction:column;height:100%;
+  padding:calc(10px + env(safe-area-inset-top)) 17px calc(14px + env(safe-area-inset-bottom))}
+.sheet>.handle,.sheet>.sheettop,.sheet>p.sub,.sheet>.stick{flex:0 0 auto}
+/* The country chips are their own sideways scroller. Nested inside a body that
+   could also scroll sideways, tapping a chip scrolled BOTH — panning the whole
+   sheet left and cutting the labels off. clip doesn't create a scroll container
+   at all, so it can't happen; hidden is the fallback for older Safari. */
+.sheetbody{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:2px}
+.sheet .stick{padding-top:12px;margin-top:2px;border-top:1px solid var(--line)}
+.sheet .stick>button{margin-top:8px}
+.sheet .stick>div:not(:empty){margin-bottom:9px}
+.sheet .stick>button:first-child{margin-top:0}
+.handle{display:none}
 .sheet h2{font-size:25px;letter-spacing:-.8px;margin:0 0 5px}
 .sheet p.sub{font-size:12px;line-height:1.5;color:var(--muted);margin:0 0 17px}
 label{display:block;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:1px;
   color:var(--muted);margin:14px 0 6px}
-input,select{width:100%;border:1px solid #dcd4c7;background:#fff;border-radius:14px;padding:14px;
-  font-size:15px;outline:none;font-family:inherit}
+/* 16px minimum — below this iOS auto-zooms the page on focus and never zooms
+   back out, which is what made the app look scaled up and draggable. */
+input,select,textarea{width:100%;border:1px solid #dcd4c7;background:#fff;border-radius:14px;
+  padding:13px 14px;font-size:16px;outline:none;font-family:inherit}
 input:focus,select:focus{border-color:var(--green)}
 input.big{font-size:30px;font-weight:900;text-align:center;padding:16px}
 .pwwrap{position:relative}
@@ -163,11 +226,13 @@ input.big{font-size:30px;font-weight:900;text-align:center;padding:16px}
 .mode:last-child{margin-bottom:0}
 .mode.solo{background:var(--green);color:#fff}
 .mode.mate{background:linear-gradient(145deg,#d9b45d,#efd58a);color:var(--green)}
+.mode.four{background:#fff;border:2px solid var(--green);color:var(--green)}
 .mico{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;font-size:21px;
   background:rgba(255,255,255,.14)}
 .mode.mate .mico{background:rgba(255,255,255,.32)}
+.mode.four .mico{background:#eef4ef}
 .mode b{display:block;font-size:16px;margin-bottom:4px}
-.mode span{display:block;font-size:10.8px;line-height:1.4;opacity:.72}
+.mode span{display:block;font-size:12px;line-height:1.45;opacity:.72}
 .partner-box{display:flex;align-items:center;gap:10px;background:#fff;border-radius:15px;
   padding:12px;border:1px solid var(--line);margin-top:8px;cursor:pointer}
 .partner-box.sel{border-color:var(--green);background:#f3f8f4}
@@ -233,14 +298,14 @@ input.big{font-size:30px;font-weight:900;text-align:center;padding:16px}
 .addrow button{border:0;border-radius:13px;background:var(--green);color:#fff;
   padding:0 16px;font-weight:900;font-size:12px;white-space:nowrap}
 .tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
-.tabs button{border:1px solid #ddd5c7;background:#fff;border-radius:12px;padding:10px 4px;
-  font-size:10.5px;font-weight:900;color:var(--green)}
+.tabs button{border:1px solid #ddd5c7;background:#fff;border-radius:12px;padding:12px 4px;
+  font-size:12.5px;font-weight:900;color:var(--green)}
 .tabs button.on{background:var(--green);color:#fff;border-color:var(--green)}
 .tbox{background:#fff;border-radius:16px;padding:13px;margin-top:9px;border:1px solid var(--line)}
 .tbox .th{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .tbox .tn{font-size:12px;font-weight:900;color:var(--green)}
 .tbox .thc{font-size:10px;font-weight:900;color:var(--muted)}
-.tbox select{margin-bottom:6px;padding:11px;font-size:13px}
+.tbox select{margin-bottom:6px;padding:10px 11px;font-size:16px}
 .stepnum{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:8px;
   background:var(--green);color:#fff;font-size:11px;font-weight:900;margin-right:8px}
 .stepnum.done{background:var(--good)}
@@ -302,10 +367,10 @@ input.big{font-size:30px;font-weight:900;text-align:center;padding:16px}
 
 .screen{display:none}
 .screen.on{display:block}
-.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(14px);
+.toast{position:fixed;left:0;right:0;margin:0 auto;bottom:92px;transform:translateY(14px);
   background:#122019;color:#fff;border-radius:12px;padding:11px 15px;font-size:11px;opacity:0;
   transition:.2s;z-index:40;pointer-events:none;max-width:88vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.show{opacity:1;transform:translateY(0)}
 .toast.err{background:var(--bad)}
 .spin{display:inline-block;width:18px;height:18px;border:3px solid var(--line);
   border-top-color:var(--green);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px}
@@ -325,7 +390,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 <div id="v-out" class="screen">
   <header class="top" style="height:420px">
     <div class="toprow" style="align-items:flex-start">
-      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+      <div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div>
     </div>
     <div class="welcome">
       <small>Your handicap · Your mates · Your comp</small>
@@ -335,8 +400,10 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
         and compete with your mates — wherever you play.</p>
       <button class="cta" onclick="authMode('signup');openSheet('sh-signup')">
         Create a free account →</button>
-      <div class="alt">Already have an account?
-        <button onclick="authMode('signin');openSheet('sh-signup')">Sign in</button></div>
+      <div class="alt">
+        <button onclick="authMode('signin');openSheet('sh-signup')">Sign in</button>
+        <small>Already have an account? Sign in here.</small>
+      </div>
     </div>
   </header>
 
@@ -403,7 +470,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 <!-- ============ ONBOARD NAME ============ -->
 <div id="v-name" class="screen">
   <header class="top" style="height:200px">
-    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="toprow"><div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div></div>
     <div class="welcome"><small>Step 1 of 2</small>
       <h1>What should we call you?</h1>
       <p>The name your mates see on the leaderboard.</p></div>
@@ -420,7 +487,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 <!-- ============ ONBOARD HANDICAP ============ -->
 <div id="v-est" class="screen">
   <header class="top" style="height:200px">
-    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="toprow"><div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div></div>
     <div class="welcome"><small>Step 2 of 2</small>
       <h1>Roughly what do you shoot?</h1>
       <p>Your best guess for 18 holes. One round and we'll work out the real number.</p></div>
@@ -445,7 +512,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 <div id="v-home" class="screen">
   <header class="top">
     <div class="toprow">
-      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+      <div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div>
       <button class="avatar" id="av" onclick="openSheet('sh-profile')">--</button>
     </div>
     <div class="welcome">
@@ -464,7 +531,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
         <div class="chev">›</div>
       </button>
       <div class="grid">
-        <button class="tile dark" onclick="openSheet('sh-newcomp')">
+        <button class="tile dark" onclick="newComp()">
           <div class="ico">🏆</div><b>Create Comp</b>
           <span>Choose the format, course and players.</span></button>
         <button class="tile gold" onclick="openSheet('sh-join')">
@@ -492,6 +559,8 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
       </div>
     </section>
 
+    <div id="verify-banner"></div>
+
     <div id="live-wrap"></div>
 
     <div class="section"><h2>Your comps</h2></div>
@@ -502,7 +571,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 <!-- ============ MATES ============ -->
 <div id="v-mates" class="screen">
   <header class="top" style="height:190px">
-    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="toprow"><div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div></div>
     <div class="welcome"><small>The group</small><h1>Your mates</h1>
       <p>Who’s out there, and what they’ve been shooting.</p></div>
   </header>
@@ -521,7 +590,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 <!-- ============ MY ROUNDS ============ -->
 <div id="v-rounds" class="screen">
   <header class="top" style="height:190px">
-    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="toprow"><div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div></div>
     <div class="welcome"><small>Your record</small><h1>My rounds</h1>
       <p>Every round that counts towards your handicap.</p></div>
   </header>
@@ -540,7 +609,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
   <header class="top" style="height:230px">
     <div class="toprow">
       <button class="backbtn" onclick="show('v-home')">←</button>
-      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+      <div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div>
     </div>
     <div class="welcome">
       <small>Play Golf</small>
@@ -562,6 +631,12 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
           players.</span></div>
         <div class="chev">›</div>
       </button>
+      <button class="mode four" onclick="openFourSheet()">
+        <div class="mico">⛳</div>
+        <div><b>Get a group together</b><span>Two, three or four of you. Throw the balls up,
+          pick the game and settle it hole by hole.</span></div>
+        <div class="chev">›</div>
+      </button>
     </section>
 
     <div class="section"><h2>About casual rounds</h2></div>
@@ -580,7 +655,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 <!-- ============ PLAY A ROUND ============ -->
 <div id="v-round" class="screen">
   <header class="top" style="height:190px">
-    <div class="toprow"><div class="brand"><div class="mark">⛳</div>GolfComp</div></div>
+    <div class="toprow"><div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div></div>
     <div class="welcome"><small id="rd-course">—</small><h1>Your card</h1>
       <p id="rd-hint">Enter your score for each hole.</p></div>
   </header>
@@ -594,7 +669,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
   <header class="top" style="height:200px">
     <div class="toprow">
       <button class="backbtn" onclick="show('v-home')">←</button>
-      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+      <div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div>
     </div>
     <div class="welcome"><small id="cs-kicker">Setting up</small>
       <h1 id="cs-name" style="font-size:25px">—</h1>
@@ -608,7 +683,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
   <header class="top" style="height:190px">
     <div class="toprow">
       <button class="backbtn" onclick="show('v-round');renderRoundHole()">←</button>
-      <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+      <div class="brand"><img class="mark" src="/mark.png" alt="" width="36" height="36">GolfComp</div>
     </div>
     <div class="welcome"><small>Almost done</small><h1 id="rv-title">Check your card</h1>
       <p id="rv-sub">One last look before it counts.</p></div>
@@ -627,9 +702,10 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 </div>
 
 <!-- ============ SHEETS ============ -->
-<div class="sheet-wrap" id="sh-signup" onclick="outside(event,'sh-signup')"><div class="sheet">
+<div class="sheet-wrap" id="sh-signup"><div class="sheet">
   <div class="handle"></div>
-  <h2 id="au-title">Join GolfComp.</h2>
+  <div class="sheettop"><button class="sheetback" onclick="closeSheet('sh-signup')" aria-label="Back">←</button><h2 id="au-title">Join GolfComp.</h2></div>
+  <div class="sheetbody">
   <p class="sub" id="au-sub">Start building your GolfComp Handicap and running comps with your mates.</p>
 
   <div class="tabs" style="grid-template-columns:1fr 1fr;margin-bottom:4px">
@@ -667,12 +743,14 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 
   <div class="fine">No club membership · No joining fee · Free to play</div>
   <button class="cancel" onclick="closeSheet('sh-signup')">Not now</button>
+  </div>
 </div></div>
 
-<div class="sheet-wrap" id="sh-newcomp" onclick="outside(event,'sh-newcomp')"><div class="sheet">
+<div class="sheet-wrap" id="sh-newcomp"><div class="sheet">
   <div class="handle"></div>
-  <h2>Create a comp.</h2>
+  <div class="sheettop"><button class="sheetback" onclick="closeSheet('sh-newcomp')" aria-label="Back">←</button><h2>Create a comp.</h2></div>
   <p class="sub">Set it up once, share a link, everyone scores on their phone.</p>
+  <div class="sheetbody">
   <label>Comp name</label>
   <input type="text" id="nc-name" placeholder="Saturday at Ivanhoe">
 
@@ -680,20 +758,110 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 
   <button class="ghostbtn" style="margin-top:10px" onclick="addDay()">＋ Add another day</button>
   <div class="fine" id="nc-days-note" style="text-align:left;margin-top:6px"></div>
-
-  <button class="primary" style="margin-top:14px" onclick="createComp()">Create comp →</button>
-  <button class="cancel" onclick="closeSheet('sh-newcomp')">Cancel</button>
+  </div>
+  <div class="stick">
+    <button class="primary" onclick="createComp()">Create comp →</button>
+    <button class="cancel" onclick="closeSheet('sh-newcomp')">Cancel</button>
+  </div>
 </div></div>
 
-<div class="sheet-wrap" id="sh-rules" onclick="outside(event,'sh-rules')"><div class="sheet">
+<div class="sheet-wrap" id="sh-four"><div class="sheet">
   <div class="handle"></div>
-  <div id="rules-body"></div>
-  <button class="cancel" onclick="closeSheet('sh-rules')">Close</button>
+  <div class="sheettop"><button class="sheetback" onclick="fourBack()" aria-label="Back">←</button><h2 id="fr-title">Where are you playing?</h2></div>
+  <div class="wzdots"><i id="fr-dot1"></i><i id="fr-dot2"></i><i id="fr-dot3"></i><i id="fr-dot4"></i>
+    <span id="fr-stepn">Step 1 of 4</span></div>
+  <div class="sheetbody">
+  <div id="fr-recap"></div>
+
+  <!-- step 1 — course -->
+  <div class="wzstep" id="fr-s1">
+    <div id="cp-fr"></div>
+  </div>
+
+  <!-- step 2 — what you're playing -->
+  <div class="wzstep" id="fr-s2">
+    <div id="fr-games"></div>
+  </div>
+
+  <!-- step 3 — when -->
+  <div class="wzstep" id="fr-s3">
+    <label>Date</label>
+    <input type="date" id="fr-date">
+  </div>
+
+  <!-- step 4 — who -->
+  <div class="wzstep" id="fr-s4">
+    <label>Who’s playing? <span style="color:var(--muted);font-weight:700" id="fr-need"></span></label>
+    <div id="fr-picked"></div>
+    <div id="fr-recent"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin:14px 0 4px">
+      <div style="flex:1;height:1px;background:var(--line)"></div>
+      <div style="font-size:9px;font-weight:900;color:var(--muted);letter-spacing:.8px">OR BY EMAIL</div>
+      <div style="flex:1;height:1px;background:var(--line)"></div>
+    </div>
+    <input type="email" id="fr-email" placeholder="their@email.com" inputmode="email"
+           onkeydown="if(event.key==='Enter')fourLookup()">
+    <button class="ghostbtn" onclick="fourLookup()">Look them up</button>
+    <div id="fr-results"></div>
+    <div id="fr-teams"></div>
+  </div>
+
+  </div>
+  <div class="stick">
+    <div id="fr-msg"></div>
+    <button class="primary" id="fr-next" onclick="fourNext()">Next →</button>
+    <button class="cancel" onclick="closeSheet('sh-four')">Cancel</button>
+  </div>
 </div></div>
 
-<div class="sheet-wrap" id="sh-created" onclick="outside(event,'sh-created')"><div class="sheet">
+<div class="sheet-wrap" id="sh-addcourse"><div class="sheet">
+  <div class="handle"></div>
+  <div class="sheettop"><button class="sheetback" onclick="closeSheet('sh-addcourse')" aria-label="Back">←</button><h2>Add a course.</h2></div>
+  <p class="sub">Copy it off the scorecard. Once it's in, everyone can use it.</p>
+  <div class="sheetbody">
+  <label>Course name</label>
+  <input type="text" id="ac-name" placeholder="e.g. Barwon Heads Golf Club">
+  <label>Suburb or town</label>
+  <input type="text" id="ac-suburb" placeholder="e.g. Barwon Heads">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+    <div><label>State</label><input type="text" id="ac-state" placeholder="VIC"></div>
+    <div><label>Country</label><input type="text" id="ac-country" value="Australia"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+    <div><label>Tee</label><input type="text" id="ac-tee" placeholder="e.g. Blue"></div>
+    <div><label>For</label>
+      <select id="ac-gender">
+        <option value="men">Men</option>
+        <option value="women">Women</option>
+        <option value="any">Any</option>
+      </select></div>
+  </div>
+
+  <label style="margin-top:14px">The card</label>
+  <div class="fine" style="text-align:left;margin-bottom:8px">Par and stroke index for each
+    hole. The stroke index is the little number on the card — every hole gets one, 1 to 18,
+    and it decides where your shots fall.</div>
+  <div id="ac-holes"></div>
+  </div>
+  <div class="stick">
+    <div id="ac-msg"></div>
+    <button class="primary" onclick="submitCourse()">Add the course →</button>
+    <button class="cancel" onclick="closeSheet('sh-addcourse')">Cancel</button>
+  </div>
+</div></div>
+
+<div class="sheet-wrap" id="sh-rules"><div class="sheet">
+  <div class="handle"></div>
+  
+  <div class="sheetbody"><div id="rules-body"></div>
+  <button class="cancel" onclick="closeSheet('sh-rules')">Close</button>
+  </div>
+</div></div>
+
+<div class="sheet-wrap" id="sh-created"><div class="sheet">
   <div class="handle"></div>
   <h2>You're set.</h2>
+  <div class="sheetbody">
   <p class="sub" id="cr-name"></p>
   <label>Share this link</label>
   <input type="text" id="cr-link" readonly onclick="this.select()">
@@ -701,37 +869,45 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
   <div class="note">Anyone who taps it signs in, or makes a free account, and lands on their
     own card. You're the organiser because you set it up — nothing to remember.</div>
   <button class="cancel" onclick="closeSheet('sh-created')">Done</button>
+  </div>
 </div></div>
 
-<div class="sheet-wrap" id="sh-join" onclick="outside(event,'sh-join')"><div class="sheet">
+<div class="sheet-wrap" id="sh-join"><div class="sheet">
   <div class="handle"></div>
-  <h2>Join a comp.</h2>
+  <div class="sheettop"><button class="sheetback" onclick="closeSheet('sh-join')" aria-label="Back">←</button><h2>Join a comp.</h2></div>
   <p class="sub">Paste the link a mate sent you.</p>
+  <div class="sheetbody">
   <label>Link or code</label>
   <input type="text" id="join-code" placeholder="golfcomp.com.au/c/…">
   <button class="primary" style="margin-top:11px" onclick="joinComp()">Find it →</button>
   <div id="join-msg"></div>
   <button class="cancel" onclick="closeSheet('sh-join')">Cancel</button>
+  </div>
 </div></div>
 
-<div class="sheet-wrap" id="sh-solo" onclick="outside(event,'sh-solo')"><div class="sheet">
+<div class="sheet-wrap" id="sh-solo"><div class="sheet">
   <div class="handle"></div>
-  <h2>Solo round.</h2>
+  <div class="sheettop"><button class="sheetback" onclick="closeSheet('sh-solo')" aria-label="Back">←</button><h2>Solo round.</h2></div>
   <p class="sub">Choose your course and tee, then start scoring.</p>
+  <div class="sheetbody">
   <label>Course &amp; tee</label>
-  <select id="so-tee"></select>
+  <div id="cp-so"></div>
   <label>Date played</label>
   <input type="date" id="so-date">
+  </div>
+  <div class="stick">
   <button class="primary" onclick="beginRound(false)">Start round →</button>
-  <button class="cancel" onclick="closeSheet('sh-solo')">Cancel</button>
+    <button class="cancel" onclick="closeSheet('sh-solo')">Cancel</button>
+  </div>
 </div></div>
 
-<div class="sheet-wrap" id="sh-mate" onclick="outside(event,'sh-mate')"><div class="sheet">
+<div class="sheet-wrap" id="sh-mate"><div class="sheet">
   <div class="handle"></div>
-  <h2>Play with a mate.</h2>
+  <div class="sheettop"><button class="sheetback" onclick="closeSheet('sh-mate')" aria-label="Back">←</button><h2>Play with a mate.</h2></div>
   <p class="sub">Add your playing partner. Either of you can score the round for both players.</p>
+  <div class="sheetbody">
   <label>Course &amp; tee</label>
-  <select id="ma-tee"></select>
+  <div id="cp-ma"></div>
   <label>Date played</label>
   <input type="date" id="ma-date">
   <label>Playing partner</label>
@@ -745,13 +921,28 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
          onkeydown="if(event.key==='Enter')lookupEmail()">
   <button class="ghostbtn" onclick="lookupEmail()">Look them up</button>
   <div id="ma-results"></div>
+  </div>
+  <div class="stick">
   <button class="primary" onclick="beginRound(true)">Start round together →</button>
-  <button class="cancel" onclick="closeSheet('sh-mate')">Cancel</button>
+    <button class="cancel" onclick="closeSheet('sh-mate')">Cancel</button>
+  </div>
 </div></div>
 
-<div class="sheet-wrap" id="sh-result" onclick="outside(event,'sh-result')"><div class="sheet">
+<div class="sheet-wrap" id="sh-mateview"><div class="sheet">
   <div class="handle"></div>
-  <h2 id="rs-title">Round saved.</h2>
+  <div class="sheettop"><button class="sheetback" onclick="closeSheet('sh-mateview')" aria-label="Back">←</button><h2 id="mv-name">—</h2></div>
+  <p class="sub" id="mv-sub">—</p>
+  <div class="sheetbody"><div id="mv-body"></div></div>
+  <div class="stick">
+    <button class="ghostbtn" id="mv-follow" onclick="mvFollow()">Follow</button>
+    <button class="cancel" onclick="closeSheet('sh-mateview')">Close</button>
+  </div>
+</div></div>
+
+<div class="sheet-wrap" id="sh-result"><div class="sheet">
+  <div class="handle"></div>
+  
+  <div class="sheetbody"><h2 id="rs-title">Round saved.</h2>
   <p class="sub" id="rs-sub"></p>
   <section class="card hcp" style="box-shadow:none;border:1px solid #e2dbcd">
     <div class="ring" id="rs-ring"><div class="ringin"><div>
@@ -762,11 +953,13 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
   <div class="note lock" id="rs-other" style="display:none"></div>
   <button class="primary" style="margin-top:12px"
     onclick="closeSheet('sh-result');show('v-home')">Back to dashboard</button>
+  </div>
 </div></div>
 
-<div class="sheet-wrap" id="sh-profile" onclick="outside(event,'sh-profile')"><div class="sheet">
+<div class="sheet-wrap" id="sh-profile"><div class="sheet">
   <div class="handle"></div>
-  <h2 id="pr-name">Profile</h2>
+  
+  <div class="sheetbody"><h2 id="pr-name">Profile</h2>
   <p class="sub" id="pr-email"></p>
   <div id="pr-emailstate"></div>
   <div class="note lock" id="pr-hcp"></div>
@@ -782,9 +975,9 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
   </div>
 
   <div id="pr-verifybox" style="display:none;margin-top:4px">
-    <label>Enter the 6-digit code we emailed you</label>
-    <input type="text" id="pr-otp" inputmode="numeric" maxlength="6" placeholder="123456"
-           autocomplete="one-time-code" style="letter-spacing:5px;text-align:center;font-size:19px">
+    <label>Got a code instead? Enter it here</label>
+    <input type="text" id="pr-otp" inputmode="numeric" maxlength="8" placeholder="12345678"
+           autocomplete="one-time-code" style="letter-spacing:4px;text-align:center;font-size:19px">
     <div id="pr-otpmsg"></div>
     <button class="primary" style="margin-top:10px" onclick="confirmCode()">Verify</button>
     <button class="linkbtn" onclick="sendVerify()"
@@ -811,6 +1004,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
   <button class="ghostbtn" onclick="signOut()" style="color:var(--bad);border-color:var(--bad)">Sign out</button>
   <div class="fine" id="pr-ver"></div>
   <button class="cancel" onclick="closeSheet('sh-profile')">Close</button>
+  </div>
 </div></div>
 
 <div class="toast" id="toast"></div>
@@ -837,19 +1031,114 @@ const FORMATS=[
  {key:'ambrose_2man',name:'2-Man Ambrose',teams:true,size:2,hcp:false,
   blurb:'Pairs. Everyone hits, best shot is taken and both play from there.'},
  {key:'ambrose_4man',name:'4-Man Ambrose',teams:true,size:4,hcp:false,
-  blurb:'Fours. Everyone hits, best shot chosen, all play from there. Nobody gets left behind.'}
+  blurb:'Fours. Everyone hits, best shot chosen, all play from there. Nobody gets left behind.'},
+ // Per-hole games. No teams — every player for themselves, hole by hole.
+ // These suit a three, where nothing splits evenly.
+ {key:'matchplay',name:'Match Play',teams:true,size:1,hcp:true,
+  blurb:'Head to head. Better score takes the hole, level and it’s halved. Whoever’s up after 18 wins.'},
+ {key:'holes_won',name:'Most Holes Won',teams:false,hcp:true,
+  blurb:'Best score takes the hole. Level and nobody gets it. Most holes at the end wins.'},
+ {key:'skins',name:'Skins',teams:false,hcp:true,
+  blurb:'A skin per hole, won outright. Tie it and the skin carries — so the next hole is worth two.'},
+ {key:'perch',name:'Bird on a Perch',teams:false,hcp:true,
+  blurb:'Win a hole to get on the perch. Win again from there and it’s a point. Halve it and you stay put — lose it and someone else is up.'}
 ];
 
 function $(i){return document.getElementById(i)}
+
+// ---------- crash reporting ----------
+// Until now, any function that threw simply did nothing: no message, no log.
+// "Get a group together" was dead for a day because a variable collision threw
+// before the sheet opened and nothing said so. This makes failures visible to
+// the player and legible to us.
+let errCount=0, lastErrKey='', lastErrAt=0;
+function currentScreen(){
+  const s=document.querySelector('.screen.on');
+  const sh=document.querySelector('.sheet-wrap.open');
+  return (sh?sh.id+' / ':'')+((s&&s.id)||'?');
+}
+function reportError(kind, err){
+  try{
+    const msg=(err&&(err.message||err.reason&&err.reason.message))||String(err&&err.reason||err||'')||'unknown';
+    const stack=(err&&(err.stack||(err.reason&&err.reason.stack)))||null;
+    // don't spam on a render loop, and don't log the same thing twice in a row
+    const key=kind+'|'+msg;
+    const now=Date.now();
+    if(key===lastErrKey && now-lastErrAt<3000) return;
+    lastErrKey=key; lastErrAt=now;
+    if(++errCount>10) return;
+
+    console.error('[GolfComp]', kind, msg, stack||'');
+    // Tell the player something happened — silence is the actual bug.
+    try{ toast('Something went wrong there — we’ve logged it', true) }catch(_){}
+    // Posted with plain fetch rather than through the Supabase client, because
+    // the crashes that matter most happen during boot, before that client
+    // exists. Fire and forget — a failed log must never surface to the player.
+    try{
+      fetch(SUPA_URL+'/rest/v1/rpc/gc_log_error',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':SUPA_KEY,
+                 'Authorization':'Bearer '+SUPA_KEY},
+        body:JSON.stringify({
+          p_kind:kind, p_message:msg, p_stack:stack,
+          p_screen:currentScreen(), p_path:location.pathname,
+          p_user_agent:navigator.userAgent,
+          p_app_version:(typeof APP_VERSION!=='undefined'?APP_VERSION:null)
+        }),
+        keepalive:true   // still sends if the crash takes the page down
+      }).catch(()=>{});
+    }catch(_){}
+  }catch(_){ /* a reporter that crashes is worse than no reporter */ }
+}
+window.addEventListener('error', e=>reportError('error', e.error||e));
+window.addEventListener('unhandledrejection', e=>reportError('unhandledrejection', e));
+
+// Inline onclick="" handlers don't reach window.onerror in every browser, so
+// catch at the click boundary too — that's where most of ours live.
+document.addEventListener('click', function(e){
+  const t=e.target && e.target.closest && e.target.closest('[onclick]');
+  if(!t) return;
+  // nothing to do on success; the browser runs the handler itself. We only
+  // need the listener so an exception inside it surfaces as window.onerror.
+}, true);
+
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(m,e){const t=$('toast');t.textContent=m;t.className='toast show'+(e?' err':'');
   clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2800)}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
   $('nav').style.display=(id==='v-out'||id==='v-name'||id==='v-est'||id==='v-review')
     ?'none':'grid';window.scrollTo(0,0)}
-function openSheet(i){$(i).classList.add('open')}
-function closeSheet(i){$(i).classList.remove('open')}
-function outside(e,i){if(e.target.id===i)closeSheet(i)}
+function anySheetOpen(){ return !!document.querySelector('.sheet-wrap.open') }
+// The panel covers the screen, so the page behind only needs to stop scrolling.
+// No position:fixed, no saved scroll offset, no scrollbar compensation, no
+// visual-viewport arithmetic — all of that existed to prop up a bottom sheet
+// and every piece of it was a source of the drifting and jumping.
+function lockPage(){ document.body.classList.add('locked') }
+function unlockPage(){ document.body.classList.remove('locked') }
+
+function openSheet(i){ $(i).classList.add('open'); lockPage();
+  const b=$(i).querySelector('.sheetbody'); if(b)b.scrollTop=0 }
+function closeSheet(i){ $(i).classList.remove('open'); if(!anySheetOpen())unlockPage() }
+// outside() removed: sheets are full-screen panels, so there is no visible
+// 'outside' to click — it only ever discarded work by accident.
+// Focusing a field must move the sheet's own scroller and nothing else.
+// scrollIntoView() walks up and scrolls every ancestor it can, which is how the
+// whole sheet ended up shunted sideways and off the top.
+function revealInSheet(el){
+  const b=el.closest&&el.closest('.sheetbody');
+  if(!b)return;
+  const br=b.getBoundingClientRect(), er=el.getBoundingClientRect();
+  // Park it just under the top of the scroller so the results list below it
+  // stays on screen — centring a search box hides its own results.
+  b.scrollTop += (er.top-br.top)-10;
+}
+document.addEventListener('focusin',e=>{
+  const t=e.target;
+  if(!t.closest||!t.closest('.sheetbody'))return;
+  // iOS needs a beat to finish animating the keyboard in and settle the viewport
+  setTimeout(()=>revealInSheet(t),300);
+  setTimeout(()=>revealInSheet(t),650);
+});
 
 // ---------- auth ----------
 let auMode='signup';
@@ -894,7 +1183,10 @@ async function doAuth(){
       $('auth-msg').innerHTML='<div class="note err">'+esc(error.message)+'</div>'; return;
     }
     if(data && data.session){ $('auth-msg').innerHTML=''; closeSheet('sh-signup'); route(); return; }
-    // Supabase is set to confirm emails
+    // No session back means Supabase wants an email confirmation. We don't make
+    // people wait on that — sign them straight in and chase verification later.
+    const {error:se}=await sb.auth.signInWithPassword({email:em,password:pw});
+    if(!se){ $('auth-msg').innerHTML=''; closeSheet('sh-signup'); route(); return; }
     $('auth-msg').innerHTML='<div class="note lock"><strong>Almost there.</strong> '
       +'We’ve emailed '+esc(em)+' to confirm it’s you. Tap the link and you’re in.</div>';
     return;
@@ -966,13 +1258,16 @@ async function sendVerify(){
   const {error}=await sb.auth.signInWithOtp({email:me.email,
     options:{shouldCreateUser:false}});
   if(error){box.innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
-  box.innerHTML='<div class="note">Code sent to <strong>'+esc(me.email)+'</strong>. '
-    +'It’s good for an hour.</div>';
-  $('pr-otp').focus();
+  box.innerHTML='<div class="note lock"><strong>Check '+esc(me.email)+'.</strong><br>'
+    +'Tap the link in the email and you’re verified — that’s the easiest way. '
+    +'If the email has a code instead, type it below. Good for an hour.</div>';
 }
 async function confirmCode(){
   const code=$('pr-otp').value.trim(), box=$('pr-otpmsg');
-  if(code.length<6){box.innerHTML='<div class="note err">Enter all six digits.</div>';return}
+  if(!/^\d{6,8}$/.test(code)){
+    box.innerHTML='<div class="note err">Enter the code from the email — it’s 6 to 8 digits.</div>';
+    return;
+  }
   box.innerHTML='<div class="note">Checking…</div>';
   const {error}=await sb.auth.verifyOtp({email:me.email,token:code,type:'email'});
   if(error){box.innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
@@ -1019,7 +1314,7 @@ async function saveName(){
   await loadMe();
   if(me && me.rounds_used>0){
     // They were invited and already have rounds — straight in, handicap intact
-    renderHome(); renderFormats(); await loadCourses(); loadMyComps();
+    renderHome(); renderFormats(); await csLoadCountries(); await loadCourses(); loadMyComps();
     show('v-home');
     toast('Welcome back — your handicap is '+Number(me.handicap).toFixed(1));
     return;
@@ -1077,7 +1372,48 @@ function renderHome(){
   $('pr-hcp').innerHTML='<strong>GolfComp Handicap '+(h==null?'—':Number(h).toFixed(1))+'</strong> · '
     +esc(c)+(n?(' · '+n+' round'+(n===1?'':'s')):'');
   renderEmailState();
+  renderVerifyBanner();
   $('pr-ver').textContent=APP_VERSION;
+}
+
+// Nobody gets stopped from playing golf over an unopened email. The nudge sits
+// on the dashboard, and the only thing it actually blocks is creating a comp —
+// where you're the organiser and people need to be able to reach you.
+function needsVerify(){
+  return !!me && !me.email_verified && !me.email_is_placeholder;
+}
+function renderVerifyBanner(){
+  const el=$('verify-banner'); if(!el)return;
+  if(!needsVerify()){el.innerHTML='';return}
+  el.innerHTML='<section class="card" style="padding:14px;margin-bottom:11px;'
+    +'border-left:3px solid var(--gold)">'
+    +'<div style="font-size:12.5px;line-height:1.55">'
+    +'<strong>Confirm your email.</strong> Everything works without it — it just means we '
+    +'can get you back in if you lose your password, and you’ll need it to start a comp.</div>'
+    +'<button class="primary" style="margin-top:11px" onclick="verifyFromBanner()">'
+    +'Send me the code</button>'
+    +'<button class="linkbtn" onclick="openSheet(\'sh-profile\')" '
+    +'style="width:100%;border:0;background:none;color:var(--muted);font-size:12px;'
+    +'font-weight:800;text-decoration:underline;padding:11px;cursor:pointer;margin:0">'
+    +'Wrong address? Change it</button>'
+    +'</section>';
+}
+function verifyFromBanner(){
+  openSheet('sh-profile');
+  setTimeout(sendVerify,250);
+}
+function newComp(){
+  if(needsVerify()){
+    toast('Confirm your email first — you’re the organiser',true);
+    verifyFromBanner();
+    return;
+  }
+  if(me&&me.email_is_placeholder){
+    toast('Add a real email address first',true);
+    openSheet('sh-profile');
+    return;
+  }
+  openSheet('sh-newcomp');
 }
 
 // Verification is a nudge, never a gate — nobody gets stopped from playing
@@ -1098,15 +1434,225 @@ function renderEmailState(){
   }
 }
 
+// ---------- course search ----------
+// A dropdown works for six courses. It does not work for four hundred, so this
+// is a type-to-search box that queries the database rather than the page.
+const CS={};   // per-picker state: {tee, label, q, results, busy, timer}
+let csCountries=[], csCountry='';   // no filter by default — name is usually enough
+
+async function csLoadCountries(){
+  const {data}=await sb.rpc('gc_countries');
+  csCountries=data||[];
+}
+function csSetCountry(c,key){
+  csCountry=c;
+  const s=csState(key);
+  if(s.q)csType(key,s.q); else csRender(key,s.onPick);
+}
+
+function csState(key){ return CS[key]||(CS[key]={tee:'',label:'',q:'',results:null,busy:false}) }
+function csValue(key){ return csState(key).tee }
+function csCourse(key){ return csState(key).course||null }
+function csSet(key,row){
+  const s=csState(key);
+  s.course=row||null; s.tee=row?row.tee_id:''; s.label=row?(row.name+' — '+row.tee_name):'';
+}
+
+function csHtml(key,onPick){
+  const s=csState(key);
+  if(s.tee){
+    return '<div style="display:flex;align-items:center;gap:10px;background:#fff;'
+      +'border:1.5px solid var(--green);border-radius:14px;padding:12px 13px">'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:900;'
+      +'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(s.label)+'</div></div>'
+      +((s.course&&s.course.has_stroke_index===false)
+         ? '<span title="No stroke index yet" style="flex:0 0 auto;font-size:9px;font-weight:900;'
+           +'background:rgba(217,180,93,.25);color:#8a6d1f;border-radius:99px;padding:3px 7px;'
+           +'margin-right:6px">NO SI</span>' : '')
+      +'<button onclick="csClear(\''+key+'\')" style="border:0;background:none;'
+      +'color:var(--green);font-size:11.5px;font-weight:900;text-decoration:underline;'
+      +'cursor:pointer;padding:4px">Change</button></div>';
+  }
+  // Country first — otherwise "Dunes" turns up one in Arizona
+  let h='<div class="hscroll" style="display:flex;gap:7px;margin-bottom:7px;overflow-x:auto;padding-bottom:2px">'
+    +csCountries.map(c=>{
+      const on=(csCountry===c.country);
+      return '<button onclick="csSetCountry(\''+esc(c.country).replace(/'/g,"\\'")+'\',\''+key+'\')" '
+        +'style="flex:0 0 auto;border:1.5px solid '+(on?'var(--green)':'#e2dbcd')
+        +';background:'+(on?'var(--green)':'#fff')+';color:'+(on?'#fff':'var(--ink)')
+        +';border-radius:99px;padding:7px 13px;font-size:11.5px;font-weight:900;'
+        +'font-family:inherit;cursor:pointer">'+esc(c.country)+'</button>';
+    }).join('')
+    +'<button onclick="csSetCountry(\'\',\''+key+'\')" style="flex:0 0 auto;border:1.5px solid '
+    +(csCountry?'#e2dbcd':'var(--green)')+';background:'+(csCountry?'#fff':'var(--green)')
+    +';color:'+(csCountry?'var(--ink)':'#fff')+';border-radius:99px;padding:7px 13px;'
+    +'font-size:11.5px;font-weight:900;font-family:inherit;cursor:pointer">Anywhere</button>'
+    +'</div>'
+    +'<input type="search" id="cs-in-'+key+'" placeholder="Search course or suburb…" '
+    +'autocomplete="off" value="'+esc(s.q)+'" '
+    +'oninput="csType(\''+key+'\',this.value)">';
+  if(s.busy)h+='<div class="fine" style="text-align:left;margin-top:6px">'
+    +'<span class="spin"></span></div>';
+  else if(s.results){
+    if(!s.results.length){
+      h+='<div class="note" style="margin-top:8px"><strong>No course called “'+esc(s.q)+'”.</strong> '
+        +'Try the suburb, or a shorter word — then add it if it really isn’t here.</div>'
+        +'<button class="ghostbtn" onclick="openAddCourse(\''+key+'\')">'
+        +'＋ Add this course</button>';
+    } else {
+      h+='<div style="display:grid;gap:6px;margin-top:8px;max-height:260px;overflow-y:auto">'
+        +s.results.map(c=>{
+          return '<button onclick="csPick(\''+key+'\',\''+c.tee_id+'\');'+(onPick||'')+'" '
+            +'style="width:100%;text-align:left;border:1px solid var(--line);background:#fff;'
+            +'border-radius:12px;padding:10px 12px;font-family:inherit;cursor:pointer">'
+            +'<b style="display:block;font-size:12.5px;font-weight:900">'+esc(c.name)+'</b>'
+            +'<span style="display:block;font-size:11px;color:var(--muted);font-weight:700;'
+            +'margin-top:2px">'+esc(c.tee_name)+' · par '+c.par
+            +(c.suburb?(' · '+esc(c.suburb)):'')
+            +((!csCountry&&c.country)?(' · '+esc(c.country)):'')
+            +(c.has_stroke_index?'':' · <span style="color:#8a6d1f">needs stroke indexes</span>')
+            +'</span></button>';
+        }).join('')+'</div>';
+    }
+  } else if(!s.q){
+    h+='<div class="fine" style="text-align:left;margin-top:6px">'
+      +'Start typing — we’ll find it.</div>';
+  }
+  return h;
+}
+function csRender(key,onPick){
+  const s=csState(key);
+  // Remember the callback on the state. It used to be passed per-render only, so
+  // after csPick re-rendered, s.onPick was undefined for the create-comp day
+  // pickers — the course showed as chosen but dayPicked() never ran, ncDays[i].tee
+  // stayed empty, and Create said "pick a course" for a course you'd just picked.
+  if(onPick!==undefined&&onPick!==null)s.onPick=onPick;
+  const el=$('cp-'+key); if(el)el.innerHTML=csHtml(key,s.onPick);
+}
+function csClear(key){
+  const s=csState(key); s.tee=''; s.label=''; s.course=null; s.results=null; s.q='';
+  csRender(key, s.onPick);
+  const i=$('cs-in-'+key); if(i)i.focus();
+}
+function csPick(key,tee){
+  const s=csState(key);
+  const row=(s.results||[]).find(r=>r.tee_id===tee);
+  if(row)csSet(key,row);
+  s.results=null;
+  csRender(key, s.onPick);
+}
+function csType(key,v){
+  const s=csState(key); s.q=v;
+  if(s.timer)clearTimeout(s.timer);
+  if(!v.trim()){ s.results=null; s.busy=false; csRender(key,s.onPick); return }
+  s.timer=setTimeout(async()=>{
+    s.busy=true; csRender(key,s.onPick);
+    const {data,error}=await sb.rpc('gc_search_courses',
+      {p_query:v.trim(), p_country:csCountry||null});
+    s.busy=false;
+    s.results=(error||!data)?[]:data;
+    csRender(key,s.onPick);
+    // typing continues in the same box, so put the cursor back where it was
+    const i=$('cs-in-'+key);
+    if(i){ const p=i.value.length; i.focus(); try{i.setSelectionRange(p,p)}catch(e){} }
+  },220);
+}
+
+// ---------- add a course ----------
+// The database fills itself this way. Validation is deliberately fussy: a wrong
+// stroke index doesn't error, it just quietly makes every Stableford score wrong.
+let acKey=null, acHoles=[];
+
+function openAddCourse(key){
+  acKey=key;
+  const s=csState(key);
+  acHoles=[];
+  for(let i=1;i<=18;i++)acHoles.push({par:4,si:i});
+  $('ac-name').value=(s.q||'').replace(/\b\w/g,m=>m.toUpperCase());
+  $('ac-suburb').value=''; $('ac-state').value='';
+  $('ac-country').value=csCountry||'Australia';
+  $('ac-tee').value='Blue'; $('ac-msg').innerHTML='';
+  renderAcHoles();
+  openSheet('sh-addcourse');
+}
+function acField(i,k,v){
+  const n=parseInt(v,10);
+  acHoles[i][k]=isNaN(n)?null:n;
+  acWarn();
+}
+function renderAcHoles(){
+  let h='<div style="display:grid;grid-template-columns:28px 1fr 1fr;gap:6px;'
+    +'align-items:center;font-size:9.5px;font-weight:900;color:var(--muted);'
+    +'text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px">'
+    +'<div></div><div>Par</div><div>Stroke index</div></div>';
+  acHoles.forEach((x,i)=>{
+    h+='<div style="display:grid;grid-template-columns:28px 1fr 1fr;gap:6px;'
+      +'align-items:center;margin-bottom:5px">'
+      +'<div style="font-size:11.5px;font-weight:900;color:var(--green)">'+(i+1)+'</div>'
+      +'<input type="number" inputmode="numeric" min="3" max="6" value="'+(x.par==null?'':x.par)
+      +'" onchange="acField('+i+',\'par\',this.value)" style="margin:0;padding:9px">'
+      +'<input type="number" inputmode="numeric" min="1" max="18" value="'+(x.si==null?'':x.si)
+      +'" onchange="acField('+i+',\'si\',this.value)" style="margin:0;padding:9px">'
+      +'</div>';
+  });
+  $('ac-holes').innerHTML=h;
+  acWarn();
+}
+function acWarn(){
+  const m=$('ac-msg'); if(!m)return;
+  const sis=acHoles.map(x=>x.si).filter(x=>x!=null).sort((a,b)=>a-b);
+  const want=Array.from({length:18},(_,i)=>i+1);
+  const par=acHoles.reduce((a,x)=>a+(x.par||0),0);
+  const dup=sis.length!==new Set(sis).size;
+  if(sis.length<18||dup||sis.join()!==want.join()){
+    m.innerHTML='<div class="note warn" style="margin-top:10px">'
+      +'<strong>Stroke indexes need to be 1 to 18, each used once.</strong>'
+      +(dup?' You’ve used one twice.':'')
+      +' Par currently adds to '+par+'.</div>';
+  } else {
+    m.innerHTML='<div class="note lock" style="margin-top:10px">'
+      +'<strong>Card looks right.</strong> Par '+par+'.</div>';
+  }
+}
+async function submitCourse(){
+  const m=$('ac-msg');
+  const name=$('ac-name').value.trim();
+  if(!name){m.innerHTML='<div class="note err">Give the course a name.</div>';return}
+  const sis=acHoles.map(x=>x.si).filter(x=>x!=null).sort((a,b)=>a-b);
+  if(sis.join()!==Array.from({length:18},(_,i)=>i+1).join()){
+    m.innerHTML='<div class="note err">Stroke indexes must be 1 to 18, each used once.</div>';return}
+  m.innerHTML='<div class="note">Adding…</div>';
+
+  const {data,error}=await sb.rpc('gc_add_course',{
+    p_name:name, p_suburb:$('ac-suburb').value.trim(),
+    p_country:$('ac-country').value.trim()||'Australia',
+    p_state:$('ac-state').value.trim(),
+    p_tee_name:$('ac-tee').value.trim()||'Default',
+    p_gender:$('ac-gender').value,
+    p_holes:acHoles.map(x=>({par:x.par,si:x.si}))});
+  if(error){m.innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
+
+  await csLoadCountries();
+  const row=data[0];
+  // Select it straight away so they can carry on with what they were doing
+  if(acKey){
+    csSet(acKey,{tee_id:row.tee_id,name:name,
+      tee_name:$('ac-tee').value.trim()||'Default',
+      par:acHoles.reduce((a,x)=>a+(x.par||0),0)});
+    const s=csState(acKey); s.results=null;
+    csRender(acKey,s.onPick);
+    if(acKey.indexOf('day')===0)dayPicked(parseInt(acKey.slice(3),10));
+  }
+  closeSheet('sh-addcourse');
+  toast(name+' added');
+}
+
 // ---------- play golf ----------
 let partner=null, roundTee=null, roundDate=null;
 
 async function startRound(){
   show('v-play');
-  if(!courses.length) await loadCourses();
-  const opts=courses.map(c=>'<option value="'+c.tee_id+'">'+esc(c.name)+' — '+esc(c.tee_name)
-    +' (par '+c.par+')</option>').join('');
-  $('so-tee').innerHTML=opts; $('ma-tee').innerHTML=opts;
+  csRender('so'); csRender('ma');
   const today=new Date().toISOString().slice(0,10);
   if(!$('so-date').value)$('so-date').value=today;
   if(!$('ma-date').value)$('ma-date').value=today;
@@ -1169,12 +1715,13 @@ function pickPartner(id,name,hcp,el){
 async function beginRound(withMate){
   if(withMate && !partner){ toast('Pick your playing partner first', true); return; }
   card={}; cardP={}; rdHole=1;
-  roundTee = withMate ? $('ma-tee').value : $('so-tee').value;
+  roundTee = withMate ? csValue('ma') : csValue('so');
+  if(!roundTee){toast('Search for your course first',true);return}
   roundDate = withMate ? $('ma-date').value : $('so-date').value;
   closeSheet('sh-solo'); closeSheet('sh-mate');
   if(!withMate) partner=null;
   show('v-round');
-  const c=courses.find(x=>x.tee_id===roundTee);
+  const c=csCourse(partner?'ma':'so');
   $('rd-course').textContent=c?(c.name+' · '+c.tee_name):'';
   $('rd-hint').textContent=partner
     ? ('Scoring for you and '+partner.name+'.')
@@ -1376,7 +1923,7 @@ function renderReview(){
     '<section class="card" style="overflow:hidden">'
     +'<div class="holehead"><div class="n" style="font-size:20px">'
     +(partner?'Check the card':'Your card')+'</div>'
-    +'<div class="i">'+esc((courses.find(c=>c.tee_id===roundTee)||{}).name||'')+'</div></div>'
+    +'<div class="i">'+esc((csCourse(partner?'ma':'so')||{}).name||'')+'</div></div>'
     +rows+'</section>'
     +'<div class="note">'+(partner
       ? 'Both of you have a quick look, then confirm. It counts towards both your handicaps.'
@@ -1455,9 +2002,9 @@ async function showRounds(){
   show('v-rounds');
   const b=$('rounds-body');
   b.innerHTML='<div class="empty"><span class="spin"></span></div>';
-  const {data,error}=await sb.from('gc_handicap_rounds')
-    .select('played_on,gross,adjusted_gross,differential,source,gc_courses(name)')
-    .eq('profile_id',me.profile_id).order('played_on',{ascending:false});
+  // Was querying the handicap table straight off PostgREST, which meant no
+  // points and no course handicap to work them out from. The RPC does both.
+  const {data,error}=await sb.rpc('gc_my_rounds',{p_limit:40});
   if(error){b.innerHTML='<div class="empty">'+esc(error.message)+'</div>';return}
   if(!data.length){b.innerHTML='<div class="empty">No rounds yet.<br>Tap <b>Play Golf</b> and enter a card.</div>';return}
 
@@ -1468,15 +2015,24 @@ async function showRounds(){
   const best=recent.slice().sort((a,b2)=>Number(a.differential)-Number(b2.differential))
     .slice(0,useCount).map(r=>r.differential+'|'+r.played_on);
 
-  let h='<table class="t"><thead><tr><th>Date</th><th>Course</th><th class="num">Gross</th>'
-    +'<th class="num">Adj</th><th class="num">Diff</th></tr></thead><tbody>';
+  // Shots and points first — they're what you'd tell someone in the bar. Adj and
+  // Diff are handicap machinery and sit to the right.
+  let h='<table class="t"><thead><tr><th>Date</th><th>Course</th><th class="num">Shots</th>'
+    +'<th class="num">Pts</th><th class="num">Adj</th><th class="num">Diff</th></tr></thead><tbody>';
   data.forEach(r=>{
     const counted=best.indexOf(r.differential+'|'+r.played_on)>=0;
+    const tp=(r.to_par==null)?'':(r.to_par===0?'E':(r.to_par>0?'+'+r.to_par:String(r.to_par)));
     h+='<tr'+(counted?' style="background:#f3f7f2"':'')+'><td>'
       +new Date(r.played_on).toLocaleDateString('en-AU',{day:'numeric',month:'short'})
-      +'</td><td style="font-size:11px">'+esc((r.gc_courses&&r.gc_courses.name)||'—')
-      +(r.source==='comp'?'<br><span style="font-size:9px;color:var(--muted)">comp</span>':'')
-      +'</td><td class="num">'+r.gross+'</td><td class="num">'+r.adjusted_gross
+      +'</td><td style="font-size:11px">'+esc(r.course_name||'—')
+      +'<br><span style="font-size:9px;color:var(--muted)">'
+      +esc([r.tee_name,(r.par?('par '+r.par):''),(r.source==='comp'?'comp':'')]
+            .filter(Boolean).join(' · '))+'</span>'
+      +'</td><td class="num" style="font-weight:900">'+r.gross
+      +(tp?('<br><span style="font-size:9px;color:var(--muted);font-weight:700">'+tp+'</span>'):'')
+      +'</td><td class="num" style="font-weight:900">'
+      +(r.stableford==null?'—':r.stableford)+'</td>'
+      +'<td class="num">'+r.adjusted_gross
       +'</td><td class="num"'+(counted?' style="font-weight:900;color:var(--green)"':'')+'>'
       +Number(r.differential).toFixed(1)+'</td></tr>'});
   b.innerHTML=h+'</tbody></table>'
@@ -1484,6 +2040,8 @@ async function showRounds(){
     +'Your index is the average of your best '+useCount+' differential'+(useCount===1?'':'s')
     +' from your last '+n+' round'+(n===1?'':'s')
     +(n<5?' — under 5 rounds it stays provisional and carries a starting allowance.':'.')
+    +'<br><br><strong>Points</strong> is stableford off your course handicap for that tee. '
+    +'<strong>Shots</strong> is what you actually signed for, with your score to par under it.'
     +'<br><br><strong>Differential</strong> is the score adjusted for how hard the course '
     +'plays: (adjusted gross − course rating) × 113 ÷ slope. That’s what makes a 90 at a '
     +'brutal course worth more than a 90 at an easy one.</div>';
@@ -1534,7 +2092,9 @@ async function loadFeed(){
     }
     return '<section class="card" style="padding:13px;margin-bottom:9px">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
-      +'<div><b style="font-size:13.5px">'+esc(r.display_name)+'</b>'
+      +'<div style="flex:1;min-width:0;cursor:pointer"'
+      +(r.profile_id?(' onclick="openMateView(\''+r.profile_id+'\')"'):'')
+      +'><b style="font-size:13.5px">'+esc(r.display_name)+'</b>'
       +'<div class="small">'+esc(r.course_name||'a round')+' · '+ago(r.happened_at)+'</div></div>'
       +'<div style="text-align:right"><div style="font-size:19px;font-weight:900;'
       +'color:var(--green);line-height:1">'+r.gross+'</div>'
@@ -1555,7 +2115,8 @@ async function loadMates(){
   b.innerHTML=data.map(m=>
     '<section class="card" style="padding:12px 13px;margin-bottom:8px">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
-    +'<div><b style="font-size:13px">'+esc(m.display_name)+'</b>'
+    +'<div style="flex:1;min-width:0;cursor:pointer" onclick="openMateView(\''+m.profile_id+'\')">'
+    +'<b style="font-size:13px">'+esc(m.display_name)+' <span style="color:var(--muted)">›</span></b>'
     +'<div class="small">'+(m.index_value==null
         ? 'No handicap yet'
         : ('Handicap '+Number(m.index_value).toFixed(1)
@@ -1570,6 +2131,80 @@ async function loadMates(){
     +'<div class="note"><strong>Following someone</strong> puts their rounds and live comps '
     +'in your Activity feed. Anyone you’ve played a comp with is already there.</div>';
 }
+// Tap a mate to see how they're actually going — their last few cards, not
+// just a handicap number. Server side only returns people you've played with.
+let mvPid=null, mvFollowing=false;
+async function openMateView(pid){
+  mvPid=pid;
+  $('mv-name').textContent='…'; $('mv-sub').textContent='';
+  $('mv-body').innerHTML='<div class="empty"><span class="spin"></span></div>';
+  $('mv-follow').style.display='none';
+  openSheet('sh-mateview');
+  const {data,error}=await sb.rpc('gc_mate_rounds',{p_profile_id:pid,p_limit:8});
+  if(error){ $('mv-body').innerHTML='<div class="empty">'+esc(error.message)+'</div>'; return }
+  if(!data||!data.length){
+    $('mv-name').textContent='Not available';
+    $('mv-body').innerHTML='<div class="empty">You can only see the form of people '
+      +'you\u2019ve played a comp with.</div>';
+    return;
+  }
+  const m=data[0];
+  mvFollowing=!!m.following;
+  $('mv-name').textContent=m.display_name;
+  $('mv-sub').textContent=(m.index_value==null
+      ? 'No handicap yet'
+      : ('Handicap '+Number(m.index_value).toFixed(1)
+         +(m.confidence==='provisional'?' \u00b7 provisional':'')
+         +(m.rounds_used?(' \u00b7 off '+m.rounds_used+' round'+(m.rounds_used===1?'':'s')):'')))
+    +(m.played_together?(' \u00b7 '+m.played_together+' comp'
+        +(m.played_together===1?'':'s')+' with you'):'');
+  $('mv-follow').style.display='';
+  $('mv-follow').textContent=mvFollowing?'Following \u2713':'Follow';
+
+  const rounds=data.filter(r=>r.played_on);
+  if(!rounds.length){
+    $('mv-body').innerHTML='<div class="empty">No rounds yet.</div>'; return;
+  }
+  const best=Math.min.apply(null,rounds.map(r=>r.gross==null?Infinity:r.gross));
+  $('mv-body').innerHTML='<div class="striplabel">Last '+rounds.length+' round'
+    +(rounds.length===1?'':'s')+'</div>'
+    +rounds.map(r=>{
+      const tp=(r.to_par==null)?'':(r.to_par===0?'E':(r.to_par>0?'+'+r.to_par:String(r.to_par)));
+      return '<section class="card" style="padding:12px 13px;margin-bottom:8px'
+        +((r.gross===best&&rounds.length>1)?';border:1.5px solid var(--gold)':'')+'">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+        +'<div style="flex:1;min-width:0">'
+        +'<b style="font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;'
+        +'text-overflow:ellipsis">'+esc(r.course_name||'Unknown course')+'</b>'
+        +'<div class="small">'+esc(r.tee_name||'')
+        +(r.par?(' \u00b7 par '+r.par):'')+' \u00b7 '
+        +new Date(r.played_on+'T00:00:00').toLocaleDateString('en-AU',
+            {day:'numeric',month:'short',year:'numeric'})+'</div>'
+        +(r.comp_name?('<div class="small" style="opacity:.75">'+esc(r.comp_name)+'</div>'):'')
+        +'</div>'
+        +'<div style="text-align:right;flex:0 0 auto">'
+        +'<div style="font-size:20px;font-weight:900;color:var(--green);line-height:1">'
+        +(r.gross==null?'\u2014':r.gross)+'</div>'
+        +'<div style="font-size:9.5px;font-weight:800;color:var(--muted);margin-top:2px">'
+        +(tp?(tp+' \u00b7 '):'')+(r.stableford==null?'':(r.stableford+' pts'))+'</div>'
+        +((r.gross===best&&rounds.length>1)
+            ? '<div style="font-size:8.5px;font-weight:900;color:var(--gold);'
+              +'letter-spacing:.6px;margin-top:3px">BEST</div>':'')
+        +'</div></div></section>';
+    }).join('')
+    +'<div class="note">Shots is the gross they signed for. Points is stableford off '
+    +'their course handicap for that tee \u2014 which is why a 98 somewhere hard can be '
+    +'worth more than an 88 somewhere easy.</div>';
+}
+async function mvFollow(){
+  if(!mvPid)return;
+  const on=!mvFollowing;
+  const {error}=await sb.rpc('gc_follow',{p_profile_id:mvPid,p_on:on});
+  if(error){toast(error.message,true);return}
+  mvFollowing=on;
+  $('mv-follow').textContent=on?'Following \u2713':'Follow';
+  toast(on?'Following':'Unfollowed');
+}
 async function toggleFollow(pid,on){
   const {error}=await sb.rpc('gc_follow',{p_profile_id:pid,p_on:on});
   if(error){toast(error.message,true);return}
@@ -1579,6 +2214,344 @@ async function toggleFollow(pid,on){
 
 // ---------- comps ----------
 function renderFormats(){ if(!ncDays.length)ncDays=[blankDay(0)]; renderDays() }
+// ---------- get a four together ----------
+// The club game: four turn up, balls go in the air, the two nearest play
+// together. Stableford, and the better score in each pair takes the hole.
+let four=[], fourTeams=null, fourGame=null;
+
+// ---- four steps: course, game, date, players ----
+// The game comes before the players because the game decides how many you need:
+// a four-ball is exactly four, match play is exactly two, the rest take 2 to 4.
+const FOUR_GAMES=[
+  {k:'bestball_match',n:'Four-Ball Match Play',min:4,max:4,
+   d:'Two pairs. Better score in each pair takes the hole.'},
+  {k:'matchplay',n:'Match Play',min:2,max:2,
+   d:'Just the two of you. Better score takes the hole.'},
+  {k:'skins',n:'Skins',min:2,max:4,
+   d:'A skin a hole. Tie it and it carries into the next.'},
+  {k:'perch',n:'Bird on a Perch',min:2,max:4,
+   d:'Win to get up there. Win again and it’s a point.'},
+  {k:'holes_won',n:'Most Holes Won',min:2,max:4,
+   d:'Best score takes the hole. Level and nobody gets it.'}
+];
+function fourGameDef(){ return FOUR_GAMES.find(g=>g.k===fourGame)||null }
+function fourNeedText(){
+  const g=fourGameDef(); if(!g)return '';
+  return g.min===g.max ? ('needs exactly '+(g.min===2?'two':'four'))
+                       : '(you plus one, two or three)';
+}
+let fourStep=1;
+const FOUR_TITLES={1:'Where are you playing?',2:'What are you playing?',
+                   3:'When?',4:'Who’s playing?'};
+function fourShow(n){
+  fourStep=n;
+  for(let i=1;i<=4;i++){
+    $('fr-s'+i).classList.toggle('on',i===n);
+    $('fr-dot'+i).classList.toggle('on',i<=n);
+  }
+  $('fr-stepn').textContent='Step '+n+' of 4';
+  $('fr-title').textContent=FOUR_TITLES[n];
+  $('fr-next').textContent=(n===4?'Start the match →':'Next →');
+  $('fr-msg').innerHTML='';
+  fourRecap();
+  if(n===2)renderFourGames();
+  if(n===4){ $('fr-need').textContent=fourNeedText(); renderFour() }
+  const b=document.querySelector('#sh-four .sheetbody'); if(b)b.scrollTop=0;
+}
+// What you've already chosen, kept in view so you don't lose your place.
+function fourRecap(){
+  const el=$('fr-recap'); if(!el)return;
+  const rows=[];
+  const s=csState('fr'), g=fourGameDef(), d=$('fr-date').value;
+  const chg=(step)=>'<button onclick="fourShow('+step+')" style="border:0;background:none;'
+    +'color:var(--green);font-size:11.5px;font-weight:900;text-decoration:underline;'
+    +'cursor:pointer;padding:4px">Change</button>';
+  if(fourStep>1&&s.label)rows.push('<b>Course</b><span>'+esc(s.label)+'</span>'+chg(1));
+  if(fourStep>2&&g)rows.push('<b>Game</b><span>'+esc(g.n)+'</span>'+chg(2));
+  if(fourStep>3&&d)rows.push('<b>Date</b><span>'
+    +esc(new Date(d+'T00:00:00').toLocaleDateString('en-AU',
+         {weekday:'short',day:'numeric',month:'short'}))+'</span>'+chg(3));
+  el.innerHTML=rows.map(r=>'<div class="wzrecap">'+r+'</div>').join('');
+}
+// The back arrow walks back through the steps before it closes the sheet.
+function fourBack(){ if(fourStep>1)fourShow(fourStep-1); else closeSheet('sh-four') }
+function fourNext(){
+  if(fourStep===1){
+    if(!csValue('fr')){ toast('Pick your course first',true); return }
+    return fourShow(2);
+  }
+  if(fourStep===2){
+    if(!fourGame){ toast('Pick what you’re playing',true); return }
+    return fourShow(3);
+  }
+  if(fourStep===3){
+    if(!$('fr-date').value){ toast('Pick a date',true); return }
+    return fourShow(4);
+  }
+  startFour();
+}
+function renderFourGames(){
+  const el=$('fr-games'); if(!el)return;
+  el.innerHTML='<div style="display:grid;gap:7px">'+FOUR_GAMES.map(x=>{
+    const on=(fourGame===x.k);
+    const who=(x.min===x.max)?((x.min===2?'2':'4')+' players')
+                             :(x.min+'–'+x.max+' players');
+    return '<button onclick="setGame(\''+x.k+'\')" style="width:100%;text-align:left;'
+      +'border:2px solid '+(on?'var(--green)':'#e2dbcd')+';background:'+(on?'var(--green)':'#fff')
+      +';color:'+(on?'#fff':'var(--ink)')+';border-radius:14px;padding:12px 13px;'
+      +'font-family:inherit;cursor:pointer">'
+      +'<b style="display:flex;gap:8px;align-items:baseline;font-size:13.5px;font-weight:900">'
+      +esc(x.n)+'<span style="font-size:9.5px;font-weight:900;letter-spacing:.6px;opacity:.6">'
+      +who+'</span></b>'
+      +'<span style="display:block;font-size:11.5px;opacity:.75;margin-top:2px;'
+      +'line-height:1.4">'+esc(x.d)+'</span></button>';
+  }).join('')+'</div>';
+}
+
+async function openFourSheet(){
+  four=[]; fourTeams=null; fourGame=null;
+  $('fr-results').innerHTML=''; $('fr-email').value=''; $('fr-msg').innerHTML='';
+  if(!$('fr-date').value)$('fr-date').value=new Date().toISOString().slice(0,10);
+  csState('fr').tee=''; csState('fr').label=''; csState('fr').q=''; csState('fr').results=null;
+  // picking a course is the whole of step 1 — move straight on when it's chosen
+  csState('fr').onPick='fourShow(2)';
+  csRender('fr','fourShow(2)');
+  fourShow(1);
+  openSheet('sh-four');
+
+  $('fr-recent').innerHTML='<div class="fine" style="text-align:left"><span class="spin"></span></div>';
+  const {data,error}=await sb.rpc('gc_recent_partners');
+  if(error||!data||!data.length){
+    $('fr-recent').innerHTML='<div class="fine" style="text-align:left;margin-top:4px">'
+      +'Nobody yet — add them by email below.</div>';
+    return;
+  }
+  fourRecent=data;
+  renderFourRecent();
+}
+let fourRecent=[];
+function renderFourRecent(){
+  const el=$('fr-recent'); if(!el)return;
+  const have=four.map(p=>p.id);
+  const list=fourRecent.filter(p=>have.indexOf(p.id)<0);
+  el.innerHTML=list.length
+    ? '<div style="font-size:9px;font-weight:900;color:var(--muted);letter-spacing:.8px;'
+      +'margin-bottom:2px">PLAYED WITH BEFORE</div>'
+      +list.map(p=>{
+        const ini=(p.display_name||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+        return '<div class="partner-box" onclick="addFour(\''+p.id+'\',\''
+          +esc(p.display_name).replace(/'/g,"\\'")+'\','+(p.handicap==null?'null':p.handicap)+')">'
+          +'<div class="partner-avatar">'+esc(ini)+'</div><div><b>'+esc(p.display_name)+'</b>'
+          +'<span>'+(p.handicap==null?'No handicap yet':('HCP '+Number(p.handicap).toFixed(1)))
+          +'</span></div></div>';
+      }).join('')
+    : '';
+}
+// Re-rendering the sheet resets its scroll, which threw you back to the top
+// every time you added someone. Hold the position across the redraw.
+function keepScroll(fn){
+  const sheet=document.querySelector('#sh-four .sheetbody');
+  const y=sheet?sheet.scrollTop:0;
+  fn();
+  if(sheet)requestAnimationFrame(()=>{sheet.scrollTop=y});
+}
+function addFour(id,name,hcp){
+  // The game sets the ceiling: a four-ball tops out at four, match play at two.
+  const g=fourGameDef(); const max=g?g.max:4;
+  if(four.length>=max-1){
+    toast(g?(g.n+' is '+(max===2?'two players':'four players')+' — remove someone first')
+           :'That\u2019s four already \u2014 remove someone first',true);
+    return;
+  }
+  if(four.some(p=>p.id===id))return;
+  four.push({id:id,name:name,hcp:hcp});
+  fourTeams=null;
+  // Clear the lookup so the person you just added isn't still sitting there
+  $('fr-results').innerHTML=''; $('fr-email').value='';
+  keepScroll(()=>{renderFour(); renderFourRecent()});
+  toast(name+' added');
+}
+function dropFour(id){
+  four=four.filter(p=>p.id!==id); fourTeams=null;
+  keepScroll(()=>{renderFour(); renderFourRecent()});
+}
+function setGame(g){
+  fourGame=g; fourTeams=null;
+  if(fourStep===2)renderFourGames();
+  else keepScroll(()=>{ $('fr-need').textContent=fourNeedText(); renderFour() });
+}
+function renderFour(){
+  const me4={id:'me',name:(me&&me.display_name)||'You',hcp:me?me.handicap:null};
+  const all=[me4].concat(four);
+  const g=fourGameDef();
+  const max=g?g.max:4;
+  let h='<div style="display:grid;gap:6px;margin-bottom:4px">';
+  all.forEach((p,i)=>{
+    h+='<div style="display:flex;align-items:center;gap:9px;background:#fff;border:1px solid '
+      +'var(--line);border-radius:12px;padding:9px 11px">'
+      +'<div style="width:24px;height:24px;border-radius:8px;background:var(--green);color:#fff;'
+      +'font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center">'
+      +(i+1)+'</div>'
+      +'<div style="flex:1;font-size:12.5px;font-weight:800">'+esc(p.name)
+      +'<span style="color:var(--muted);font-weight:700"> \u00b7 '
+      +(p.hcp==null?'no hcp':Number(p.hcp).toFixed(1))+'</span></div>'
+      +(i===0?'<span class="tag">YOU</span>'
+        :('<button class="x" onclick="dropFour(\''+p.id+'\')">\u00d7</button>'))
+      +'</div>';
+  });
+  // How many more this game wants, in plain words
+  if(all.length<max){
+    const short=g?(g.min-all.length):0;
+    h+='<div style="border:1.5px dashed #d9d2c4;border-radius:12px;padding:11px;'
+      +'font-size:11.5px;color:var(--muted);font-weight:800;text-align:center">'
+      +(short>0 ? (esc(g.n)+' needs '+(short===1?'one more player':short+' more players'))
+        : 'Add someone \u2014 or start with '+(all.length===2?'the two':'the three')+' of you')
+      +'</div>';
+  }
+  h+='</div>';
+  $('fr-picked').innerHTML=h;
+
+  // Teams only mean something in the four-ball; everything else is singles.
+  const t=$('fr-teams'); if(!t)return;
+  if(fourGame==='bestball_match'){
+    t.innerHTML=(all.length===4)
+      ? ('<button class="ghostbtn" onclick="throwBallsUp()">'
+         +(fourTeams?'\ud83c\udfb2 Throw them up again':'\ud83c\udfb2 Throw the balls up')+'</button>'
+         +(fourTeams?fourTeamsHtml():
+           '<div class="fine" style="text-align:left;margin-top:7px">Random draw, same as tossing '
+           +'the balls in the air and pairing the two closest. Or start without drawing and it '
+           +'pairs you 1&amp;2 against 3&amp;4.</div>'))
+      : '';
+  } else if(all.length>=2&&g){
+    t.innerHTML='<div class="fine" style="text-align:left;margin-top:9px">Everyone plays for '
+      +'themselves \u2014 no teams, so '+esc(g.n)+' works just as well with '+all.length+'.</div>';
+  } else {
+    t.innerHTML='';
+  }
+}
+function fourTeamsHtml(){
+  if(!fourTeams)return '';
+  return '<div style="display:grid;gap:8px;margin-top:10px">'
+    +fourTeams.map((t,i)=>'<div style="background:'+(i===0?'var(--green)':'var(--gold)')
+      +';color:'+(i===0?'#fff':'var(--green)')+';border-radius:13px;padding:11px 13px">'
+      +'<div style="font-size:9px;font-weight:900;letter-spacing:.8px;opacity:.8">TEAM '+(i+1)+'</div>'
+      +'<div style="font-size:13.5px;font-weight:900;margin-top:2px">'
+      +t.map(p=>esc(p.name)).join(' &amp; ')+'</div></div>').join('')
+    +'</div>';
+}
+function throwBallsUp(){
+  const me4={id:'me',name:(me&&me.display_name)||'You',hcp:me?me.handicap:null};
+  const all=[me4].concat(four);
+  // Fisher–Yates, so every pairing is equally likely
+  for(let i=all.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    const t=all[i]; all[i]=all[j]; all[j]=t;
+  }
+  fourTeams=[[all[0],all[1]],[all[2],all[3]]];
+  renderFour();
+  toast('Teams drawn');
+}
+
+async function startFour(){
+  const msg=$('fr-msg');
+  const g=fourGameDef();
+  if(!g){ fourShow(2); toast('Pick what you\u2019re playing',true); return }
+  const tee=csValue('fr'), date=$('fr-date').value;
+  if(!tee){ fourShow(1); toast('Pick your course first',true); return }
+  if(!date){ fourShow(3); toast('Pick a date',true); return }
+
+  const me4={id:'me',name:(me&&me.display_name)||'You'};
+  const all=[me4].concat(four);
+  const game=fourGame;
+  if(all.length<g.min||all.length>g.max){
+    const need=(g.min===g.max)
+      ? (g.n+' needs exactly '+(g.min===2?'two players':'four players')+'.')
+      : (g.n+' needs between two and four players.');
+    msg.innerHTML='<div class="note err">'+esc(need)+'</div>';
+    toast(need,true); return;
+  }
+  // Only the four-ball pairs people up; everything else is singles
+  const teams=(game==='bestball_match')
+    ? (fourTeams||[[all[0],all[1]],[all[2],all[3]]])
+    : all.map(p=>[p]);
+  const c=csCourse('fr');
+  msg.innerHTML='<div class="note">Setting it up…</div>';
+
+  let gid=me.group_id;
+  if(!gid){
+    // gc_my_group returns the group you already have and only creates one if
+    // you genuinely have none. gc_create_group made a fresh "My Golf Group"
+    // every single round — 21 of them before anyone noticed.
+    const {data:g,error:ge}=await sb.rpc('gc_my_group');
+    if(ge){msg.innerHTML='<div class="note err">'+esc(ge.message)+'</div>';return}
+    gid=g;
+  }
+
+  const gname={bestball_match:'four-ball',matchplay:'match',skins:'skins',
+               perch:'perch',holes_won:'match'}[game]||'game';
+  const {data,error}=await sb.rpc('gc_create_comp_multi',{
+    p_group_id:gid,
+    p_name:(c?c.name:'Golf')+' '+gname,
+    p_subtitle:new Date(date).toLocaleDateString('en-AU',
+      {weekday:'short',day:'numeric',month:'short'})+' · '+(c?c.name:''),
+    p_days:[{name:'Round 1',played_on:date,tee_id:tee,course_id:c?c.id:null,
+             format:game,team_size:(game==='bestball_match'?2:1),min_contributions:0}]});
+  if(error){msg.innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
+  const comp=data[0], cid=comp.comp_id;
+
+  // Creator is added automatically; add the other three
+  for(const p of four){
+    const {error:ae}=await sb.rpc('gc_add_player',
+      {p_comp_id:cid,p_pin:null,p_profile_id:p.id,p_guest_name:null,p_handicap:null});
+    if(ae){msg.innerHTML='<div class="note err">'+esc(ae.message)+'</div>';return}
+  }
+
+  // Map our picks onto the comp_player ids the server just made
+  const {data:setup,error:se}=await sb.rpc('gc_comp_setup',{p_comp_id:cid,p_pin:null});
+  if(se){msg.innerHTML='<div class="note err">'+esc(se.message)+'</div>';return}
+  const rounds=(setup.rounds&&setup.rounds.length)?setup.rounds:[setup.round];
+  const rid=rounds[0].id;
+  const byProfile={};
+  (setup.players||[]).forEach(p=>{byProfile[p.profile_id]=p.id});
+  const mine=me.profile_id;
+  const idOf=(p)=>byProfile[p.id==='me'?mine:p.id];
+
+  const payload=teams.map(t=>t.map(idOf).filter(Boolean));
+  const want=(game==='bestball_match')?2:1;
+  if(payload.some(t=>t.length!==want)){
+    msg.innerHTML='<div class="note err">Couldn’t build the teams — try again.</div>';return;
+  }
+  const {error:te}=await sb.rpc('gc_set_teams',
+    {p_comp_id:cid,p_pin:null,p_round_id:rid,p_teams:payload});
+  if(te){msg.innerHTML='<div class="note err">'+esc(te.message)+'</div>';return}
+
+  const {error:re}=await sb.rpc('gc_set_round_started',
+    {p_comp_id:cid,p_pin:null,p_round_id:rid,p_started:true});
+  if(re){msg.innerHTML='<div class="note err">'+esc(re.message)+'</div>';return}
+
+  closeSheet('sh-four');
+  location.href='/c/'+cid;
+}
+
+async function fourLookup(){
+  const em=$('fr-email').value.trim();
+  const box=$('fr-results');
+  if(!em||em.indexOf('@')<0){box.innerHTML='<div class="note err">Enter an email address.</div>';return}
+  box.innerHTML='<div class="fine" style="text-align:left"><span class="spin"></span></div>';
+  const {data,error}=await sb.rpc('gc_find_by_email',{p_email:em});
+  if(error){box.innerHTML='<div class="note err">'+esc(error.message)+'</div>';return}
+  if(!data||!data.length){
+    box.innerHTML='<div class="note">Nobody with that email yet. Ask them to sign up — '
+      +'it takes twenty seconds — then add them.</div>';
+    return;
+  }
+  const p=data[0];
+  box.innerHTML='<div class="partner-box" onclick="addFour(\''+p.id+'\',\''
+    +esc(p.display_name).replace(/'/g,"\\'")+'\','+(p.handicap==null?'null':p.handicap)+')">'
+    +'<div class="partner-avatar">'+esc((p.display_name||'?').slice(0,2).toUpperCase())+'</div>'
+    +'<div><b>'+esc(p.display_name)+'</b><span>Tap to add</span></div></div>';
+}
+
 // ---------- the rules ----------
 // Plain-language explanation of each format, for anyone who's nodded along at
 // the first tee without really knowing what they were playing.
@@ -1732,12 +2705,14 @@ function minBlurb(key){
 }
 function blankDay(n){
   const iso=new Date(Date.now()+n*86400000).toISOString().slice(0,10);
-  return {date:iso,tee:'',format:'stableford_individual',size:1,min:0};
+  return {date:iso,tee:'',course:null,format:'stableford_individual',size:1,min:0};
 }
 function addDay(){
   const last=ncDays[ncDays.length-1];
   const d=blankDay(ncDays.length);
-  if(last){ d.tee=last.tee; d.format=last.format; d.size=last.size; d.min=last.min }
+  // Same course as yesterday is the common case on a trip
+  if(last){ d.tee=last.tee; d.course=last.course; d.format=last.format;
+            d.size=last.size; d.min=last.min }
   ncDays.push(d);
   renderDays();
 }
@@ -1763,7 +2738,6 @@ function renderDays(){
 
   wrap.innerHTML=ncDays.map((d,i)=>{
     const f=FORMATS.find(x=>x.key===d.format)||FORMATS[0];
-    const c=courses.find(x=>x.tee_id===d.tee);
     return '<div style="border:1.5px solid var(--line);border-radius:15px;padding:13px;'
       +'margin-top:11px;background:#fff">'
       +(multi?('<div style="display:flex;justify-content:space-between;align-items:center;'
@@ -1775,14 +2749,7 @@ function renderDays(){
       +'<label>Date</label>'
       +'<input type="date" value="'+esc(d.date)+'" onchange="dayField('+i+',\'date\',this.value)">'
       +'<label>Course</label>'
-      +'<select onchange="dayField('+i+',\'tee\',this.value)">'
-      +'<option value="">Pick a course…</option>'
-      +courses.map(x=>'<option value="'+x.tee_id+'"'+(x.tee_id===d.tee?' selected':'')+'>'
-        +esc(x.name)+' — '+esc(x.tee_name)+' (par '+x.par+')</option>').join('')
-      +'</select>'
-      +((c&&!c.has_stroke_index)
-        ?'<div class="fine" style="text-align:left;margin-top:6px">This course still needs '
-         +'stroke indexes — you can add them after you play.</div>':'')
+      +'<div id="cp-day'+i+'"></div>'
       +'<div style="display:flex;justify-content:space-between;align-items:baseline">'
       +'<label style="flex:1">Format</label>'
       +'<a onclick="showRules(\''+d.format+'\')" style="font-size:10.5px;font-weight:900;'
@@ -1812,15 +2779,26 @@ function renderDays(){
     ? '<strong>'+ncDays.length+' days.</strong> Teams carry over from the day before, and the '
       +'winner is the combined total across all of them.'
     : 'Playing over more than one day? Add a day and each gets its own course and format.';
-}
 
-async function loadCourses(){
-  const {data,error}=await sb.rpc('gc_search_courses',{p_query:''});
-  if(error||!data)return;
-  courses=data;
-  if(ncDays.length&&!ncDays[0].tee&&courses.length)ncDays[0].tee=courses[0].tee_id;
+  // The day rows are rebuilt on every change, so the pickers get redrawn with them
+  ncDays.forEach((d,i)=>{
+    const s=csState('day'+i);
+    s.course=d.course||null; s.tee=d.tee||'';
+    s.label=d.course?(d.course.name+' — '+d.course.tee_name):'';
+    csRender('day'+i,'dayPicked('+i+')');
+  });
+}
+// Called straight after csPick, so the day row takes the new course
+function dayPicked(i){
+  if(!ncDays[i])return;
+  const row=csCourse('day'+i);
+  ncDays[i].course=row; ncDays[i].tee=row?row.tee_id:'';
   renderDays();
 }
+
+// No longer pulls the whole list — with hundreds of courses you search for
+// yours instead. Kept so the create-comp sheet still renders on load.
+async function loadCourses(){ renderDays() }
 async function createComp(){
   const name=$('nc-name').value.trim();
   if(!name){toast('Give the comp a name',true);return}
@@ -1831,11 +2809,14 @@ async function createComp(){
   }
   let gid=me.group_id;
   if(!gid){
-    const {data:g,error:ge}=await sb.rpc('gc_create_group',{p_name:'My Golf Group'});
+    // gc_my_group returns the group you already have and only creates one if
+    // you genuinely have none. gc_create_group made a fresh "My Golf Group"
+    // every single round — 21 of them before anyone noticed.
+    const {data:g,error:ge}=await sb.rpc('gc_my_group');
     if(ge){toast(ge.message,true);return}
     gid=g;
   }
-  const first=courses.find(x=>x.tee_id===ncDays[0].tee);
+  const first=ncDays[0].course||null;
   const d0=new Date(ncDays[0].date);
   const subtitle=(ncDays.length>1)
     ? (d0.toLocaleDateString('en-AU',{day:'numeric',month:'short'})+'–'
@@ -1845,7 +2826,7 @@ async function createComp(){
        +' · '+(first?first.name:''));
 
   const days=ncDays.map((d,i)=>{
-    const c=courses.find(x=>x.tee_id===d.tee);
+    const c=d.course||null;
     const f=FORMATS.find(x=>x.key===d.format);
     return {name:(ncDays.length>1?('Day '+(i+1)+(c?(' · '+c.name):'')):'Round 1'),
       played_on:d.date, tee_id:d.tee, course_id:c?c.id:null,
@@ -1911,19 +2892,39 @@ function renderComp(){
     return '<div class="p"><div class="av"'+(p.joined?'':' style="background:#f6efe0"')+'>'
       +esc(ini)+'</div>'
       +'<div class="nm">'+esc(p.name)+'<small>'
-      +(placeholderEmail(p.email)
-        ? '<span style="color:var(--gold)">Placeholder email</span> · needs a real one'
-        : (p.joined
-          ? ('On GolfComp · handicap '+Number(p.hcp_index==null?p.playing_hcp:p.hcp_index).toFixed(1))
-          : ('<span style="color:var(--gold)">Invited</span> · '+esc(p.email||''))))
-      +'</small></div>'
+      +(p.joined
+        ? ('On GolfComp · handicap '+Number(p.hcp_index==null?p.playing_hcp:p.hcp_index).toFixed(1))
+        : (p.phone
+            ? ('<span style="color:var(--gold)">Invited</span> · '+esc(p.phone))
+            : (placeholderEmail(p.email)
+                ? '<span style="color:var(--gold)">No way to reach them</span> · add a mobile'
+                : ('<span style="color:var(--gold)">Invited</span> · '+esc(p.email||'')))))
+      +'</small>'
+      // Send the link yourself. wa.me and sms: open the app on the phone with the
+      // message already written, so it arrives as a text from you.
+      +(p.joined?'':('<div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap">'
+        +(p.phone
+          ? ('<button onclick="event.stopPropagation();waInvite(\''+esc(p.phone)+'\')" '
+             +'style="border:1.5px solid #25D366;background:#25D366;color:#fff;border-radius:99px;'
+             +'padding:4px 10px;font-size:10px;font-weight:900;font-family:inherit">WhatsApp</button>'
+             +'<button onclick="event.stopPropagation();smsInvite(\''+esc(p.phone)+'\')" '
+             +'style="border:1.5px solid var(--line);background:#fff;color:var(--green);'
+             +'border-radius:99px;padding:4px 10px;font-size:10px;font-weight:900;'
+             +'font-family:inherit">Message</button>')
+          : '')
+        +'<button onclick="event.stopPropagation();setPlayerPhone(\''+p.profile_id+'\')" '
+        +'style="border:0;background:none;color:var(--muted);font-size:10px;font-weight:900;'
+        +'text-decoration:underline;font-family:inherit;padding:4px 2px">'
+        +(p.phone?'Change mobile':'Add mobile')+'</button></div>'))
+      +'</div>'
       +'<div class="hc">'+Math.round(p.playing_hcp)+'</div>'
       +'<button class="x" onclick="removePlayer(\''+p.id+'\')">×</button></div>';
   }).join('')+'</div>';
 
-  h+='<div class="tabs" style="grid-template-columns:1fr 1fr">'
+  h+='<div class="tabs" style="grid-template-columns:1fr 1fr 1fr">'
     +'<button class="'+(csTab==='recent'?'on':'')+'" onclick="csSetTab(\'recent\')">Played with</button>'
-    +'<button class="'+(csTab==='email'?'on':'')+'" onclick="csSetTab(\'email\')">Invite by email</button>'
+    +'<button class="'+(csTab==='phone'?'on':'')+'" onclick="csSetTab(\'phone\')">Mobile</button>'
+    +'<button class="'+(csTab==='email'?'on':'')+'" onclick="csSetTab(\'email\')">Email</button>'
     +'</div><div id="cs-add"></div>';
   const pending=ps.filter(p=>!p.joined&&!placeholderEmail(p.email)).length;
   if(pending)h+='<div class="fine" style="text-align:left;margin-top:9px">'
@@ -1931,16 +2932,16 @@ function renderComp(){
     +'handicap are waiting for them the moment they sign up with that email.</div>';
   const holding=ps.filter(p=>placeholderEmail(p.email));
   if(holding.length)h+='<div class="note warn" style="margin-top:9px">'
-    +'<strong>'+holding.length+' on a placeholder email:</strong> '
+    +'<strong>'+holding.length+' with no real contact:</strong> '
     +holding.map(p=>esc(p.name)).join(', ')+'. They can score, but they can’t be sent a '
-    +'sign-in link or reset a password. Swap in their real address when you have it.</div>';
+    +'sign-in link. Add a mobile and send it from your own WhatsApp — quickest fix.</div>';
   h+='</section>';
 
   // 2. The days
   if(multi){
     h+='<div class="section"><h2><span class="stepnum done">2</span>The days</h2>'
       +'<span class="small">'+rs.length+'</span></div>'
-      +'<div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:11px">'
+      +'<div class="hscroll" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:11px">'
       +rs.map(x=>{
         const on=(x.id===r.id), xf=fmtOf(x.format);
         return '<button onclick="csPickDay(\''+x.id+'\')" style="flex:0 0 auto;'
@@ -2101,6 +3102,19 @@ function renderComp(){
 function csSetTab(t){csTab=t;csRenderAdd()}
 async function csRenderAdd(){
   const el=$('cs-add'); if(!el)return;
+  if(csTab==='phone'){
+    el.innerHTML='<div class="addrow" style="margin-top:10px">'
+      +'<input type="tel" id="cs-phone" placeholder="0412 345 678" inputmode="tel" '
+      +'autocomplete="tel">'
+      +'<button onclick="invitePlayerByPhone()">Add</button></div>'
+      +'<div class="addrow" style="margin-top:6px">'
+      +'<input type="text" id="cs-pname" placeholder="Their name (optional)"><span></span></div>'
+      +'<div class="fine" style="text-align:left;margin-top:7px">Add them by mobile, then send '
+      +'the link from your own WhatsApp or Messages — it lands as a text from you, not from an '
+      +'app they\u2019ve never heard of. Australian numbers can start 04; anywhere else, put the '
+      +'+ and country code.</div>';
+    return;
+  }
   if(csTab==='email'){
     el.innerHTML='<div class="addrow" style="margin-top:10px">'
       +'<input type="email" id="cs-email" placeholder="their@email.com" inputmode="email">'
@@ -2133,6 +3147,42 @@ async function addProfile(pid){
     p_profile_id:pid,p_guest_name:null,p_handicap:null});
   if(error){toast(error.message,true);return}
   await openComp(cs.comp.id,csPin); toast('Added');
+}
+// Australian numbers are assumed when they start 04 — anyone else needs the +.
+async function invitePlayerByPhone(){
+  const ph=$('cs-phone').value.trim(), nm=$('cs-pname').value.trim();
+  if(!ph){toast('Enter their mobile number',true);return}
+  const {data,error}=await sb.rpc('gc_invite_player_by_phone',
+    {p_comp_id:cs.comp.id, p_phone:ph, p_name:nm||null, p_handicap:null});
+  if(error){toast(error.message,true);return}
+  const r=(data&&data[0])||null;
+  const compId=cs.comp.id;
+  await openComp(compId,csPin);
+  if(r&&r.out_already_joined){ toast('Added — they\u2019re already on GolfComp'); }
+  else { toast('Added — now send them the link'); }
+}
+// wa.me and sms: hand off to the phone's own apps, so the message comes from you.
+// No SMS provider, no cost, and nothing for anyone to mark as spam.
+function inviteText(){
+  const c=cs.comp||{};
+  return (me&&me.display_name?me.display_name:'Someone')+' added you to '+(c.name||'a golf comp')
+    +(c.subtitle?(' — '+c.subtitle):'')+'. Your scorecard: '+location.origin+'/c/'+c.id;
+}
+function waInvite(phone){
+  const n=String(phone||'').replace(/[^0-9]/g,'');
+  window.open('https://wa.me/'+n+'?text='+encodeURIComponent(inviteText()),'_blank');
+}
+function smsInvite(phone){
+  // iOS wants &body=, Android wants ?body=. This form works on both.
+  location.href='sms:'+phone+(/iPhone|iPad|iPod|Mac/.test(navigator.userAgent)?'&':'?')
+    +'body='+encodeURIComponent(inviteText());
+}
+async function setPlayerPhone(pid){
+  const ph=prompt('Mobile number for this player');
+  if(ph===null)return;
+  const {error}=await sb.rpc('gc_set_player_phone',{p_profile_id:pid,p_phone:ph});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin); toast(ph.trim()?'Mobile saved':'Mobile removed');
 }
 async function invitePlayer(){
   const em=$('cs-email').value.trim();
@@ -2355,17 +3405,29 @@ async function route(){
     if(!me){show('v-name');return}
     // Someone who already has rounds has a real handicap — don't ask them to guess
     if(!me.estimate_locked && !(me.rounds_used>0)){show('v-est');return}
-    renderHome();renderFormats();await loadCourses();loadMyComps();
+    renderHome();renderFormats();await csLoadCountries();await loadCourses();loadMyComps();
     show('v-home');
   }catch(e){console.error(e);toast('Something went wrong loading',true)}
   finally{routing=false}
 }
+// Arriving from an emailed sign-in link is itself proof they can open that
+// mailbox — which is exactly what verification is trying to establish. Grab the
+// marker before Supabase strips the URL.
+const CAME_FROM_EMAIL_LINK=/[?#].*(type=(magiclink|signup|email_change|recovery)|access_token=)/
+  .test(location.href);
+
 function boot(){
   if(typeof supabase==='undefined'){setTimeout(boot,100);return}
   sb=supabase.createClient(SUPA_URL,SUPA_KEY,
     {auth:{detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});
-  sb.auth.onAuthStateChange(ev=>{
-    if(ev==='SIGNED_IN'||ev==='INITIAL_SESSION')route();
+  sb.auth.onAuthStateChange(async(ev)=>{
+    if(ev==='SIGNED_IN'||ev==='INITIAL_SESSION'){
+      if(CAME_FROM_EMAIL_LINK){
+        const {data}=await sb.rpc('gc_mark_email_verified').catch(()=>({data:false}));
+        if(data)toast('Email verified');
+      }
+      route();
+    }
     if(ev==='SIGNED_OUT')show('v-out');
   });
   route();

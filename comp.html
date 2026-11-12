@@ -5,18 +5,30 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#082f25">
 <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+  <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <!-- iOS ignores SVG for the home screen icon, which is why it fell back to a
+       plain "G". It needs a real PNG at 180x180, full bleed — iOS rounds it itself. -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="apple-mobile-web-app-title" content="GolfComp">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>GolfComp — Comp</title>
 <style>
 :root{--green:#082f25;--green2:#14523f;--cream:#f4f0e8;--ink:#122019;--gold:#d8b45c;
       --muted:#6f7b74;--line:rgba(18,32,25,.09);--bad:#b3261e;--good:#25704d}
 *{box-sizing:border-box}
-html{overflow-x:hidden;width:100%;overscroll-behavior:none}
+html{overflow-x:hidden;width:100%;overscroll-behavior:none;
+  overscroll-behavior-x:none;touch-action:pan-y pinch-zoom}
+.hscroll{touch-action:pan-x pinch-zoom}
 html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:#082f25;color:var(--ink);-webkit-text-size-adjust:100%}
-body{overflow-x:hidden;max-width:100vw;overscroll-behavior-y:contain}
+body{overflow-x:hidden;max-width:100%;overscroll-behavior-y:contain}
 button,input,select{font:inherit}
 button{cursor:pointer}
-.app{width:min(430px,100vw);min-height:100vh;margin:auto;background:var(--cream);
+.app{width:100%;max-width:430px;min-height:100vh;margin:auto;background:var(--cream);
   position:relative;overflow:hidden}
 
 .top{padding:calc(18px + env(safe-area-inset-top)) 18px 24px;color:#fff;
@@ -25,8 +37,7 @@ button{cursor:pointer}
   position:relative}
 .toprow{display:flex;justify-content:space-between;align-items:center}
 .brand{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:900}
-.mark{width:32px;height:32px;border-radius:11px;background:linear-gradient(145deg,#f0d787,#cba447);
-  display:grid;place-items:center;color:var(--green);font-size:15px}
+.mark{width:32px;height:32px;border-radius:8px;display:block;flex:0 0 auto;object-fit:contain}
 .backbtn{width:38px;height:38px;border:0;border-radius:13px;background:rgba(255,255,255,.93);
   color:var(--green);font-size:18px;font-weight:900}
 .livepill{background:rgba(255,255,255,.16);color:#fff;padding:6px 10px;border-radius:99px;
@@ -135,7 +146,7 @@ table.lb tr:last-child td{border-bottom:none}
   animation:pulse 1.8s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .who-else b{font-weight:900}
-.saved{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#1d5c42;color:#fff;
+.saved{position:fixed;top:10px;left:0;right:0;margin:0 auto;width:max-content;background:#1d5c42;color:#fff;
   padding:7px 14px;border-radius:99px;font-size:10.5px;font-weight:900;z-index:45;opacity:0;
   transition:.25s;pointer-events:none}
 .saved.show{opacity:1}
@@ -145,16 +156,19 @@ table.lb tr:last-child td{border-bottom:none}
 .note.lock{background:rgba(37,112,77,.10);border-color:var(--good)}
 .empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:11.5px;line-height:1.6}
 
-.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100vw);
-  display:grid;grid-template-columns:1fr 1fr;padding:9px 12px calc(11px + env(safe-area-inset-bottom));
-  background:rgba(250,248,244,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line);z-index:10}
+.bottom{position:fixed;bottom:0;left:0;right:0;margin:0 auto;width:100%;max-width:430px;display:grid;grid-template-columns:1fr 1fr;align-items:end;padding:9px 12px calc(11px + env(safe-area-inset-bottom));background:#faf8f4;border-top:1px solid var(--line);z-index:10}
 .bnav{text-align:center;font-size:9.5px;color:#7b867f;font-weight:900;border:0;background:none;padding:6px 0}
 .bnav b{display:block;font-size:17px;margin-bottom:2px}
 .bnav.on{color:var(--green)}
 
-.gate{position:fixed;inset:0;z-index:50;background:var(--green);display:flex;
+.gate{position:fixed;inset:0;z-index:50;background:var(--green);display:none;
   align-items:center;justify-content:center;padding:20px}
-.gatecard{width:min(390px,100%);background:var(--cream);border-radius:24px;padding:24px 20px;
+.gate.on{display:flex}
+#splash{position:fixed;inset:0;z-index:60;background:var(--green);display:grid;
+  place-items:center;transition:opacity .18s}
+#splash.gone{opacity:0;pointer-events:none}
+#splash img{width:64px;height:64px;border-radius:20px}
+.gatecard{width:100%;max-width:390px;background:var(--cream);border-radius:24px;padding:24px 20px;
   text-align:center;max-height:90vh;overflow-y:auto}
 .gatecard .mk{width:56px;height:56px;border-radius:19px;margin:0 auto 13px;
   background:linear-gradient(145deg,#f0d787,#cba447);display:grid;place-items:center;
@@ -163,12 +177,12 @@ table.lb tr:last-child td{border-bottom:none}
 .gatecard p{font-size:11.5px;color:var(--muted);margin:0 0 16px;line-height:1.5}
 .gatecard input[type=text],.gatecard input[type=email],.gatecard input[type=password]{
   width:100%;border:1.5px solid var(--line);background:#fff;border-radius:13px;
-  padding:13px 14px;font-size:14px;font-weight:700;font-family:inherit;color:var(--ink);
+  padding:13px 14px;font-size:16px;font-weight:700;font-family:inherit;color:var(--ink);
   margin-bottom:9px;-webkit-appearance:none}
 .gatecard input:focus{outline:0;border-color:var(--green)}
 .gtabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#efe9dc;padding:4px;
   border-radius:13px;margin-bottom:13px}
-.gtabs button{border:0;background:none;border-radius:10px;padding:9px;font-size:11.5px;
+.gtabs button{border:0;background:none;border-radius:10px;padding:12px;font-size:13.5px;
   font-weight:900;color:var(--muted);font-family:inherit;cursor:pointer}
 .gtabs button.on{background:#fff;color:var(--green);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .gfine{font-size:10.5px;color:var(--muted);line-height:1.5;margin-top:9px}
@@ -186,10 +200,10 @@ input.pin{width:100%;border:1.5px solid #ddd5c7;border-radius:14px;padding:15px;
   text-decoration:underline;padding:10px}
 
 .screen{display:none}.screen.on{display:block}
-.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(14px);opacity:0;
+.toast{position:fixed;left:0;right:0;margin:0 auto;bottom:88px;transform:translateY(14px);opacity:0;
   background:#122019;color:#fff;border-radius:12px;padding:11px 15px;font-size:11px;transition:.2s;
   z-index:60;max-width:88vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.show{opacity:1;transform:translateY(0)}
 .toast.err{background:var(--bad)}
 .spin{display:inline-block;width:18px;height:18px;border:3px solid var(--line);
   border-top-color:var(--green);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px}
@@ -199,8 +213,10 @@ input.pin{width:100%;border:1.5px solid #ddd5c7;border-radius:14px;padding:15px;
 .sheet-wrap{position:fixed;inset:0;z-index:70;background:rgba(10,20,15,.5);
   display:none;align-items:flex-end;justify-content:center}
 .sheet-wrap.on{display:flex}
-.sheet{width:min(430px,100%);max-height:88vh;overflow-y:auto;background:var(--cream);
-  border-radius:24px 24px 0 0;padding:10px 18px 26px}
+.sheet{width:100%;max-width:430px;max-height:88vh;max-height:85dvh;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--cream);
+  border-radius:24px 24px 0 0;
+  padding:10px 18px calc(30px + env(safe-area-inset-bottom))}
 .sheet .handle{width:38px;height:4px;border-radius:99px;background:#d9d2c4;margin:0 auto 14px}
 .sheet h2{font-size:21px;margin:0 0 4px;letter-spacing:-.5px}
 .sheet .sub{font-size:11px;color:var(--muted);margin:0}
@@ -209,6 +225,7 @@ input.pin{width:100%;border:1.5px solid #ddd5c7;border-radius:14px;padding:15px;
 </style>
 </head>
 <body>
+<div id="splash"><img src="/mark.png" alt="GolfComp" width="64" height="64"></div>
 <div class="app">
 
 <!-- ============ SCORE ============ -->
@@ -217,7 +234,7 @@ input.pin{width:100%;border:1.5px solid #ddd5c7;border-radius:14px;padding:15px;
     <div class="toprow">
       <div style="display:flex;align-items:center;gap:9px">
         <button class="backbtn" onclick="location.href='/app'" aria-label="Dashboard">←</button>
-        <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+        <div class="brand"><img class="mark" src="/mark.png" alt="" width="32" height="32">GolfComp</div>
       </div>
       <span class="livepill" id="conn"><i></i><span id="conn-t">Live</span></span>
     </div>
@@ -238,7 +255,7 @@ input.pin{width:100%;border:1.5px solid #ddd5c7;border-radius:14px;padding:15px;
     <div class="toprow">
       <div style="display:flex;align-items:center;gap:9px">
         <button class="backbtn" onclick="location.href='/app'" aria-label="Dashboard">←</button>
-        <div class="brand"><div class="mark">⛳</div>GolfComp</div>
+        <div class="brand"><img class="mark" src="/mark.png" alt="" width="32" height="32">GolfComp</div>
       </div>
       <span class="livepill" id="conn2"><i></i><span>Live</span></span>
     </div>
@@ -318,7 +335,7 @@ input.pin{width:100%;border:1.5px solid #ddd5c7;border-radius:14px;padding:15px;
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
 <script>
-const APP_VERSION='comp-v1 — 2026-08-14';
+const APP_VERSION='comp-v2.1 — 2026-11-05 group scoring';
 const SUPA_URL='https://fmnghbldrepksatggpdj.supabase.co';
 const SUPA_KEY='sb_publishable_kHvM1R3vOHnE2I1Rt7C7EA_DDmv9MZu';
 
@@ -327,9 +344,14 @@ const FMT={
  ambrose_4man:{label:'4-Man Ambrose',entry:'team',agg:'nett',hcpDiv:8,drives:true,low:true},
  bestball_stableford:{label:'2-Ball Best Ball',entry:'player',agg:'points',low:false},
  bestball_match:{label:'Four-Ball Match Play',entry:'player',agg:'match',low:false},
+ matchplay:{label:'Match Play',entry:'player',agg:'match',low:false},
  stableford_3man:{label:'3-Man Stableford',entry:'player',agg:'points',low:false},
  stableford_individual:{label:'Individual Stableford',entry:'player',agg:'individual',low:false},
- stroke_individual:{label:'Stroke',entry:'player',agg:'stroke_individual',low:true}
+ stroke_individual:{label:'Stroke',entry:'player',agg:'stroke_individual',low:true},
+ // Per-hole games — each hole is settled on its own, no running totals
+ holes_won:{label:'Most Holes Won',entry:'player',agg:'perhole',mode:'holes',low:false},
+ skins:{label:'Skins',entry:'player',agg:'perhole',mode:'skins',low:false},
+ perch:{label:'Bird on a Perch',entry:'player',agg:'perhole',mode:'perch',low:false}
 };
 
 let sb=null, compId=null, comp=null, round=null, players=[], holes=[], teams=[],
@@ -339,6 +361,63 @@ let sb=null, compId=null, comp=null, round=null, players=[], holes=[], teams=[],
     allRounds=[], allHoles=[], dayNo=null, boardTab='day', groups=[], allGroups=[];
 
 function $(i){return document.getElementById(i)}
+
+// ---------- crash reporting ----------
+// Until now, any function that threw simply did nothing: no message, no log.
+// "Get a group together" was dead for a day because a variable collision threw
+// before the sheet opened and nothing said so. This makes failures visible to
+// the player and legible to us.
+let errCount=0, lastErrKey='', lastErrAt=0;
+function currentScreen(){
+  const s=document.querySelector('.screen.on');
+  const sh=document.querySelector('.sheet-wrap.open');
+  return (sh?sh.id+' / ':'')+((s&&s.id)||'?');
+}
+function reportError(kind, err){
+  try{
+    const msg=(err&&(err.message||err.reason&&err.reason.message))||String(err&&err.reason||err||'')||'unknown';
+    const stack=(err&&(err.stack||(err.reason&&err.reason.stack)))||null;
+    // don't spam on a render loop, and don't log the same thing twice in a row
+    const key=kind+'|'+msg;
+    const now=Date.now();
+    if(key===lastErrKey && now-lastErrAt<3000) return;
+    lastErrKey=key; lastErrAt=now;
+    if(++errCount>10) return;
+
+    console.error('[GolfComp]', kind, msg, stack||'');
+    // Tell the player something happened — silence is the actual bug.
+    try{ toast('Something went wrong there — we’ve logged it', true) }catch(_){}
+    // Posted with plain fetch rather than through the Supabase client, because
+    // the crashes that matter most happen during boot, before that client
+    // exists. Fire and forget — a failed log must never surface to the player.
+    try{
+      fetch(SUPA_URL+'/rest/v1/rpc/gc_log_error',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':SUPA_KEY,
+                 'Authorization':'Bearer '+SUPA_KEY},
+        body:JSON.stringify({
+          p_kind:kind, p_message:msg, p_stack:stack,
+          p_screen:currentScreen(), p_path:location.pathname,
+          p_user_agent:navigator.userAgent,
+          p_app_version:(typeof APP_VERSION!=='undefined'?APP_VERSION:null)
+        }),
+        keepalive:true   // still sends if the crash takes the page down
+      }).catch(()=>{});
+    }catch(_){}
+  }catch(_){ /* a reporter that crashes is worse than no reporter */ }
+}
+window.addEventListener('error', e=>reportError('error', e.error||e));
+window.addEventListener('unhandledrejection', e=>reportError('unhandledrejection', e));
+
+// Inline onclick="" handlers don't reach window.onerror in every browser, so
+// catch at the click boundary too — that's where most of ours live.
+document.addEventListener('click', function(e){
+  const t=e.target && e.target.closest && e.target.closest('[onclick]');
+  if(!t) return;
+  // nothing to do on success; the browser runs the handler itself. We only
+  // need the listener so an exception inside it surfaces as window.onerror.
+}, true);
+
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(m,e){const t=$('toast');t.textContent=m;t.className='toast show'+(e?' err':'');
   clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600)}
@@ -350,6 +429,39 @@ function show(id){
 }
 function fmt(){return FMT[round?round.format:'stableford_individual']||FMT.stableford_individual}
 function pname(id){const p=players.find(x=>x.id===id);return p?p.name:'?'}
+// Which team a player is on for the day being scored (individual formats are
+// one-man teams, so this always resolves when teams are set).
+function teamOf(pid){return teams.find(t=>(t.members||[]).indexOf(pid)>=0)||null}
+// The playing group I'm walking round in today, matched on me or anyone on
+// my team. Null when the organiser hasn't set groups for this day.
+function myGroupObj(){
+  const me=myPlace?myPlace.comp_player_id:null;
+  const myMem=(teams.find(x=>x.id===myTeam)||{}).members||[];
+  return groups.find(g=>(g.members||[]).some(m=>m===me||myMem.indexOf(m)>=0))||null;
+}
+// Everyone whose score goes on MY card: my team first, then the rest of my
+// playing group in tee order. Before this, a solo Stableford card only ever
+// showed you, so nobody could mark for the group they were actually in.
+function cardPlayers(){
+  const t=teams.find(x=>x.id===myTeam);
+  const mine=t?(t.members||[]).slice():[];
+  const g=myGroupObj();
+  let extra=g?(g.members||[]):[];
+  if(!g){
+    const f=fmt();
+    // No groups set. A four-ball match is one card for both pairs by
+    // definition, and a comp of six or fewer is one group whatever the
+    // format — nobody should have to set that up. Bigger comps start you on
+    // your own card and you pick your group from the score screen.
+    if((f.agg==='match'&&teams.length===2)||players.length<=6){
+      extra=teams.slice().sort((a,b)=>a.team_no-b.team_no)
+        .reduce((a,t)=>a.concat(t.members||[]),[]);
+      players.forEach(p=>{if(extra.indexOf(p.id)<0)extra.push(p.id)});
+    }
+  }
+  extra.forEach(pid=>{if(mine.indexOf(pid)<0&&players.some(p=>p.id===pid))mine.push(pid)});
+  return mine;
+}
 function strokes(h,si){h=Math.round(h||0);if(h<=0||si==null)return 0;
   const b=Math.floor(h/18);return b+((si<=(h-b*18))?1:0)}
 function stbl(g,par,s){if(g==null)return null;return Math.max(0,2-((g-s)-par))}
@@ -402,6 +514,7 @@ async function loadAll(){
   teamScores={}; (ts.data||[]).forEach(r=>{(teamScores[r.team_id]=teamScores[r.team_id]||{})[r.hole]={g:r.gross,d:r.drive_by}});
   noms={}; (n.data||[]).forEach(r=>{(noms[r.team_id]=noms[r.team_id]||{})[r.hole]=r.comp_player_id});
   locks={}; (l.data||[]).forEach(r=>{locks[r.team_id]=r.locked});
+  obApply();   // anything still waiting to send stays on the screen
   return true;
 }
 
@@ -417,6 +530,26 @@ function phcp(p,r){
   const rating=(r.course_rating==null)?par:Number(r.course_rating);
   return Math.round(ix*((r.slope_rating||113)/113)+(rating-par));
 }
+// A player's whole round in one place: shots, stableford and how they're
+// tracking to par. The per-hole games only ever showed who was winning holes —
+// you couldn't see you were on 52 through 9.
+function playerCard(pid){
+  const p=players.find(x=>x.id===pid);
+  let shots=0, pts=0, holesPlayed=0, parSoFar=0, out=0, inn=0;
+  for(let n=1;n<=18;n++){
+    const g=(scores[pid]||{})[n];
+    if(g==null)continue;
+    const h=holeOf(n);
+    holesPlayed++; shots+=g; parSoFar+=h.par;
+    if(n<=9)out+=g; else inn+=g;
+    pts+=stbl(g,h.par,strokes(phcp(p),h.si))||0;
+  }
+  return {shots,pts,holes:holesPlayed,out,inn,
+          toPar:holesPlayed?(shots-parSoFar):null,
+          nett:holesPlayed?(shots-Math.round(phcp(p))):null};
+}
+function toParText(v){ return v==null?'—':(v===0?'E':(v>0?'+'+v:String(v))) }
+
 function playerPts(pid,n){
   const g=(scores[pid]||{})[n]; if(g==null)return null;
   const h=holeOf(n), p=players.find(x=>x.id===pid);
@@ -509,6 +642,37 @@ const RULES={
         +'no nearer the hole.','Keep taking the best until it’s holed.','One score per hole.'],
   hcp:'Team handicap = both course handicaps added, divided by 4.',
   tip:'Use a nervous player’s drive early. Gets it out of the way and they enjoy the rest.'},
+ matchplay:{tag:'Head to head · most holes wins',
+  gist:'Just the two of you. Better score takes the hole.',
+  how:['Play your own ball, Stableford points as normal.',
+       'Better score on the hole wins it. Level and it’s halved.',
+       'The match ends once one of you is further ahead than there are holes left — '
+        +'that’s where “3 & 2” comes from.',
+       'Front nine, back nine and the full eighteen each count as their own match.'],
+  tip:'Because the back nine is its own match, there’s still something to play for even '
+     +'after the overall has gone.'},
+ holes_won:{tag:'Everyone for themselves · most holes wins',
+  gist:'Best score takes the hole. Level and nobody gets it.',
+  how:['Play your own ball, Stableford points as normal.',
+       'Best points on the hole wins it outright.',
+       'Two or more tied for best and the hole is halved — nobody scores.',
+       'Most holes at the end wins.'],
+  tip:'Works with any number, which is why it suits a three — nothing has to split evenly.'},
+ skins:{tag:'Everyone for themselves · most skins wins',
+  gist:'A skin a hole. Win it outright and it’s yours; tie it and the skin carries.',
+  how:['Best points on the hole takes the skin.',
+       'Tied for best and nobody wins — the skin carries into the next hole.',
+       'Carries keep stacking, so a run of halves makes one hole worth a lot.',
+       'Most skins at the end wins.'],
+  tip:'The carry is what makes it. Three halves in a row and the next hole is worth four — '
+     +'suddenly everyone is trying.'},
+ perch:{tag:'Everyone for themselves · most points wins',
+  gist:'Win a hole to get on the perch. Win again from up there and it’s a point.',
+  how:['Win a hole and you’re on the perch — no points yet.',
+       'Win the next one while you’re up there and that’s a point. You stay on.',
+       'Halve a hole and nothing changes — you keep the perch.',
+       'Lose a hole and whoever won it takes the perch off you.'],
+  tip:'Getting up there is easy. Staying up there is the hard bit — you have to back it up.'},
  ambrose_4man:{tag:'Fours · one ball · lowest nett wins',
   gist:'All four tee off, pick the best shot, everyone plays their next from there.',
   how:['All four tee off and pick the best ball.',
@@ -631,8 +795,11 @@ function renderScore(){
   else if(myPlace){
     // Signed in and in the comp — say plainly whose card this is
     const mates=t?t.members.filter(id=>id!==myPlace.comp_player_id).map(pname):[];
+    const gm=cardPlayers().filter(id=>id!==myPlace.comp_player_id
+                   &&mates.indexOf(pname(id))<0).map(pname);
     $('sc-sub').textContent='Scoring as '+myPlace.display_name
-      +(mates.length?(' · with '+mates.join(' & ')):'');
+      +(mates.length?(' · with '+mates.join(' & ')):'')
+      +(gm.length?(' · group: '+gm.map(n=>n.split(' ')[0]).join(', ')):'');
   } else {
     $('sc-sub').textContent=t?(t.members.map(pname).join(' & ')||('Team '+(t.team_no+1))):'';
   }
@@ -648,7 +815,7 @@ function renderScore(){
       +'The organiser will kick it off from their phone.</div></section>';
     return;
   }
-  const locked=!!locks[myTeam];
+  const locked=!!locks[myTeam] || !amScorer();
   const tot=teamTotals(myTeam);
   const h=holeOf(hole), th=teamHole(myTeam,hole);
   let rows='';
@@ -681,17 +848,43 @@ function renderScore(){
     rows+='</div>';
   } else {
     const t2=teams.find(x=>x.id===myTeam);
-    const mem=(f.agg==='individual'||f.agg==='stroke_individual')
-      ? (t2?t2.members:[]) : (t2?t2.members:[]);
+    // A per-hole game is everyone against everyone, so the card shows the lot
+    const perholeGame=(f.agg==='perhole');
+    // Match play between two individuals is one card for both. Each player is
+    // their own "team", so showing only your own team left you scoring solo and
+    // the match could never progress.
+    const singlesMatch=(f.agg==='match' && teams.length>0
+                        && teams.every(t=>(t.members||[]).length<=1));
+    const oneCard=perholeGame||singlesMatch;
+    const hw=perholeGame?holeWinner(hole):null;
+    const mem=oneCard ? players.map(p=>p.id) : cardPlayers();
+    // One card for the whole playing group: each row uses ITS OWN team's
+    // nomination, lock and totals, not mine.
+    const groupCard=!oneCard && mem.some(pid=>!(t2&&t2.members.indexOf(pid)>=0));
+    let lastTeam=null;
     rows=mem.map(pid=>{
       const p=players.find(x=>x.id===pid)||{};
+      const pt=teamOf(pid)||t2;
+      const th=pt?teamHole(pt.id,hole):{credited:[],tied:[]};
+      const tot=pt?teamTotals(pt.id):{contribs:{}};
+      const locked=!!locks[pt?pt.id:myTeam] || !amScorer();
+      let divider='';
+      if(groupCard&&pt&&(pt.members||[]).length>1&&pt.id!==lastTeam){
+        divider='<div style="font-size:9.5px;font-weight:900;color:var(--muted);text-transform:uppercase;'
+          +'letter-spacing:.7px;padding:9px 13px 0">'+(pt.id===myTeam?'Your team':esc(pt.name||('Team '+(pt.team_no+1))))+'</div>';
+      }
+      lastTeam=pt?pt.id:null;
       const g=(scores[pid]||{})[hole], pts=playerPts(pid,hole);
       const sh=strokes(phcp(p),h.si);
-      const counts=th.credited.indexOf(pid)>=0;
-      const tied=(th.tied||[]).indexOf(pid)>=0;
-      const team=(f.agg!=='individual'&&f.agg!=='stroke_individual');
+      const counts=perholeGame ? (hw.winner===pid)
+                 : (singlesMatch ? false : (th.credited.indexOf(pid)>=0));
+      const tied=(perholeGame||singlesMatch) ? false : ((th.tied||[]).indexOf(pid)>=0);
+      const team=(!perholeGame&&!singlesMatch
+                  &&f.agg!=='individual'&&f.agg!=='stroke_individual');
       let tag='';
       if(team&&counts)tag='<span class="tag">'+(th.nominated===pid?'NOMINATED':'COUNTS')+'</span>';
+      else if(perholeGame&&counts)tag='<span class="tag" style="background:rgba(45,106,79,.14);'
+        +'color:var(--good)">WINS IT</span>';
       // How they're tracking against the minimum, so you can see who still owes holes
       const need=minNeeded();
       let mintag='';
@@ -700,7 +893,7 @@ function renderScore(){
         mintag='<span class="tag" style="background:'+(met?'rgba(45,106,79,.12)':'rgba(217,180,93,.22)')
           +';color:'+(met?'var(--good)':'#8a6d1f')+'">'+got+'/'+need+(met?' ✓':'')+'</span>';
       }
-      return '<div class="prow'+(counts&&team?' counts':'')+'">'
+      return divider+'<div class="prow'+(counts&&team?' counts':'')+'">'
         +'<div class="nm">'+esc(p.name||'?')+'<small>'+sh+' shot'+(sh===1?'':'s')+' here'
         +hcpTag(p)+'</small>'+tag+mintag+'</div>'
         +'<div class="step"><button onclick="stepPlayer(\''+pid+'\',-1)" '+(locked?'disabled':'')+'>−</button>'
@@ -728,6 +921,22 @@ function renderScore(){
     totLine={l:'Out '+sign(n.out)+' · In '+sign(n['in']),
       v:(!m||m.played===0)?'—':(mineNow===0?'ALL SQUARE'
         :(Math.abs(mineNow)+(mineNow>0?' UP':' DOWN')))};
+  } else if(f.agg==='perhole'){
+    const g=perHole(), lead=g.rows[0];
+    const drawn=g.rows.filter(r=>r.points===lead.points).length>1;
+    // Your own round alongside the game — shots first, that's what golfers ask.
+    const mine=myPlace?playerCard(myPlace.comp_player_id):null;
+    const mineTxt=(mine&&mine.holes)
+      ? (mine.shots+' shots ('+toParText(mine.toPar)+') · '+mine.pts+' pts · thru '+mine.holes)
+      : ('Through '+g.decided+'/18');
+    totLine={
+      l:(g.mode==='skins'&&g.pot>1)
+          ? ('This hole is worth '+g.pot+' · '+mineTxt)
+        :(g.mode==='perch'&&g.perch)
+          ? ('🐦 '+pname(g.perch)+' on the perch · '+mineTxt)
+          : mineTxt,
+      v:(!g.decided||lead.points===0)?'—'
+        :(drawn?'ALL SQUARE':(pname(lead.pid).split(' ')[0]+' '+lead.points))};
   } else if(f.agg==='nett'){
     totLine={l:'Team total · H/C '+tot.hcp, v:(tot.holes?tot.nett+' nett':'—')};
   } else {
@@ -778,6 +987,13 @@ function renderScore(){
       +(round.rating_source==='estimated'
         ? ' <em>The rating for this course is our estimate — tell us if you know the official one.</em>':'')
       +'</div>';
+  }
+  // No stroke index means strokes() hands out zero shots on every hole — the
+  // round quietly plays off scratch. Say so rather than let it look normal.
+  if(holes.length && holes.every(x=>x.si==null)){
+    notes+='<div class="note warn"><strong>No stroke index for this course yet.</strong> '
+      +'Nobody is getting shots, so this plays as scratch. Send a photo of the '
+      +'scorecard and we\u2019ll set it up properly.</div>';
   }
   if(th.needsPick)notes+='<div class="note warn"><strong>Tied on '+th.autoBest+' points.</strong> '
     +'Tap a player’s points to choose whose score counts for the team on this hole.</div>';
@@ -851,8 +1067,44 @@ function renderScore(){
     }
   }
 
+  // Who am I marking? Any player sets their own group — all four, or two while
+  // someone else takes the other two, or three. Before this, a playing group
+  // could only be built by the organiser with the admin PIN from the setup
+  // screen, so in practice nobody had one and a comp of more than six left
+  // every player able to score only themselves.
+  let groupPicker='';
+  if(myPlace && players.length>1 && f.entry!=='team'){
+    const me=myPlace.comp_player_id, on=cardPlayers();
+    groupPicker='<section class="card" style="padding:11px 13px;margin-bottom:11px">'
+      +'<div style="font-size:9.5px;font-weight:900;color:var(--muted);'
+      +'text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">Scoring for'
+      +'<span style="float:right;text-transform:none;letter-spacing:0;font-weight:700">'
+      +'tap to add or drop</span></div>'
+      +'<div style="display:flex;gap:7px;flex-wrap:wrap">'
+      +players.map(p=>{
+        const isMe=(p.id===me), sel=on.indexOf(p.id)>=0;
+        return '<button '+(isMe?'disabled':'onclick="setMyGroup(\''+p.id+'\')"')
+          +' style="border:2px solid '+(sel?'var(--green)':'#e2dbcd')
+          +';background:'+(sel?'var(--green)':'#fff')+';color:'+(sel?'#fff':'var(--ink)')
+          +';border-radius:13px;padding:9px 12px;font-size:11.5px;font-weight:900;'
+          +(isMe?'opacity:.85':'cursor:pointer')+'">'
+          +esc((p.name||'?').split(' ')[0])+(isMe?' (you)':'')+'</button>'}).join('')
+      +'</div></section>';
+  }
+
+  const scoreBanner = amScorer()
+    ? ''
+    : '<section class="card" style="padding:12px 13px;margin-bottom:11px;'
+      +'border-left:3px solid var(--gold)">'
+      +'<div style="font-size:12.5px;line-height:1.5">'
+      +'<strong>'+esc(scorerName()||'Someone else')+' is keeping score.</strong> '
+      +'You’ll see every shot as it goes in — you just can’t change it.</div>'
+      +'<button class="ghostbtn" style="margin-top:9px" onclick="takeScoring()">'
+      +'Take over scoring</button></section>';
+
   $('sc-body').innerHTML=
     '<div class="who-else" id="who-else" style="display:none"></div>'
+    +scoreBanner+groupPicker
     +'<section class="card">'
     +'<div class="holehead"><div class="n">Hole '+hole+'</div>'
     +'<div class="i">Par '+h.par+' · SI '+(h.si==null?'—':h.si)+(h.metres?('<br>'+h.metres+'m'):'')+'</div></div>'
@@ -867,11 +1119,88 @@ function renderScore(){
     +'<div class="ctr"><span class="b">'+hole+'</span><span class="s">OF 18</span></div>'
     +'<button onclick="stepHole(1)" '+(hole>=18?'disabled':'')+'>NEXT →</button></div>'
     +strip+notes+rivals
-    +(locked
-      ? (isAdmin?'<button class="ghostbtn" onclick="lockCard(false)">Unlock card (admin)</button>':'')
-      : '<button class="ghostbtn" onclick="lockCard(true)">Submit card &amp; lock</button>')
+    +(!amScorer() ? ''
+      : (!!locks[myTeam]
+        ? (isAdmin?'<button class="ghostbtn" onclick="lockCard(false)">Unlock card (admin)</button>':'')
+        : '<button class="ghostbtn" onclick="lockCard(true)">Submit card &amp; lock</button>'))
     +(isAdmin&&!round.started?'<button class="primary" onclick="startRound()">Start the round</button>':'');
   renderPresence();
+}
+
+// ---------- outbox ----------
+// Scores used to go straight to the server and nowhere else: a failed write
+// toasted for three seconds while the number stayed on screen, so a dropped
+// signal looked exactly like a saved score and the round was lost. Now every
+// score is written to this device first and replayed until the server has it.
+const OB_KEY='gc_outbox_v1';
+let outbox=[], obTimer=null, obSending=false, connOk=true;
+
+function obLoad(){ try{outbox=JSON.parse(localStorage.getItem(OB_KEY)||'[]')||[]}catch(e){outbox=[]} }
+function obPersist(){ try{localStorage.setItem(OB_KEY,JSON.stringify(outbox))}catch(e){} }
+
+// One entry per thing being set, so tapping + five times sends the final
+// number once instead of five writes that race each other.
+function obQueue(key,fn,args){
+  outbox=outbox.filter(o=>o.key!==key);
+  // stamp the comp: a score queued in one comp must not be replayed into
+  // whichever comp happens to be open when the signal comes back
+  outbox.push({key,fn,args,comp:compId});
+  obPersist(); obBadge(); obSend();
+}
+
+async function obSend(){
+  if(obSending||!outbox.length)return;
+  if(navigator.onLine===false){obRetryLater();return}
+  obSending=true;
+  try{
+    while(outbox.length){
+      const item=outbox[0];
+      const {error}=await sb.rpc(item.fn,
+        Object.assign({p_comp_id:item.comp||compId,p_pin:pin},item.args));
+      if(error){
+        // A refusal (card locked, someone else is scoring) will never succeed
+        // on retry, so drop it and say so. Anything else is the network —
+        // keep it queued and try again.
+        if(error.code&&/^(P0|42|23)/.test(String(error.code))){
+          outbox.shift(); obPersist(); toast(error.message,true); continue;
+        }
+        break;
+      }
+      outbox.shift(); obPersist(); obBadge();
+    }
+  }catch(e){ /* offline: everything stays queued */ }
+  obSending=false; obBadge();
+  if(outbox.length)obRetryLater(); else flashSaved();
+}
+
+function obRetryLater(){ clearTimeout(obTimer); obTimer=setTimeout(obSend,5000); }
+
+function obBadge(){
+  const queued=outbox.length;
+  ['conn','conn2'].forEach(id=>{const e=$(id);
+    if(e)e.className='livepill'+((connOk&&!queued)?'':' off')});
+  const t=$('conn-t');
+  if(t)t.textContent=queued?(queued+(queued===1?' to send':' to send')):(connOk?'Live':'Offline');
+}
+
+// Lay anything still queued back over what the server just sent, so a score
+// waiting to go up never disappears off the screen on a refresh.
+function obApply(){
+  if(!round)return;
+  outbox.forEach(o=>{
+    const a=o.args||{};
+    if(a.p_round_id!==round.id)return;
+    if(o.fn==='gc_set_score'){
+      if(a.p_gross==null){ if(scores[a.p_comp_player_id])delete scores[a.p_comp_player_id][a.p_hole]; }
+      else (scores[a.p_comp_player_id]=scores[a.p_comp_player_id]||{})[a.p_hole]=a.p_gross;
+    } else if(o.fn==='gc_set_team_score'){
+      if(a.p_gross==null&&!a.p_drive_by){ if(teamScores[a.p_team_id])delete teamScores[a.p_team_id][a.p_hole]; }
+      else (teamScores[a.p_team_id]=teamScores[a.p_team_id]||{})[a.p_hole]={g:a.p_gross,d:a.p_drive_by||null};
+    } else if(o.fn==='gc_set_nomination'){
+      if(a.p_comp_player_id==null){ if(noms[a.p_team_id])delete noms[a.p_team_id][a.p_hole]; }
+      else (noms[a.p_team_id]=noms[a.p_team_id]||{})[a.p_hole]=a.p_comp_player_id;
+    }
+  });
 }
 
 // ---------- writes ----------
@@ -886,7 +1215,8 @@ async function setPlayer(pid,v){
   (scores[pid]=scores[pid]||{});
   if(g==null)delete scores[pid][hole];else scores[pid][hole]=g;
   renderScore();
-  await rpc('gc_set_score',{p_round_id:round.id,p_comp_player_id:pid,p_hole:hole,p_gross:g});
+  obQueue('score:'+round.id+':'+pid+':'+hole,'gc_set_score',
+    {p_round_id:round.id,p_comp_player_id:pid,p_hole:hole,p_gross:g});
 }
 function stepPlayer(pid,d){
   const cur=(scores[pid]||{})[hole];
@@ -894,14 +1224,34 @@ function stepPlayer(pid,d){
   // two of it, so that's the fewest presses from here.
   setPlayer(pid,(cur==null?holeOf(hole).par:cur+d));
 }
+// Add or drop a player from the card I'm marking. Claiming a player takes them
+// out of anyone else's group for this round, so two markers can split a
+// four-ball without both holding the same cards.
+async function setMyGroup(pid){
+  if(!myPlace)return;
+  const me=myPlace.comp_player_id;
+  const next=cardPlayers().filter(x=>x!==me);
+  const i=next.indexOf(pid);
+  if(i>=0)next.splice(i,1); else next.push(pid);
+  // this RPC takes no comp id or PIN, so it can't go through rpc()
+  const {error}=await sb.rpc('gc_set_my_playing_group',
+    {p_round_id:round.id,p_member_ids:next});
+  if(error){toast(error.message,true);return}
+  flashSaved();
+  await loadAll();
+  renderScore();
+  toast(next.length?('Marking for '+(next.length+1)+' players'):'Marking for yourself only');
+}
 async function setTeam(v){
   const g=String(v).trim()===''?null:Math.max(1,Math.min(20,parseInt(v,10)||0));
   const prev=(teamScores[myTeam]||{})[hole]||{};
   (teamScores[myTeam]=teamScores[myTeam]||{});
   if(g==null)delete teamScores[myTeam][hole];else teamScores[myTeam][hole]={g,d:prev.d||null};
   renderScore();
-  await rpc('gc_set_team_score',{p_round_id:round.id,p_team_id:myTeam,p_hole:hole,
-    p_gross:g,p_drive_by:prev.d||null});
+  // the drive and the score are one row, so they share a key and the later
+  // tap carries both
+  obQueue('team:'+round.id+':'+myTeam+':'+hole,'gc_set_team_score',
+    {p_round_id:round.id,p_team_id:myTeam,p_hole:hole,p_gross:g,p_drive_by:prev.d||null});
 }
 function stepTeam(d){
   const cur=((teamScores[myTeam]||{})[hole]||{}).g;
@@ -912,17 +1262,20 @@ async function setDrive(pid){
   rec.d=(rec.d===pid)?null:pid;
   (teamScores[myTeam]=teamScores[myTeam]||{})[hole]=rec;
   renderScore();
-  await rpc('gc_set_team_score',{p_round_id:round.id,p_team_id:myTeam,p_hole:hole,
-    p_gross:rec.g,p_drive_by:rec.d});
+  obQueue('team:'+round.id+':'+myTeam+':'+hole,'gc_set_team_score',
+    {p_round_id:round.id,p_team_id:myTeam,p_hole:hole,p_gross:rec.g,p_drive_by:rec.d});
 }
 async function nominate(pid){
   if(playerPts(pid,hole)==null){toast('Enter '+pname(pid)+'’s score first',true);return}
-  const cur=(noms[myTeam]||{})[hole];
+  // On a group card the tap might be for the other pair — nominate on THEIR team
+  const tid=(teamOf(pid)||{}).id||myTeam;
+  const cur=(noms[tid]||{})[hole];
   const next=(cur===pid)?null:pid;
-  (noms[myTeam]=noms[myTeam]||{});
-  if(next)noms[myTeam][hole]=next;else delete noms[myTeam][hole];
+  (noms[tid]=noms[tid]||{});
+  if(next)noms[tid][hole]=next;else delete noms[tid][hole];
   renderScore();
-  await rpc('gc_set_nomination',{p_round_id:round.id,p_team_id:myTeam,p_hole:hole,p_comp_player_id:next});
+  obQueue('nom:'+round.id+':'+tid+':'+hole,'gc_set_nomination',
+    {p_round_id:round.id,p_team_id:tid,p_hole:hole,p_comp_player_id:next});
 }
 function clearNom(){nominate((noms[myTeam]||{})[hole])}
 async function lockCard(v){
@@ -936,6 +1289,22 @@ async function startRound(){
 }
 // The minimum lives on the day, since a trip can run Ambrose one day and best
 // ball the next. Older comps only have it at comp level.
+// Whoever started the round keeps the card. Anyone in the comp can take it over
+// — a locked card is worse than useless when the scorer's battery dies.
+function amScorer(){
+  if(!round)return false;
+  if(!round.scorer_id)return true;              // nobody's claimed it
+  if(isAdmin)return true;                        // organiser can always fix
+  return !!(myPlace && myPlace.profile_id === round.scorer_id);
+}
+function scorerName(){ return (round&&round.scorer_name)||'' }
+
+async function takeScoring(){
+  if(!confirm('Take over scoring from '+(scorerName()||'the current scorer')+'?'))return;
+  const r=await rpc('gc_take_scoring',{p_round_id:round.id});
+  if(r!==null){ await loadAll(); renderScore(); toast('You’re keeping score now') }
+}
+
 function minNeeded(){
   if(round&&round.min_contributions!=null)return round.min_contributions||0;
   return (comp&&comp.min_contributions)||0;
@@ -946,7 +1315,24 @@ function minNeeded(){
 function dayFinished(){
   const ids=teams.map(t=>t.id);
   if(!ids.length)return false;
-  return ids.every(id=>locks[id]===true);
+  if(ids.every(id=>locks[id]===true))return true;
+  // Or every card is simply full. The dashboard already called a round complete
+  // on this basis while this screen still said "live", because it only looked at
+  // locks — and people don't always remember to hit submit. Same rule as the
+  // server's gc_round_is_complete, so the two can no longer disagree.
+  const f=fmt();
+  if(f.entry==='team'){
+    return teams.every(t=>{
+      const r=teamScores[t.id]||{};
+      for(let i=1;i<=18;i++) if(r[i]==null||r[i].g==null)return false;
+      return true;
+    });
+  }
+  return players.length>0 && players.every(p=>{
+    const sc=scores[p.id]||{};
+    for(let i=1;i<=18;i++) if(sc[i]==null)return false;
+    return true;
+  });
 }
 function compFinished(){
   return round&&round.started&&dayFinished()&&
@@ -955,6 +1341,157 @@ function compFinished(){
 }
 function stepHole(d){hole=Math.max(1,Math.min(18,hole+d));renderScore()}
 function jump(n){hole=n;renderScore()}
+
+// ---------- per-hole games ----------
+// Each hole is settled on its own. Best Stableford score takes it; if two or
+// more tie for best, nobody wins the hole. Everything below is built on that.
+function holeWinner(n){
+  const rs=players.map(p=>({pid:p.id,pts:playerPts(p.id,n)})).filter(r=>r.pts!=null);
+  if(rs.length<2)return {played:false,winner:null,tied:[]};
+  const mx=Math.max.apply(null,rs.map(r=>r.pts));
+  const top=rs.filter(r=>r.pts===mx).map(r=>r.pid);
+  return {played:true, winner:(top.length===1?top[0]:null), tied:top, best:mx};
+}
+
+// Runs the whole round through whichever per-hole game is being played and
+// returns a row per player plus a hole-by-hole trail for the board.
+function perHole(){
+  const mode=(fmt().mode)||'holes';
+  const tally={}, trail=[];
+  players.forEach(p=>tally[p.id]={holes:0,points:0,skins:0});
+  let pot=1;                 // skins: how much the next decided hole is worth
+  let perch=null;            // perch: who's currently sitting on it
+
+  for(let i=1;i<=18;i++){
+    const r=holeWinner(i);
+    const row={hole:i,winner:r.winner,played:r.played,value:1,note:''};
+
+    if(!r.played){ trail.push(row); continue }
+
+    if(r.winner)tally[r.winner].holes++;
+
+    if(mode==='holes'){
+      if(r.winner)tally[r.winner].points++;
+      else row.note='halved';
+
+    } else if(mode==='skins'){
+      row.value=pot;
+      if(r.winner){
+        tally[r.winner].points+=pot;
+        tally[r.winner].skins+=pot;
+        pot=1;
+      } else {
+        row.note='carries';
+        pot++;                                  // tied — next hole is worth more
+      }
+
+    } else if(mode==='perch'){
+      if(r.winner){
+        if(perch===r.winner){
+          tally[r.winner].points++;             // already up there — that's a point
+          row.note='point';
+        } else {
+          perch=r.winner;                       // takes the perch, nothing scored yet
+          row.note='on the perch';
+        }
+      } else {
+        row.note=perch?'halved — stays up':'halved';   // a halve never knocks you off
+      }
+      row.perch=perch;
+    }
+    trail.push(row);
+  }
+
+  const rows=players.map(p=>({
+    pid:p.id, label:p.name,
+    points:tally[p.id].points,
+    holes:tally[p.id].holes,
+    onPerch:(mode==='perch'&&perch===p.id)
+  })).sort((a,b)=>b.points-a.points || b.holes-a.holes);
+
+  return {mode,rows,trail,pot,perch,
+          decided:trail.filter(t=>t.played).length};
+}
+
+function renderPerHole(){
+  const f=fmt(), g=perHole();
+  const unit=(g.mode==='skins')?'skins':'points';
+  let h='';
+
+  // Who's leading, and anything live about the state of the game
+  if(g.decided){
+    const top=g.rows[0], drawn=g.rows.filter(r=>r.points===top.points).length>1;
+    h+='<section class="card" style="overflow:hidden;margin-bottom:11px">'
+      +'<div style="background:var(--green);color:#fff;padding:20px 16px;text-align:center">'
+      +'<div style="font-size:10px;font-weight:900;letter-spacing:1.1px;opacity:.75;'
+      +'text-transform:uppercase">'+(g.decided>=18?'Final':'Leading')+'</div>'
+      +'<div style="font-size:21px;font-weight:900;margin-top:3px">'
+      +(drawn?'All square':esc(top.label))+'</div>'
+      +'<div style="font-size:13px;font-weight:800;opacity:.85;margin-top:2px">'
+      +top.points+' '+unit+'</div>'
+      +(g.mode==='skins'&&g.pot>1
+        ? '<div style="font-size:12px;font-weight:800;margin-top:9px;background:rgba(255,255,255,.15);'
+          +'border-radius:99px;padding:6px 13px;display:inline-block">Next hole worth '+g.pot+'</div>'
+        :'')
+      +(g.mode==='perch'&&g.perch
+        ? '<div style="font-size:12px;font-weight:800;margin-top:9px;background:rgba(255,255,255,.15);'
+          +'border-radius:99px;padding:6px 13px;display:inline-block">🐦 '
+          +esc(pname(g.perch))+' is on the perch</div>'
+        :'')
+      +'</div></section>';
+  }
+
+  // The game standing plus everyone's actual round — shots and stableford —
+  // because "who won the skins" isn't the only thing people want off a card.
+  h+='<div class="striplabel">'+(g.mode==='skins'?'Skins':'The game')+'</div>'
+    +'<section class="card" style="overflow:hidden"><table class="lb"><thead><tr>'
+    +'<th>#</th><th>Player</th><th class="num">Shots</th><th class="num">Pts</th>'
+    +'<th class="num">'+(g.mode==='skins'?'Skins':'Won')+'</th></tr></thead><tbody>';
+  let pos=0,prev=null,shown=0;
+  g.rows.forEach(r=>{
+    shown++;
+    if(prev===null||r.points!==prev){pos=shown;prev=r.points}
+    const c=playerCard(r.pid);
+    h+='<tr'+(pos===1&&r.points>0?' class="win"':'')+'><td>'+pos+'</td>'
+      +'<td>'+esc(r.label)+(r.onPerch?' 🐦':'')
+      +'<div style="font-size:9.5px;color:var(--muted);font-weight:700">'
+      +(c.holes?('thru '+c.holes+' · '+toParText(c.toPar)+' to par'):'no card')+'</div></td>'
+      +'<td class="num" style="font-weight:900">'+(c.holes?c.shots:'—')+'</td>'
+      +'<td class="num">'+(c.holes?c.pts:'—')+'</td>'
+      +'<td class="num" style="font-weight:900">'+r.points+'</td></tr>';
+  });
+  h+='</tbody></table></section>';
+
+  // Hole by hole, so you can settle an argument at the bar
+  const played=g.trail.filter(t=>t.played);
+  if(played.length){
+    h+='<div class="striplabel">Hole by hole</div>'
+      +'<section class="card" style="overflow:hidden"><table class="lb"><tbody>';
+    played.forEach(t=>{
+      h+='<tr><td style="width:36px;font-weight:900;color:var(--muted)">'+t.hole+'</td>'
+        +'<td>'+(t.winner?esc(pname(t.winner)):'<span style="color:var(--muted)">Halved</span>')
+        +(t.note&&t.note!=='halved'
+          ?(' <span style="font-size:10px;color:var(--muted);font-weight:800">· '+esc(t.note)+'</span>')
+          :'')
+        +'</td>'
+        +'<td class="num" style="font-weight:900">'
+        +(t.winner?('+'+(g.mode==='skins'?t.value:(g.mode==='perch'?(t.note==='point'?1:0):1))):'—')
+        +'</td></tr>';
+    });
+    h+='</tbody></table></section>';
+  }
+
+  h+='<div class="note">'+({
+    holes:'<strong>Best score takes the hole.</strong> Tie it and nobody gets it. Most holes wins.',
+    skins:'<strong>A skin a hole.</strong> Win it outright and it’s yours. Tie and the skin '
+         +'carries into the next hole, so a run of halves makes one hole worth a lot.',
+    perch:'<strong>Win a hole and you’re on the perch.</strong> Win the next one from up there '
+         +'and it’s a point. Halve it and you stay put. Lose it and whoever won takes your spot.'
+  }[g.mode])+'</div>'
+  +'<button class="ghostbtn" onclick="location.href=\'/app\'">← Back to dashboard</button>';
+
+  $('lb-body').innerHTML=dayTabs('day')+h;
+}
 
 // ---------- days ----------
 function dayTabs(active){
@@ -1047,6 +1584,13 @@ async function showOverall(){
 function renderBoard(){
   if(boardTab==='overall'&&allRounds.length>1){showOverall();return}
   const f=fmt();
+  if(f.agg==='perhole'){
+    $('lb-name').textContent=comp.name;
+    $('lb-sub').textContent=(comp.subtitle||'')
+      +(allRounds.length>1?(' · Day '+dayNo):'')+' · '+f.label;
+    renderPerHole();
+    return;
+  }
   $('lb-name').textContent=comp.name;
   $('lb-sub').textContent=(comp.subtitle||'')
     +(allRounds.length>1?(' · Day '+dayNo+' · '+(round.course_name||'')):'')+' · '+f.label;
@@ -1273,6 +1817,9 @@ function matchCell(m,i){
 }
 
 // ---------- gate ----------
+function hideGate(){ const g=$('gate'); g.classList.remove('on'); g.style.display='none' }
+function dropSplash(){ const s=$('splash'); if(s){ s.classList.add('gone');
+  setTimeout(()=>{ if(s.parentNode)s.parentNode.removeChild(s) },220) } }
 // Scoring needs an account. A PIN let people score all day and never become a
 // user — no handicap, no history, nothing to come back to.
 let gMode='up';
@@ -1304,6 +1851,7 @@ function renderGate(){
   $('g-sub').textContent=comp
     ? ((comp.subtitle||'')+' · '+fmt().label+(n?(' · '+n+' playing'):''))
     : '';
+  $('gate').classList.add('on');
   gShow('g-auth');
   gAuthMode('up');
 }
@@ -1335,8 +1883,12 @@ async function gAuth(){
     return;
   }
   if(!res.data||!res.data.session){
-    gErr('Check your email to confirm the account, then come back to this link.');
-    return;
+    // Same as the app — don't strand someone on the first tee waiting for mail
+    const {error:se}=await sb.auth.signInWithPassword({email:em,password:pw});
+    if(se){
+      gErr('Check your email to confirm the account, then come back to this link.');
+      return;
+    }
   }
   if(gMode==='up'&&nm){
     await sb.rpc('gc_create_profile',{p_display_name:nm}).catch(()=>{});
@@ -1353,7 +1905,7 @@ async function gMagic(){
     +'. Open it on this phone and you’ll come straight back here.</span>');
 }
 function watchBoard(){
-  watch=true; $('gate').style.display='none';
+  watch=true; hideGate();
   show('v-board'); renderBoard();
 }
 async function joinThisComp(){
@@ -1375,14 +1927,15 @@ async function afterSignIn(){
     myTeam=(myPlace.team_id&&teams.some(t=>t.id===myPlace.team_id))?myPlace.team_id:null;
 
     if(myTeam){
-      $('gate').style.display='none';
+      hideGate();
       renderScore(); startSync();
       toast('Scoring as '+myPlace.display_name);
       return;
     }
     // In the comp, but not in a team for this day
     $('g-sub').textContent='You’re in this comp, but not in a team yet.';
-    gShow('g-pick');
+    $('gate').classList.add('on');
+  gShow('g-pick');
     $('g-pick').innerHTML='<div class="note warn"><strong>No team for you yet.</strong><br>'
       +'You’re on the player list, but the organiser hasn’t put you in a team for '
       +(allRounds.length>1?('Day '+dayNo):'this round')+'. Give them a nudge — you’ll be '
@@ -1397,20 +1950,22 @@ async function afterSignIn(){
   const a=await sb.rpc('gc_is_organiser',{p_comp_id:compId});
   if(a&&a.data){
     isAdmin=true;
-    watch=true; $('gate').style.display='none';
+    watch=true; hideGate();
     show('v-board'); renderBoard(); startSync();
     toast('Organiser view');
     return;
   }
   $('g-sub').textContent='You’re signed in, but you’re not in this comp yet.';
+  $('gate').classList.add('on');
   gShow('g-join');
   startSync();
 }
 
 // ---------- sync ----------
 function setConn(ok){
-  ['conn','conn2'].forEach(id=>{const e=$(id);if(e)e.className='livepill'+(ok?'':' off')});
-  const t=$('conn-t');if(t)t.textContent=ok?'Live':'Offline';
+  connOk=ok;
+  obBadge();                 // owns the pill: a queue outranks "Live"
+  if(ok)obSend();            // back on the air — push whatever's waiting
 }
 let chan=null, others=[];
 
@@ -1501,10 +2056,21 @@ async function init(){
   localStorage.removeItem('gc_pin_'+compId);
   localStorage.removeItem('gc_team_'+compId);
 
+  // Pick up any scores this phone never managed to send — from earlier today,
+  // or from a round where the signal died and the app was closed.
+  obLoad();
+  window.addEventListener('online',()=>{connOk=true;obBadge();obSend()});
+  window.addEventListener('offline',()=>{connOk=false;obBadge()});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)obSend()});
+  window.addEventListener('beforeunload',e=>{
+    if(outbox.length){e.preventDefault();e.returnValue=''}
+  });
+
   const {data:{session}}=await sb.auth.getSession();
   if(session){
-    if(!await loadAll())return;
+    if(!await loadAll()){ dropSplash(); return }
     await afterSignIn();
+    dropSplash();
     return;
   }
 
@@ -1513,9 +2079,11 @@ async function init(){
     document.body.innerHTML=
       '<div style="color:#fff;padding:40px;text-align:center;font-family:sans-serif">'
       +'Comp not found.</div>';
+    dropSplash();
     return;
   }
   renderGate();
+  dropSplash();
 }
 (function boot(){ if(typeof supabase==='undefined'){setTimeout(boot,100);return} init() })();
 </script>

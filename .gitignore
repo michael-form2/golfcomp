@@ -31,3 +31,10 @@ may-open.html
 may-open-legacy.html
 may-open-local.html
 ritchie-cup.html
+
+# superseded icon attempts
+favicon.svg
+favicon-180.png
+
+# local safety copies
+*.bak-*

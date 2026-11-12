@@ -30,3 +30,8 @@ Artwork/
 # Excel + PDFs from past events
 *.xlsx
 *.pdf
+
+# Superseded icon attempts — the real icons are apple-touch-icon.png,
+# favicon-*.png, icon-*.png and mark.png
+favicon.svg
+favicon-180.png
