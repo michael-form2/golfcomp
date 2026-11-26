@@ -2223,6 +2223,13 @@ let four=[], fourTeams=null, fourGame=null;
 // The game comes before the players because the game decides how many you need:
 // a four-ball is exactly four, match play is exactly two, the rest take 2 to 4.
 const FOUR_GAMES=[
+  // Stableford first: it's what a social group actually plays. Until now the
+  // only games here were head-to-head ones, so playing stableford with a
+  // couple of mates meant going off and creating a whole named comp instead.
+  {k:'stableford_individual',n:'Stableford',min:2,max:4,
+   d:'Points off your handicap. Most points wins.'},
+  {k:'stroke_individual',n:'Stroke (Nett)',min:2,max:4,
+   d:'Count every shot. Handicap comes off at the end, lowest nett wins.'},
   {k:'bestball_match',n:'Four-Ball Match Play',min:4,max:4,
    d:'Two pairs. Better score in each pair takes the hole.'},
   {k:'matchplay',n:'Match Play',min:2,max:2,
@@ -2488,7 +2495,8 @@ async function startFour(){
   }
 
   const gname={bestball_match:'four-ball',matchplay:'match',skins:'skins',
-               perch:'perch',holes_won:'match'}[game]||'game';
+               perch:'perch',holes_won:'match',
+               stableford_individual:'stableford',stroke_individual:'stroke'}[game]||'game';
   const {data,error}=await sb.rpc('gc_create_comp_multi',{
     p_group_id:gid,
     p_name:(c?c.name:'Golf')+' '+gname,

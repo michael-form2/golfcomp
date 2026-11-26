@@ -233,7 +233,7 @@ input.pin{width:100%;border:1.5px solid #ddd5c7;border-radius:14px;padding:15px;
   <header class="top">
     <div class="toprow">
       <div style="display:flex;align-items:center;gap:9px">
-        <button class="backbtn" onclick="location.href='/app'" aria-label="Dashboard">←</button>
+        <button class="backbtn" onclick="leaveScoring()" aria-label="Dashboard">←</button>
         <div class="brand"><img class="mark" src="/mark.png" alt="" width="32" height="32">GolfComp</div>
       </div>
       <span class="livepill" id="conn"><i></i><span id="conn-t">Live</span></span>
@@ -358,7 +358,8 @@ let sb=null, compId=null, comp=null, round=null, players=[], holes=[], teams=[],
     scores={}, teamScores={}, noms={}, locks={},
     myTeam=null, pin='', isAdmin=false, hole=1, watch=false, pollT=null,
     myPlace=null,   // set when a signed-in player is in this comp
-    allRounds=[], allHoles=[], dayNo=null, boardTab='day', groups=[], allGroups=[];
+    allRounds=[], allHoles=[], dayNo=null, boardTab='day', groups=[], allGroups=[],
+    holeRestored=null;   // round whose saved hole we've already restored
 
 function $(i){return document.getElementById(i)}
 
@@ -515,6 +516,9 @@ async function loadAll(){
   noms={}; (n.data||[]).forEach(r=>{(noms[r.team_id]=noms[r.team_id]||{})[r.hole]=r.comp_player_id});
   locks={}; (l.data||[]).forEach(r=>{locks[r.team_id]=r.locked});
   obApply();   // anything still waiting to send stays on the screen
+  // Land back on the hole you left, but only once per round — loadAll also
+  // runs on every poll, and restoring there would drag you back mid-round.
+  if(holeRestored!==round.id){ restoreHole(); holeRestored=round.id }
   return true;
 }
 
@@ -1339,8 +1343,27 @@ function compFinished(){
     (allRounds.length<2 || allRounds.every(r=>!r.started||r.round_no<=dayNo)) &&
     dayNo===allRounds[allRounds.length-1].round_no;
 }
-function stepHole(d){hole=Math.max(1,Math.min(18,hole+d));renderScore()}
-function jump(n){hole=n;renderScore()}
+// Which hole you're on is remembered per round on this device. Without it,
+// stepping out to the dashboard and back dropped you on hole 1 and you had to
+// find your way to the 14th again.
+function holeKey(){ return round?('gc_hole_'+round.id):null }
+function saveHole(){ const k=holeKey(); if(k)try{localStorage.setItem(k,String(hole))}catch(e){} }
+function restoreHole(){
+  const k=holeKey(); if(!k)return;
+  try{ const v=parseInt(localStorage.getItem(k)||'',10); if(v>=1&&v<=18)hole=v }catch(e){}
+}
+function stepHole(d){hole=Math.max(1,Math.min(18,hole+d));saveHole();renderScore()}
+function jump(n){hole=n;saveHole();renderScore()}
+
+// The back arrow is a full page navigation out of scoring, and it sits next to
+// the logo where it's easy to catch by accident. Say what will happen.
+function leaveScoring(){
+  const mid = round && round.started && !watch
+    && Object.keys(scores||{}).length>0 && !compFinished();
+  if(mid && !confirm('Back to the dashboard? Your card is saved — you’ll come '
+    +'straight back to hole '+hole+'.'))return;
+  location.href='/app';
+}
 
 // ---------- per-hole games ----------
 // Each hole is settled on its own. Best Stableford score takes it; if two or
@@ -1519,7 +1542,8 @@ async function pickDay(n){
   if(n===dayNo&&boardTab==='day')return;
   dayNo=n; boardTab='day';
   await loadAll();
-  hole=1;
+  // switching day lands on that day's own hole, not back at the 1st
+  holeRestored=null; hole=1; restoreHole(); holeRestored=round.id;
   renderBoard();
 }
 async function showOverall(){
