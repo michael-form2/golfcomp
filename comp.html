@@ -69,6 +69,9 @@ button{cursor:pointer}
 .prow:last-of-type{border-bottom:none}
 .prow .nm{font-weight:800;font-size:13px;min-width:0;overflow:hidden}
 .prow .nm small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;margin-top:2px}
+/* Running total for the round, per player — the bottom bar only ever showed
+   your own, so you couldn't tell the boys where they were up to. */
+.prow .nm small.run{color:var(--green);font-weight:900}
 .prow .nm .tag{display:block;font-size:8.5px;font-weight:900;letter-spacing:.5px;margin-top:3px;
   color:#a8861e}
 .prow.counts{background:#fdf8ea}
@@ -897,9 +900,15 @@ function renderScore(){
         mintag='<span class="tag" style="background:'+(met?'rgba(45,106,79,.12)':'rgba(217,180,93,.22)')
           +';color:'+(met?'var(--good)':'#8a6d1f')+'">'+got+'/'+need+(met?' ✓':'')+'</span>';
       }
+      // Where this player is up to for the round, not just this hole
+      const rc=playerCard(pid);
+      const run=rc.holes
+        ? '<small class="run">'+rc.shots+' shot'+(rc.shots===1?'':'s')+' · '+rc.pts
+          +' pt'+(rc.pts===1?'':'s')+' · thru '+rc.holes+'</small>'
+        : '';
       return divider+'<div class="prow'+(counts&&team?' counts':'')+'">'
         +'<div class="nm">'+esc(p.name||'?')+'<small>'+sh+' shot'+(sh===1?'':'s')+' here'
-        +hcpTag(p)+'</small>'+tag+mintag+'</div>'
+        +hcpTag(p)+'</small>'+run+tag+mintag+'</div>'
         +'<div class="step"><button onclick="stepPlayer(\''+pid+'\',-1)" '+(locked?'disabled':'')+'>−</button>'
         +'<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
         +'onchange="setPlayer(\''+pid+'\',this.value)" '+(locked?'disabled':'')+'>'
