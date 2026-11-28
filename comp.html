@@ -2042,6 +2042,9 @@ async function afterSignIn(){
     toast('Organiser view');
     return;
   }
+  // this branch set the subtitle but never the title, so the card sat there
+  // saying "Loading…" over a comp that had finished loading
+  $('g-name').textContent=(comp&&comp.name)||'This comp';
   $('g-sub').textContent='You’re signed in, but you’re not in this comp yet.';
   $('gate').classList.add('on');
   gShow('g-join');
