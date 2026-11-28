@@ -1978,7 +1978,8 @@ async function gAuth(){
     }
   }
   if(gMode==='up'&&nm){
-    await sb.rpc('gc_create_profile',{p_display_name:nm}).catch(()=>{});
+    // same trap as the email-verify call: rpc() is thenable but has no .catch
+    try{ await sb.rpc('gc_create_profile',{p_display_name:nm}) }catch(e){}
   }
   await afterSignIn();
 }

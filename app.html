@@ -3514,8 +3514,14 @@ function boot(){
   sb.auth.onAuthStateChange(async(ev)=>{
     if(ev==='SIGNED_IN'||ev==='INITIAL_SESSION'){
       if(CAME_FROM_EMAIL_LINK){
-        const {data}=await sb.rpc('gc_mark_email_verified').catch(()=>({data:false}));
-        if(data)toast('Email verified');
+        // sb.rpc() returns a query builder: it's thenable but has no .catch,
+        // so chaining one threw right here — at the exact moment somebody
+        // clicked the link in their verification email. Nobody has ever been
+        // marked verified because of it.
+        try{
+          const {data}=await sb.rpc('gc_mark_email_verified');
+          if(data)toast('Email verified');
+        }catch(e){ reportError('verify',e) }
       }
       route();
     }
