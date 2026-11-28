@@ -1773,7 +1773,7 @@ function rdBanner(){
     +'border-left:3px solid var(--gold)">'
     +'<b style="font-size:13.5px">Round in progress</b>'
     +'<div class="small" style="margin:2px 0 11px">'+esc(d.label||'Your card')
-    +' · '+n+' hole'+(n===1?'':'s')+' entered'
+    +' · '+(n?(n+' hole'+(n===1?'':'s')+' entered'):'no scores yet')
     +(d.partner?(' · with '+esc(d.partner.name)):'')+'</div>'
     +'<button class="primary" onclick="resumeRound()">Pick up where you left off →</button>'
     +'<button class="ghostbtn" onclick="binRound()">Bin it</button></section>';
@@ -1811,11 +1811,24 @@ async function loadHoles(){
   renderRoundHole();
 }
 
+// Two Micks both showed as "Mick" — you couldn't tell whose row was whose.
+// Only shorten to a first name when it's actually unambiguous.
+function shortNames(a,b){
+  const fa=String(a||'You').trim(), fb=String(b||'').trim();
+  const a1=fa.split(' ')[0], b1=fb.split(' ')[0];
+  if(!fb)return [a1,''];
+  if(a1.toLowerCase()!==b1.toLowerCase())return [a1,b1];
+  // same first name — add whatever distinguishes them
+  const rest=(s,f)=>{const r=s.slice(f.length).trim();return r?(f+' '+r):f};
+  return [rest(fa,a1), rest(fb,b1)];
+}
+
 function renderRoundHole(){
   const h=holeOf(rdHole);
   const myH=me.handicap==null?36:Number(me.handicap);
-  const rows=[{id:'me',name:(me.display_name||'You').split(' ')[0],hcp:myH,store:card}];
-  if(partner)rows.push({id:'pa',name:partner.name.split(' ')[0],hcp:partner.hcp==null?36:Number(partner.hcp),store:cardP});
+  const [myLabel,paLabel]=shortNames(me.display_name,partner?partner.name:'');
+  const rows=[{id:'me',name:myLabel,hcp:myH,store:card}];
+  if(partner)rows.push({id:'pa',name:paLabel,hcp:partner.hcp==null?36:Number(partner.hcp),store:cardP});
 
   let body='';
   rows.forEach(r=>{
@@ -1858,14 +1871,14 @@ function renderRoundHole(){
   }
   const par=holes.reduce((a,b)=>a+b.par,0);
   // One row per player: name, gross, points
-  const myName=(me.display_name||'You').split(' ')[0];
+  const myName=myLabel;
   let totBar='<div class="tot2">'
     +'<div class="r"><div><div class="who">'+esc(myName)+'</div>'
     +'<div class="g">'+(n1?('gross '+t1+' · thru '+n1):'no scores yet')
     +(n1===18?(' · '+(t1-par>0?'+':'')+(t1-par)+' vs par'):'')+'</div></div>'
     +'<div></div><div class="p">'+pts1+'<em>PTS</em></div></div>';
   if(partner){
-    totBar+='<div class="r"><div><div class="who">'+esc(partner.name.split(' ')[0])+'</div>'
+    totBar+='<div class="r"><div><div class="who">'+esc(paLabel)+'</div>'
       +'<div class="g">'+(n2?('gross '+t2+' · thru '+n2):'no scores yet')+'</div></div>'
       +'<div></div><div class="p">'+pts2+'<em>PTS</em></div></div>';
   }
@@ -1919,7 +1932,7 @@ function renderRoundHole(){
     +(ok
       ? 'Check the card →'
       : (partner
-          ? ('You '+n1+' · '+esc(partner.name.split(' ')[0])+' '+n2+' of 18')
+          ? ('You '+n1+' · '+esc(paLabel)+' '+n2+' of 18')
           : (n1+' of 18 holes')))
     +'</button>'
     +(ok?'':'<div class="fine" style="margin-top:7px">A round needs at least 14 holes'
@@ -1947,10 +1960,11 @@ function renderReview(){
   const pt=(s,hcp)=>{let t=0;for(let i=1;i<=18;i++){const h=holeOf(i);
     const p=stbl(s[i]>0?s[i]:null,h.par,strokesOn(hcp,h.si));if(p!=null)t+=p}return t};
 
+  const [rvMe,rvPa]=shortNames(me.display_name,partner?partner.name:'');
   const gridCss=partner?'grid-template-columns:34px 1fr 1fr':'grid-template-columns:34px 1fr';
   let rows='<div class="rvhead" style="'+gridCss+'"><div>Hole</div><div>'
-    +esc((me.display_name||'You').split(' ')[0])+'</div>'
-    +(partner?('<div>'+esc(partner.name.split(' ')[0])+'</div>'):'')+'</div>';
+    +esc(rvMe)+'</div>'
+    +(partner?('<div>'+esc(rvPa)+'</div>'):'')+'</div>';
 
   for(let i=1;i<=18;i++){
     const h=holeOf(i);
