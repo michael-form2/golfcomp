@@ -2036,7 +2036,9 @@ async function joinThisComp(){
 // Work out where a signed-in person belongs and let them in.
 async function afterSignIn(){
   await loadAll();
-  const {data:place}=await sb.rpc('gc_my_place',{p_comp_id:compId});
+  // ask for the day actually on screen, not whichever one the server picks
+  const {data:place}=await sb.rpc('gc_my_place',
+    {p_comp_id:compId, p_round_id:round?round.id:null});
   if(place&&place.length){
     myPlace=place[0];
     isAdmin=!!myPlace.is_organiser;
@@ -2051,6 +2053,7 @@ async function afterSignIn(){
       return;
     }
     // In the comp, but not in a team for this day
+    $('g-name').textContent=(comp&&comp.name)||'This comp';   // was stuck on "Loading…"
     $('g-sub').textContent='You’re in this comp, but not in a team yet.';
     $('gate').classList.add('on');
   gShow('g-pick');
