@@ -1188,11 +1188,24 @@ function renderScore(){
     +'<button onclick="stepHole(-1)" '+(hole<=1?'disabled':'')+'>← PREV</button>'
     +'<div class="ctr"><span class="b">'+hole+'</span><span class="s">OF 18</span></div>'
     +'<button onclick="stepHole(1)" '+(hole>=18?'disabled':'')+'>NEXT →</button></div>'
+    // Once every hole is in, handing the card in is the only thing left to do,
+    // so it stops being a quiet ghost button at the bottom of the page.
+    +(amScorer()&&!locks[myTeam]&&tot.holes>=18
+      ? '<section class="card" style="padding:15px 16px;margin-bottom:11px;'
+        +'border:2px solid var(--green);background:#f1f7f3">'
+        +'<b style="font-size:14px;color:var(--green)">All 18 holes are in.</b>'
+        +'<div class="fine" style="text-align:left;margin:3px 0 11px">Hand the card in and '
+        +'it goes to the leaderboard and everyone’s handicap. You’ll need the organiser to '
+        +'unlock it after that.</div>'
+        +'<button class="primary" style="margin:0" onclick="lockCard(true)">'
+        +'Submit card →</button></section>'
+      : '')
     +strip+notes+rivals
     +(!amScorer() ? ''
       : (!!locks[myTeam]
         ? (isAdmin?'<button class="ghostbtn" onclick="lockCard(false)">Unlock card (admin)</button>':'')
-        : '<button class="ghostbtn" onclick="lockCard(true)">Submit card &amp; lock</button>'))
+        : (tot.holes>=18 ? ''
+           : '<button class="ghostbtn" onclick="lockCard(true)">Submit card &amp; lock</button>')))
     +(isAdmin&&!round.started?'<button class="primary" onclick="startRound()">Start the round</button>':'');
   renderPresence();
   obBadge();   // the round may have just finished — the pill should say so
