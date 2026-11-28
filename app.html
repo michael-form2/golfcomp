@@ -81,6 +81,11 @@ button{font:inherit;cursor:pointer}
 
 .section{display:flex;justify-content:space-between;align-items:center;margin:22px 3px 10px}
 .section h2{font-size:17px;letter-spacing:-.3px;margin:0}
+/* The count beside a step heading — "6 players", "4 teams", "not set". It was
+   the same faint grey as body copy and read as a caption, when it's actually
+   the status of the step. */
+.section .small{flex:0 0 auto;background:#efe9dc;color:var(--green);border-radius:99px;
+  padding:5px 11px;font-size:10.5px;font-weight:900;letter-spacing:.2px;white-space:nowrap}
 .section button{border:0;background:none;color:var(--green);font-size:10.5px;font-weight:900;padding:0}
 
 /* ---------- handicap ---------- */
@@ -679,6 +684,34 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
   </header>
   <main class="content"><div id="cs-body"></div></main>
 </div>
+
+<!-- Players and playing groups get their own screens — they were the two
+     longest blocks on the setup page. -->
+<div class="sheet-wrap" id="sh-cs-players"><div class="sheet">
+  <div class="handle"></div>
+  <div class="sheettop">
+    <button class="sheetback" onclick="closeSheet('sh-cs-players')" aria-label="Back">←</button>
+    <h2>Who&rsquo;s playing</h2>
+  </div>
+  <p class="sub" id="cs-players-sub">—</p>
+  <div class="sheetbody"><div id="cs-players-body"></div></div>
+  <div class="stick">
+    <button class="primary" onclick="closeSheet('sh-cs-players')">Done</button>
+  </div>
+</div></div>
+
+<div class="sheet-wrap" id="sh-cs-groups"><div class="sheet">
+  <div class="handle"></div>
+  <div class="sheettop">
+    <button class="sheetback" onclick="closeSheet('sh-cs-groups')" aria-label="Back">←</button>
+    <h2>Playing groups</h2>
+  </div>
+  <p class="sub" id="cs-groups-sub">—</p>
+  <div class="sheetbody"><div id="cs-groups-body"></div></div>
+  <div class="stick">
+    <button class="primary" onclick="closeSheet('sh-cs-groups')">Done</button>
+  </div>
+</div></div>
 
 <!-- ============ REVIEW & SIGN ============ -->
 <div id="v-review" class="screen">
@@ -2989,15 +3022,12 @@ function csDay(){
 }
 function csPickDay(id){ csRoundId=id; renderComp() }
 // The roster collapses once teams exist; this opens it to add or swap someone.
-let csPlayersOpen=false;
-function csTogglePlayers(){ csPlayersOpen=!csPlayersOpen; renderComp() }
 
 function renderComp(){
   const c=cs.comp, ps=cs.players||[];
   const rs=csRounds();
   const r=csDay();
   const ts=(r.teams!==undefined)?(r.teams||[]):(cs.teams||[]);
-  const teamsBuilt=ts.length>0;
   const f=fmtOf(r.format);
   const multi=rs.length>1;
   $('cs-kicker').textContent=rs.some(x=>x.started)?'Live now':'Setting up';
@@ -3006,28 +3036,28 @@ function renderComp(){
     +' · <a onclick="showRules(\''+r.format+'\')" style="color:inherit;font-weight:900;'
     +'text-decoration:underline;cursor:pointer">rules</a>';
 
-  // 1. Players
-  // Once the teams are up they list everyone with their handicap anyway, so the
-  // full roster above them is the same names twice. Collapse it to a line, and
-  // keep one button for the thing you actually come back for: someone's pulled
-  // out and you need to swap them.
-  const collapsed=teamsBuilt&&!csPlayersOpen;
+  // 1. Players — a summary here; the roster and the invite tools live on their
+  // own screen, because this page was already long before you added anyone.
+  const waiting=ps.filter(p=>!p.joined&&!placeholderEmail(p.email)).length;
   let h='<div class="section"><h2><span class="stepnum'+(ps.length>1?' done':'')+'">1</span>'
     +'Who’s playing</h2><span class="small">'
     +(ps.length?(ps.length+(ps.length===1?' player':' players')):'nobody yet')
-    +'</span></div>';
-  if(collapsed){
-    const waiting=ps.filter(p=>!p.joined&&!placeholderEmail(p.email)).length;
-    h+='<section class="card" style="padding:12px 13px;margin-bottom:4px">'
-      +'<div style="display:flex;align-items:center;gap:10px">'
-      +'<div style="flex:1;min-width:0;font-size:11.5px;color:var(--muted);font-weight:700">'
-      +'<strong style="color:var(--ink)">'+ps.length+' in</strong>'
-      +(waiting?(' · '+waiting+' still to join'):'')
-      +'</div>'
-      +'<button class="ghostbtn" style="margin:0;width:auto;padding:8px 13px;font-size:11px"'
-      +' onclick="csTogglePlayers()">Add or swap someone</button>'
-      +'</div></section>';
-  } else {
+    +'</span></div>'
+    +'<section class="card" style="padding:13px">'
+    +(ps.length
+      ? ('<div style="font-size:11.5px;line-height:1.55;color:var(--ink)">'
+         +ps.map(p=>esc(String(p.name||'').split(' ')[0])).join(', ')+'</div>'
+         +(waiting?('<div class="fine" style="text-align:left;margin-top:6px">'
+             +waiting+' still to join — they can play either way.</div>'):''))
+      : '<div class="empty" style="padding:10px 0">Nobody yet.</div>')
+    +'<button class="'+(ps.length>1?'ghostbtn':'primary')+'" style="margin-top:10px" '
+    +'onclick="openSheet(\'sh-cs-players\')">'
+    +(ps.length?'Add or remove players →':'Add players →')+'</button>'
+    +'</section>';
+
+  // The full roster + invite tools, rendered into their own full-screen panel
+  let hp='';
+  {
   // Who's on whose team, so the pairings show up here the moment you build them
   // instead of only down in the Teams step.
   const teamNo={}, teamMates={};
@@ -3040,8 +3070,8 @@ function renderComp(){
         .filter(Boolean);
     });
   });
-  h+='<section class="card" style="padding:13px">';
-  h+='<div class="plist">'+ps.map(p=>{
+  hp+='<section class="card" style="padding:13px">';
+  hp+='<div class="plist">'+ps.map(p=>{
     const ini=(p.name||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
     const tn=teamNo[p.id];
     const badge=tn
@@ -3086,7 +3116,7 @@ function renderComp(){
       +'<button class="x" onclick="removePlayer(\''+p.id+'\')">×</button></div>';
   }).join('')+'</div>';
 
-  h+='<div class="tabs" style="grid-template-columns:1fr 1fr 1fr">'
+  hp+='<div class="tabs" style="grid-template-columns:1fr 1fr 1fr">'
     +'<button class="'+(csTab==='recent'?'on':'')+'" onclick="csSetTab(\'recent\')">Played with</button>'
     +'<button class="'+(csTab==='phone'?'on':'')+'" onclick="csSetTab(\'phone\')">Mobile</button>'
     +'<button class="'+(csTab==='email'?'on':'')+'" onclick="csSetTab(\'email\')">Email</button>'
@@ -3100,12 +3130,7 @@ function renderComp(){
     +'<strong>'+holding.length+' with no real contact:</strong> '
     +holding.map(p=>esc(p.name)).join(', ')+'. They can score, but they can’t be sent a '
     +'sign-in link. Add a mobile and send it from your own WhatsApp — quickest fix.</div>';
-  if(teamsBuilt){
-    h+='<button class="linkbtn" style="width:100%;border:0;background:none;color:var(--muted);'
-      +'font-size:10.5px;font-weight:800;text-decoration:underline;padding:10px 0 2px;'
-      +'cursor:pointer;font-family:inherit" onclick="csTogglePlayers()">Hide the full list</button>';
-  }
-  h+='</section>';
+  hp+='</section>';
   }
 
   // 2. The days
@@ -3144,6 +3169,34 @@ function renderComp(){
           +'<div class="fine" style="text-align:left;margin:7px 0 11px">Most trips keep the same '
           +'pairings all weekend. Or build fresh ones below.</div>';
       }
+      // Nine players don't go into pairs. Say so before the teams are built,
+      // and offer the formats that do fit — it used to silently make one team
+      // of three, which in a best-ball is a third ball nobody else gets.
+      const tsz=r.team_size||f.size||2;
+      const rem=ps.length%tsz;
+      if(rem){
+        const odd=ps.length-rem;
+        h+='<div class="note warn" style="margin-bottom:11px">'
+          +'<strong>'+ps.length+' players won’t split into '
+          +(tsz===2?'pairs':('teams of '+tsz))+'.</strong> '
+          +'You’d get '+Math.floor(ps.length/tsz)+' proper team'
+          +(Math.floor(ps.length/tsz)===1?'':'s')+' and '+rem+' left over — '
+          +'so one team carries an extra player and an extra ball. '
+          +'In a best ball that team is a shot better off on most holes.'
+          +'<div style="margin-top:9px;display:flex;gap:7px;flex-wrap:wrap">'
+          +fitsFor(ps.length).filter(k=>k!==f.key).map(k=>{
+            const ff=fmtOf(k);
+            return '<button onclick="csSetFormat(\''+k+'\')" '
+              +'style="border:1.5px solid var(--green);background:#fff;color:var(--green);'
+              +'border-radius:11px;padding:7px 12px;font-size:11px;font-weight:900;'
+              +'cursor:pointer;font-family:inherit">'+esc(ff.name)+'</button>';
+          }).join('')
+          +'</div>'
+          +'<div style="margin-top:8px;font-size:10.5px;opacity:.85">'
+          +'Or add '+(tsz-rem)+' more player'+((tsz-rem)===1?'':'s')+', '
+          +'or carry on and let one team run with an extra.</div>'
+          +'</div>';
+      }
       h+='<button class="'+(prevHasTeams&&!built?'ghostbtn':'primary')+'" onclick="autoTeams()">'
         +(built?'Rebuild teams — balanced by handicap':'Build teams — balanced by handicap')+'</button>'
         +'<div class="fine" style="text-align:left;margin-top:7px">Pairs the strongest with the '
@@ -3177,11 +3230,29 @@ function renderComp(){
   h+='<div class="section"><h2><span class="stepnum'+(gs.length?' done':'')+'">'+stepGroups
     +'</span>Playing groups'+(multi?(' · Day '+r.round_no):'')+'</h2>'
     +'<span class="small">'+(gs.length?(gs.length+(gs.length===1?' group':' groups')):'not set')+'</span></div>';
-  h+='<section class="card" style="padding:13px">';
+  h+='<section class="card" style="padding:13px">'
+    +(ps.length<2
+      ? '<div class="empty" style="padding:10px 0">Add players first.</div>'
+      : ((gs.length
+          ? ('<div style="font-size:11.5px;line-height:1.55;color:var(--ink)">'
+             +gs.map((g,i)=>'Group '+(g.group_no+1)+': '
+               +(g.members||[]).map(id=>{const q=ps.find(y=>y.id===id);
+                 return q?esc(String(q.name||'').split(' ')[0]):''}).filter(Boolean).join(', ')
+               ).join('<br>')+'</div>')
+          : '<div class="fine" style="text-align:left">Not set — everyone just scores '
+            +'their own card. Set them and a group shares one card.</div>')
+        +'<button class="'+(gs.length?'ghostbtn':'primary')+'" style="margin-top:10px" '
+        +'onclick="openSheet(\'sh-cs-groups\')">'
+        +(gs.length?'Change the groups →':'Assign groups →')+'</button>'))
+    +'</section>';
+
+  // the groups editor, on its own screen
+  let hg='';
+  hg+='<section class="card" style="padding:13px">';
   if(ps.length<2){
-    h+='<div class="empty">Add players first.</div>';
+    hg+='<div class="empty">Add players first.</div>';
   } else {
-    h+='<div class="fine" style="text-align:left;margin-bottom:10px;line-height:1.55">'
+    hg+='<div class="fine" style="text-align:left;margin-bottom:10px;line-height:1.55">'
       +'<strong style="color:var(--ink)">Who walks round together.</strong> '
       +'Everyone in a group shows up on each other’s scorecard, so one person can '
       +'mark for the lot of you.'
@@ -3200,7 +3271,7 @@ function renderComp(){
       gs.forEach(g=>(g.members||[]).forEach(m=>{inGroup[m]=g.id}));
       const loose=ps.filter(p=>!inGroup[p.id]);
       gs.forEach((g,gi)=>{
-        h+='<div class="tbox" style="margin-top:11px"><div class="th">'
+        hg+='<div class="tbox" style="margin-top:11px"><div class="th">'
           +'<span class="tn">Group '+(g.group_no+1)+'</span>'
           +'<span class="thc"><input type="time" value="'+esc(g.tee_time||'')+'" '
           +'onchange="setTee(\''+g.id+'\',this.value)" style="border:1px solid var(--line);'
@@ -3209,7 +3280,7 @@ function renderComp(){
         (g.members||[]).forEach(pid=>{
           const p=ps.find(x=>x.id===pid); if(!p)return;
           const tno=teamNoOf(ts,pid);
-          h+='<div style="display:flex;align-items:center;gap:8px;padding:7px 2px;'
+          hg+='<div style="display:flex;align-items:center;gap:8px;padding:7px 2px;'
             +'border-bottom:1px solid var(--line)">'
             +'<div style="flex:1;font-size:12px;font-weight:800">'+esc(p.name)
             +(tno!=null?('<span style="color:var(--muted);font-weight:700"> · Team '+(tno+1)+'</span>'):'')
@@ -3220,15 +3291,15 @@ function renderComp(){
               +(x.group_no+1)+'</option>').join('')
             +'</select></div>';
         });
-        if(!(g.members||[]).length)h+='<div class="fine" style="text-align:left;padding:8px 2px">Empty.</div>';
-        h+='</div>';
+        if(!(g.members||[]).length)hg+='<div class="fine" style="text-align:left;padding:8px 2px">Empty.</div>';
+        hg+='</div>';
       });
-      if(loose.length)h+='<div class="note warn" style="margin-top:10px"><strong>Not in a group:</strong> '
+      if(loose.length)hg+='<div class="note warn" style="margin-top:10px"><strong>Not in a group:</strong> '
         +loose.map(p=>esc(p.name)).join(', ')+'. They can still score — they just won’t see '
         +'anyone else’s card.</div>';
     }
   }
-  h+='</section>';
+  hg+='</section>';
 
   // 5. Share
   const stepShare=stepGroups+1;
@@ -3274,6 +3345,14 @@ function renderComp(){
     +'margin-top:16px" onclick="deleteComp()">Delete this comp</button>';
 
   $('cs-body').innerHTML=h;
+  // Players and playing groups each get their own full-screen panel. They were
+  // the two longest blocks on a page you already had to scroll a long way down.
+  if($('cs-players-body'))$('cs-players-body').innerHTML=hp;
+  if($('cs-groups-body'))$('cs-groups-body').innerHTML=hg;
+  if($('cs-players-sub'))$('cs-players-sub').textContent=
+    ps.length?(ps.length+(ps.length===1?' player':' players')):'Nobody yet';
+  if($('cs-groups-sub'))$('cs-groups-sub').textContent=
+    gs.length?(gs.length+(gs.length===1?' group':' groups')):'Not set';
   csRenderAdd();
 }
 
@@ -3400,6 +3479,30 @@ async function autoTeams(){
     p_round_id:r.id,p_team_size:r.team_size});
   if(error){toast(error.message,true);return}
   await openComp(cs.comp.id,csPin); toast('Teams built');
+}
+// Nine players will not go into pairs. The format was fixed once the comp
+// existed, so the only way out was to delete it and start again — this lets you
+// switch to one that actually fits the number you've got.
+async function csSetFormat(key){
+  const r=csDay(), f=fmtOf(key);
+  if(!confirm('Change this day to '+f.name+'? Any teams already built will be cleared.'))return;
+  const {error}=await sb.rpc('gc_update_round',{
+    p_comp_id:cs.comp.id, p_pin:csPin, p_round_id:r.id,
+    p_played_on:r.played_on, p_tee_id:r.tee_id,
+    p_format:key, p_team_size:(f.teams?(f.size||2):1),
+    p_min_contributions:r.min_contributions||0, p_name:r.name});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin);
+  toast('Now playing '+f.name);
+}
+// What you can actually play with this many players.
+function fitsFor(n){
+  const out=[];
+  if(n>=2&&n%2===0)out.push('bestball_stableford');
+  if(n>=3&&n%3===0)out.push('stableford_3man');
+  if(n>=4&&n%4===0)out.push('ambrose_4man');
+  out.push('stableford_individual');
+  return out;
 }
 // A stand-in address so someone can play before you've chased their real one.
 // Nothing can be delivered to it, so it's worth calling out.
