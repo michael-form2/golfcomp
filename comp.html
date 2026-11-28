@@ -280,7 +280,9 @@ input.pin{width:100%;border:1.5px solid #ddd5c7;border-radius:14px;padding:15px;
 </div>
 
 <nav class="bottom" id="nav">
-  <button class="bnav on" id="nav-score" onclick="show('v-score')"><b>✎</b>Score</button>
+  <!-- show() alone just reveals the screen. If it was never rendered — because
+       something earlier sent us to the board — you get a blank page. -->
+  <button class="bnav on" id="nav-score" onclick="show('v-score');renderScore()"><b>✎</b>Score</button>
   <button class="bnav" id="nav-board" onclick="show('v-board');renderBoard()"><b>▦</b>Leaderboard</button>
 </nav>
 </div>
@@ -932,23 +934,27 @@ function renderScore(){
       // Stableford and the points games only — in stroke or a match you have to
       // hole out, so there's nothing to pick up.
       const canPu=(f.agg==='individual'||f.agg==='points');
+      // Sits under the stepper, where your thumb already is — not over in the
+      // name column on the far side of the row.
       const puBtn=canPu
         ? '<button onclick="pickUp(\''+pid+'\')" '+(locked?'disabled':'')
-          +' style="margin-top:4px;border:1px solid '+(isPu?'var(--green)':'#e2dbcd')
+          +' style="width:100%;margin-top:5px;border:1px solid '+(isPu?'var(--green)':'#e2dbcd')
           +';background:'+(isPu?'var(--green)':'#fff')+';color:'+(isPu?'#fff':'var(--muted)')
-          +';border-radius:9px;padding:3px 8px;font-size:9px;font-weight:900;'
-          +'letter-spacing:.4px;cursor:pointer">'+(isPu?'PICKED UP ✕':'PICK UP')+'</button>'
+          +';border-radius:10px;padding:5px 6px;font-size:9px;font-weight:900;'
+          +'letter-spacing:.4px;cursor:pointer;font-family:inherit">'
+          +(isPu?'PICKED UP ✕':'PICK UP')+'</button>'
         : '';
       return divider+'<div class="prow'+(counts&&team?' counts':'')+(isPu?' pu':'')+'">'
         +'<div class="nm">'+esc(p.name||'?')+'<small>'+sh+' shot'+(sh===1?'':'s')+' here'
-        +hcpTag(p)+'</small>'+run+tag+mintag+puBtn+'</div>'
-        +'<div class="step"><button onclick="stepPlayer(\''+pid+'\',-1)" '+(locked?'disabled':'')+'>−</button>'
+        +hcpTag(p)+'</small>'+run+tag+mintag+'</div>'
+        +'<div><div class="step"><button onclick="stepPlayer(\''+pid+'\',-1)" '+(locked?'disabled':'')+'>−</button>'
         +(isPu
           ? '<input type="text" value="PU" readonly title="Picked up — counts as '+g+'" '
             +'style="text-align:center;font-weight:900;color:var(--muted)">'
           : '<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
             +'onchange="setPlayer(\''+pid+'\',this.value)" '+(locked?'disabled':'')+'>')
         +'<button onclick="stepPlayer(\''+pid+'\',1)" '+(locked?'disabled':'')+'>+</button></div>'
+        +puBtn+'</div>'
         +(team
           ? '<button class="use'+(counts?' on':'')+((tied&&th.needsPick)?' pick':'')+'" '
             +(locked||pts==null?'disabled':'')+' onclick="nominate(\''+pid+'\')">'
@@ -987,9 +993,9 @@ function renderScore(){
       v:(!g.decided||lead.points===0)?'—'
         :(drawn?'ALL SQUARE':(pname(lead.pid).split(' ')[0]+' '+lead.points))};
   } else if(f.agg==='nett'){
-    totLine={l:'Team total · H/C '+tot.hcp, v:(tot.holes?tot.nett+' nett':'—')};
+    totLine={l:'Team total · H/C '+tot.hcp+minStatus(), v:(tot.holes?tot.nett+' nett':'—')};
   } else {
-    totLine={l:'Team total · through '+tot.holes+'/18', v:tot.pts+' pts'};
+    totLine={l:'Team total · through '+tot.holes+'/18'+minStatus(), v:tot.pts+' pts'};
   }
 
   // Initials for the drive/credit markers, kept unique within the team so you
@@ -1396,6 +1402,27 @@ async function takeScoring(){
   if(r!==null){ await loadAll(); renderScore(); toast('You’re keeping score now') }
 }
 
+// Where each player is up to against the minimum — six counting scores each, or
+// six drives in an Ambrose. It was only on the player rows, so the team bar gave
+// no sense of whether you were on track as a team.
+function minStatus(){
+  const need=minNeeded(); if(!need)return '';
+  const f=fmt(), t=teams.find(x=>x.id===myTeam);
+  const mem=(t&&t.members)||[]; if(!mem.length)return '';
+  let got={};
+  if(f.drives){
+    Object.values(teamScores[myTeam]||{}).forEach(r=>{if(r&&r.d)got[r.d]=(got[r.d]||0)+1});
+  } else {
+    got=(teamTotals(myTeam).contribs)||{};
+  }
+  const word=f.drives?'drives':'scores';
+  const parts=mem.map(pid=>{
+    const n=got[pid]||0, ok=n>=need;
+    return '<span style="color:'+(ok?'#9fe3bf':'#efd78b')+'">'
+      +esc(pname(pid).split(' ')[0])+' '+n+'/'+need+(ok?' ✓':'')+'</span>';
+  });
+  return ' · '+word+': '+parts.join(' · ');
+}
 function minNeeded(){
   if(round&&round.min_contributions!=null)return round.min_contributions||0;
   return (comp&&comp.min_contributions)||0;
@@ -2067,7 +2094,10 @@ async function afterSignIn(){
     startSync();
     return;
   }
-  // Signed in but not a player
+  // Signed in but not a player. If gc_my_place errored rather than genuinely
+  // returning nothing, we'd land here and quietly put a player into watch mode,
+  // which is how an organiser ended up stuck on the leaderboard.
+  if(place&&place.error)reportError('my_place',place.error);
   const a=await sb.rpc('gc_is_organiser',{p_comp_id:compId});
   if(a&&a.data){
     isAdmin=true;
