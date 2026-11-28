@@ -2034,12 +2034,15 @@ function renderBoard(){
              holes:tt.holes,low:f.low,unres:tt.unres,parPlayed:parPlayed};
     }).filter(r=>r.holes>0);
   }
-  // Mid-round, a raw nett isn't comparable: teams are at different holes and
-  // the full handicap is being taken off a part-played card. Scale the
-  // allowance to the holes done and show the score against par instead.
+  // You have your whole allowance from the first tee, so the board starts you
+  // at minus your handicap and tracks against par from there: par a hole and
+  // nothing moves, double it and you give two back. Projected nett is simply
+  // the course par plus that number.
+  const coursePar=holes.reduce((a,b)=>a+(b.par||0),0)||72;
   rows.forEach(r=>{
-    r.used=r.holes>=18?r.hcp:(r.hcp*r.holes/18);
-    r.toPar=r.low?Math.round((r.gross-r.used-r.parPlayed)*10)/10:null;
+    r.used=Math.round(r.hcp||0);
+    r.toPar=r.low?(r.gross-r.parPlayed-r.used):null;
+    r.projNett=r.low?(coursePar+r.toPar):null;
   });
   rows.sort((a,b)=>f.low?(a.toPar-b.toPar):(b.primary-a.primary));
   const done=rows.length&&rows.every(r=>r.holes===18);
@@ -2053,7 +2056,8 @@ function renderBoard(){
   let h='<section class="card" style="overflow:hidden"><table class="lb"><thead><tr>'
     +'<th>Pos</th><th>'+((f.agg==='individual'||f.agg==='stroke_individual')?'Player':'Team')+'</th>'
     +(f.agg==='nett'||f.agg==='stroke_individual'?'<th class="num">Gross</th><th class="num">H/C</th>':'')
-    +'<th class="num">'+(f.low?(done?'Nett':'To par'):'Pts')+'</th>'
+    +'<th class="num">'+(f.low?'To par':'Pts')+'</th>'
+    +(f.low?'<th class="num">Nett</th>':'')
     +'<th class="num">Thru</th></tr></thead><tbody>';
   let pos=0,last=null;
   rows.forEach((r,i)=>{
@@ -2062,10 +2066,11 @@ function renderBoard(){
     h+='<tr class="'+(done&&i===0?'win':'')+'"><td><span class="pos">'+(done&&i===0?'🏆 ':'')+pos+'</span></td>'
       +'<td>'+esc(r.label)+'</td>'
       +(f.agg==='nett'||f.agg==='stroke_individual'
-        ? '<td class="num">'+r.gross+'</td><td class="num">'
-          +(r.holes>=18?Math.round(r.hcp):(Math.round(r.used*10)/10))+'</td>'
+        ? '<td class="num">'+r.gross+'</td><td class="num">'+r.used+'</td>'
         : '')
-      +'<td class="num">'+(f.low?(done?r.primary:toParText(r.toPar)):r.primary)+'</td>'
+      +'<td class="num">'+(f.low?toParText(r.toPar):r.primary)+'</td>'
+      +(f.low?('<td class="num"'+(r.holes>=18?' style="font-weight:900"':'')+'>'
+               +r.projNett+(r.holes>=18?'':'*')+'</td>'):'')
       +'<td class="num">'+r.holes+'</td></tr>';
   });
   h+='</tbody></table></section>';
