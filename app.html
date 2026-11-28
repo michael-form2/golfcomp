@@ -3060,7 +3060,8 @@ function renderComp(){
   {
   // Who's on whose team, so the pairings show up here the moment you build them
   // instead of only down in the Teams step.
-  const teamNo={}, teamMates={};
+  const teamNo={}, teamMates={}, inGroup={};
+  (r.groups||[]).forEach(g=>(g.members||[]).forEach(id=>{inGroup[id]=true}));
   ts.forEach(t=>{
     const mem=t.members||[];
     mem.forEach(id=>{
@@ -3111,11 +3112,28 @@ function renderComp(){
         +'style="border:0;background:none;color:var(--muted);font-size:10px;font-weight:900;'
         +'text-decoration:underline;font-family:inherit;padding:4px 2px">'
         +(p.phone?'Change mobile':'Add mobile')+'</button></div>'))
+      // Swap keeps their team slot and playing group; Remove just takes them out
+      +(tn||inGroup[p.id]
+        ? ('<button onclick="event.stopPropagation();startSwap(\''+p.id+'\',\''
+           +esc(String(p.name||'').replace(/'/g,"\\'"))+'\')" '
+           +'style="margin-top:5px;border:1px solid var(--line);background:#fff;'
+           +'color:var(--green);border-radius:9px;padding:3px 9px;font-size:9.5px;'
+           +'font-weight:900;cursor:pointer;font-family:inherit">Swap someone in</button>')
+        : '')
       +'</div>'
       +'<div class="hc">'+Math.round(p.playing_hcp)+'</div>'
       +'<button class="x" onclick="removePlayer(\''+p.id+'\')">×</button></div>';
   }).join('')+'</div>';
 
+  if(csSwapOut){
+    hp+='<div class="note warn" style="margin-top:10px">'
+      +'<strong>Replacing '+esc(csSwapName)+'.</strong> Pick their replacement below — '
+      +'they’ll take '+esc(csSwapName)+'’s team slot and playing group.'
+      +'<button onclick="cancelSwap()" style="display:block;margin-top:8px;border:0;'
+      +'background:none;color:var(--muted);font-size:10.5px;font-weight:900;'
+      +'text-decoration:underline;cursor:pointer;font-family:inherit;padding:2px 0">'
+      +'Cancel the swap</button></div>';
+  }
   hp+='<div class="tabs" style="grid-template-columns:1fr 1fr 1fr">'
     +'<button class="'+(csTab==='recent'?'on':'')+'" onclick="csSetTab(\'recent\')">Played with</button>'
     +'<button class="'+(csTab==='phone'?'on':'')+'" onclick="csSetTab(\'phone\')">Mobile</button>'
@@ -3411,7 +3429,27 @@ async function csRenderAdd(){
     : '<div class="fine" style="text-align:left">Nobody yet — add by email or as a guest.</div>';
 }
 
+// Who we're replacing, if the Swap button started this. The replacement takes
+// their team slot and their place in the playing group.
+let csSwapOut=null, csSwapName='';
+function startSwap(id,name){
+  csSwapOut=id; csSwapName=name||'them';
+  renderComp();
+  const el=$('cs-add'); if(el&&el.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function cancelSwap(){ csSwapOut=null; csSwapName=''; renderComp() }
+
 async function addProfile(pid){
+  if(csSwapOut){
+    const out=csSwapOut, nm=csSwapName;
+    const {error}=await sb.rpc('gc_swap_player',{p_comp_id:cs.comp.id,p_pin:csPin,
+      p_out_comp_player_id:out,p_in_profile_id:pid});
+    if(error){toast(error.message,true);return}
+    csSwapOut=null; csSwapName='';
+    await openComp(cs.comp.id,csPin);
+    toast('Swapped in for '+nm);
+    return;
+  }
   const {error}=await sb.rpc('gc_add_player',{p_comp_id:cs.comp.id,p_pin:csPin,
     p_profile_id:pid,p_guest_name:null,p_handicap:null});
   if(error){toast(error.message,true);return}

@@ -1121,13 +1121,28 @@ function renderScore(){
   let groupPicker='';
   if(myPlace && players.length>1 && f.entry!=='team'){
     const me=myPlace.comp_player_id, on=cardPlayers();
+    // Only offer the people you're actually out there with. When the organiser
+    // has set playing groups that's your group plus your team; otherwise it's
+    // open, because you have to be able to say who you're walking with.
+    const g=myGroupObj();
+    let offer;
+    if(g){
+      offer=(g.members||[]).slice();
+      ((teams.find(x=>x.id===myTeam)||{}).members||[])
+        .forEach(id=>{if(offer.indexOf(id)<0)offer.push(id)});
+      on.forEach(id=>{if(offer.indexOf(id)<0)offer.push(id)});
+      if(offer.indexOf(me)<0)offer.push(me);
+    } else {
+      offer=players.map(p=>p.id);
+    }
+    const pickable=players.filter(p=>offer.indexOf(p.id)>=0);
     groupPicker='<section class="card" style="padding:11px 13px;margin-bottom:11px">'
       +'<div style="font-size:9.5px;font-weight:900;color:var(--muted);'
       +'text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">Scoring for'
       +'<span style="float:right;text-transform:none;letter-spacing:0;font-weight:700">'
-      +'tap to add or drop</span></div>'
+      +(g?'your group':'tap to add or drop')+'</span></div>'
       +'<div style="display:flex;gap:7px;flex-wrap:wrap">'
-      +players.map(p=>{
+      +pickable.map(p=>{
         const isMe=(p.id===me), sel=on.indexOf(p.id)>=0;
         return '<button '+(isMe?'disabled':'onclick="setMyGroup(\''+p.id+'\')"')
           +' style="border:2px solid '+(sel?'var(--green)':'#e2dbcd')
