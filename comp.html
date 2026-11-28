@@ -1168,6 +1168,26 @@ function renderScore(){
       +'</div></section>';
   }
 
+  // On a trip you could only change day from the leaderboard, and even then it
+  // never brought you back to a card. Days live on the scoring screen now.
+  let dayTabs='';
+  if(allRounds.length>1){
+    dayTabs='<div class="hscroll" style="display:flex;gap:7px;overflow-x:auto;'
+      +'padding:0 0 4px;margin-bottom:11px">'
+      +allRounds.map(x=>{
+        const on=(x.round_no===dayNo);
+        const cn=(x.course_name||'').split(' ')[0];
+        return '<button onclick="scoreDay('+x.round_no+')" style="flex:0 0 auto;'
+          +'border:2px solid '+(on?'var(--green)':'#e2dbcd')+';background:'+(on?'var(--green)':'#fff')
+          +';color:'+(on?'#fff':'var(--ink)')+';border-radius:13px;padding:8px 13px;'
+          +'font-size:11.5px;font-weight:900;text-align:left;font-family:inherit">Day '+x.round_no
+          +(x.started?' ●':'')
+          +'<span style="display:block;font-size:9px;font-weight:700;opacity:.75;margin-top:2px">'
+          +esc(cn)+(x.started?'':' · not started')+'</span></button>';
+      }).join('')
+      +'</div>';
+  }
+
   const scoreBanner = amScorer()
     ? ''
     : '<section class="card" style="padding:12px 13px;margin-bottom:11px;'
@@ -1180,7 +1200,7 @@ function renderScore(){
 
   $('sc-body').innerHTML=
     '<div class="who-else" id="who-else" style="display:none"></div>'
-    +scoreBanner+groupPicker
+    +dayTabs+scoreBanner+groupPicker
     +'<section class="card">'
     +'<div class="holehead"><div class="n">Hole '+hole+'</div>'
     +'<div class="i">Par '+h.par+' · SI '+(h.si==null?'—':h.si)+(h.metres?('<br>'+h.metres+'m'):'')+'</div></div>'
@@ -2064,6 +2084,21 @@ async function gMagic(){
 }
 // From the leaderboard, "back" means back to your card. Only someone who isn't
 // playing — a watcher — has nothing to go back to, so they get the dashboard.
+// Switch the card to another day of a trip. Teams differ per day, so my place
+// has to be resolved again for the day being opened.
+async function scoreDay(n){
+  if(n===dayNo){ show('v-score'); renderScore(); return }
+  dayNo=n;
+  await loadAll();
+  const {data:place}=await sb.rpc('gc_my_place',
+    {p_comp_id:compId, p_round_id:round?round.id:null});
+  if(place&&place.length){
+    myPlace=place[0];
+    myTeam=(myPlace.team_id&&teams.some(t=>t.id===myPlace.team_id))?myPlace.team_id:null;
+  }
+  holeRestored=null; hole=1; restoreHole(); holeRestored=round.id;
+  show('v-score'); renderScore();
+}
 function backToScore(){
   if(watch||!myPlace){ location.href='/app'; return }
   show('v-score'); renderScore();

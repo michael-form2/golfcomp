@@ -2183,6 +2183,13 @@ function ago(ts){
   const d=Math.round(s/86400);
   return d===1?'yesterday':(d+'d ago');
 }
+// A whole field joined with "&" runs to four lines on a phone. Name a couple
+// and count the rest.
+function shortList(s){
+  const names=String(s||'').split(' & ').filter(Boolean);
+  if(names.length<=3)return names.join(' & ');
+  return names.slice(0,2).join(', ')+' +'+(names.length-2)+' more';
+}
 async function loadFeed(){
   const b=$('mates-body');
   b.innerHTML='<div class="empty"><span class="spin"></span></div>';
@@ -2199,7 +2206,7 @@ async function loadFeed(){
         +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
         +'<div><div style="font-size:9.5px;font-weight:900;color:var(--good);'
         +'text-transform:uppercase;letter-spacing:.7px">● Playing now</div>'
-        +'<b style="font-size:13.5px">'+esc(r.display_name)+'</b>'
+        +'<b style="font-size:13.5px">'+esc(shortList(r.display_name))+'</b>'
         +'<div class="small">'+esc(r.comp_name||'')+' · '+esc(r.course_name||'')
         +' · thru '+(r.holes_done||0)+'</div></div>'
         +'<button class="ghostbtn" style="margin:0;width:auto;padding:8px 13px;font-size:11px"'
@@ -3249,6 +3256,18 @@ function renderComp(){
           }
           h+='</div>';
         });
+        // Anyone added after the teams were built lands in the comp but in no
+        // team, and nothing said so — they simply weren't on that day's card.
+        const assigned={};
+        ts.forEach(t=>(t.members||[]).forEach(id=>{assigned[id]=true}));
+        const unassigned=ps.filter(p=>!assigned[p.id]);
+        if(unassigned.length){
+          h+='<div class="note warn" style="margin-top:11px">'
+            +'<strong>Not in a team'+(multi?(' for Day '+r.round_no):'')+':</strong> '
+            +unassigned.map(p=>esc(p.name)).join(', ')
+            +'. They won’t be able to score'+(multi?' that day':'')
+            +' — put them in a slot above, or rebuild the teams.</div>';
+        }
       }
     }
     h+='</section>';
@@ -3295,7 +3314,14 @@ function renderComp(){
       +'Groups of 3</button>'
       +'<button class="primary" style="flex:1;margin:0" onclick="autoGroups(4)">'
       +'Groups of 4</button>'
-      +'</div>';
+      +'</div>'
+      // Day two onwards is drawn off the overnight leaderboard — leaders last.
+      +(r.round_no>1
+        ? ('<button class="ghostbtn" style="margin-top:8px" onclick="drawByStanding(4)">'
+           +'Draw off the leaderboard →</button>'
+           +'<div class="fine" style="text-align:left;margin-top:6px">Groups of four '
+           +'ordered on the running total, so the leaders tee off last.</div>')
+        : '');
     if(gs.length){
       const inGroup={};
       gs.forEach(g=>(g.members||[]).forEach(m=>{inGroup[m]=g.id}));
@@ -3562,6 +3588,14 @@ function placeholderEmail(e){
 function teamNoOf(ts,pid){
   for(let i=0;i<ts.length;i++){ if((ts[i].members||[]).indexOf(pid)>=0)return ts[i].team_no }
   return null;
+}
+async function drawByStanding(size){
+  const r=csDay();
+  const {data,error}=await sb.rpc('gc_auto_playing_groups_by_standing',
+    {p_comp_id:cs.comp.id,p_pin:csPin,p_round_id:r.id,p_size:size});
+  if(error){toast(error.message,true);return}
+  await openComp(cs.comp.id,csPin);
+  toast('Drawn off the leaderboard — leaders out last');
 }
 async function autoGroups(size){
   const r=csDay();
