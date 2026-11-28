@@ -561,6 +561,8 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
 
     <div id="verify-banner"></div>
 
+    <div id="round-draft"></div>
+
     <div id="live-wrap"></div>
 
     <div class="section"><h2>Your comps</h2></div>
@@ -1107,7 +1109,9 @@ function toast(m,e){const t=$('toast');t.textContent=m;t.className='toast show'+
   clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2800)}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
   $('nav').style.display=(id==='v-out'||id==='v-name'||id==='v-est'||id==='v-review')
-    ?'none':'grid';window.scrollTo(0,0)}
+    ?'none':'grid';window.scrollTo(0,0);
+  // offer back any round left part-finished
+  if(id==='v-home'&&typeof rdBanner==='function')rdBanner();}
 function anySheetOpen(){ return !!document.querySelector('.sheet-wrap.open') }
 // The panel covers the screen, so the page behind only needs to stop scrolling.
 // No position:fixed, no saved scroll offset, no scrollbar compensation, no
@@ -1715,6 +1719,7 @@ function pickPartner(id,name,hcp,el){
 async function beginRound(withMate){
   if(withMate && !partner){ toast('Pick your playing partner first', true); return; }
   card={}; cardP={}; rdHole=1;
+  rdClear();          // starting a new one replaces any half-finished card
   roundTee = withMate ? csValue('ma') : csValue('so');
   if(!roundTee){toast('Search for your course first',true);return}
   roundDate = withMate ? $('ma-date').value : $('so-date').value;
@@ -1730,6 +1735,64 @@ async function beginRound(withMate){
 }
 
 let card={}, cardP={}, rdHole=1;
+
+// ---------- a round you haven't submitted yet ----------
+// card and cardP only ever lived in memory, so tapping Home — or closing the
+// tab, or a phone call — threw away a part-played round with no way back to
+// it. Every score now goes to this device as well, and the dashboard offers it
+// back until you submit it or bin it.
+const RD_KEY='gc_round_draft';
+function rdSave(){
+  if(!roundTee)return;
+  try{ localStorage.setItem(RD_KEY,JSON.stringify({
+    tee:roundTee, date:roundDate, partner:partner, card:card, cardP:cardP,
+    hole:rdHole, label:($('rd-course')||{}).textContent||'', at:Date.now()
+  })) }catch(e){}
+}
+function rdDraft(){
+  try{
+    const d=JSON.parse(localStorage.getItem(RD_KEY)||'null');
+    if(!d||!d.tee)return null;
+    // a card with nothing on it isn't worth offering back
+    const n=Object.keys(d.card||{}).length+Object.keys(d.cardP||{}).length;
+    return n?d:null;
+  }catch(e){ return null }
+}
+function rdClear(){ try{localStorage.removeItem(RD_KEY)}catch(e){} }
+
+function rdBanner(){
+  const el=$('round-draft'); if(!el)return;
+  const d=rdDraft();
+  if(!d){ el.innerHTML=''; return }
+  const n=Object.keys(d.card||{}).length;
+  el.innerHTML='<section class="card" style="padding:15px 16px;margin-bottom:9px;'
+    +'border-left:3px solid var(--gold)">'
+    +'<b style="font-size:13.5px">Round in progress</b>'
+    +'<div class="small" style="margin:2px 0 11px">'+esc(d.label||'Your card')
+    +' · '+n+' hole'+(n===1?'':'s')+' entered'
+    +(d.partner?(' · with '+esc(d.partner.name)):'')+'</div>'
+    +'<button class="primary" onclick="resumeRound()">Pick up where you left off →</button>'
+    +'<button class="ghostbtn" onclick="binRound()">Bin it</button></section>';
+}
+async function resumeRound(){
+  const d=rdDraft(); if(!d)return;
+  roundTee=d.tee; roundDate=d.date; partner=d.partner||null;
+  show('v-round');
+  if($('rd-course'))$('rd-course').textContent=d.label||'';
+  if($('rd-hint'))$('rd-hint').textContent=partner
+    ? ('Scoring for you and '+partner.name+'.')
+    : 'Enter your score for each hole.';
+  const {data,error}=await sb.rpc('gc_tee_holes',{p_tee_id:roundTee});
+  if(error||!data){toast('Could not load that course',true);show('v-home');return}
+  holes=data;
+  // set the card AFTER loading holes — loadHoles() clears it
+  card=d.card||{}; cardP=d.cardP||{}; rdHole=d.hole||1;
+  renderRoundHole();
+}
+function binRound(){
+  if(!confirm('Throw away this round? The scores you’ve entered will be gone.'))return;
+  rdClear(); rdBanner(); toast('Round discarded');
+}
 
 function strokesOn(hcp,si){hcp=Math.round(hcp||0);if(hcp<=0||si==null)return 0;
   const b=Math.floor(hcp/18);return b+((si<=(hcp-b*18))?1:0)}
@@ -1941,6 +2004,7 @@ function setCard(who,v){
   const n=String(v).trim()===''?null:Math.max(1,Math.min(20,parseInt(v,10)||0));
   const store=(who==='me')?card:cardP;
   if(n==null)delete store[rdHole];else store[rdHole]=n;
+  rdSave();
   renderRoundHole();
 }
 function stepCard(who,d){
@@ -1948,8 +2012,8 @@ function stepCard(who,d){
   const cur=store[rdHole];
   setCard(who,(cur==null?holeOf(rdHole).par:cur)+d);
 }
-function stepRound(d){rdHole=Math.max(1,Math.min(18,rdHole+d));renderRoundHole()}
-function jumpRound(n){rdHole=n;renderRoundHole()}
+function stepRound(d){rdHole=Math.max(1,Math.min(18,rdHole+d));rdSave();renderRoundHole()}
+function jumpRound(n){rdHole=n;rdSave();renderRoundHole()}
 
 async function submitRound(){
   const mine=[]; for(let i=1;i<=18;i++)mine.push(card[i]>0?card[i]:null);
@@ -1962,6 +2026,7 @@ async function submitRound(){
   const {data,error}=await sb.rpc('gc_submit_casual_round',{
     p_tee_id:roundTee, p_played_on:roundDate, p_entries:entries});
   if(error){toast(error.message,true);return}
+  rdClear();    // it's on the server now, so stop offering it back
 
   const mineRes=data.find(r=>r.profile_id===me.profile_id)||data[0];
   const prev=mineRes.previous_index;

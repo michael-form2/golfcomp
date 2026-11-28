@@ -1144,6 +1144,7 @@ function renderScore(){
         : '<button class="ghostbtn" onclick="lockCard(true)">Submit card &amp; lock</button>'))
     +(isAdmin&&!round.started?'<button class="primary" onclick="startRound()">Start the round</button>':'');
   renderPresence();
+  obBadge();   // the round may have just finished — the pill should say so
 }
 
 // ---------- outbox ----------
@@ -1196,10 +1197,15 @@ function obRetryLater(){ clearTimeout(obTimer); obTimer=setTimeout(obSend,5000);
 
 function obBadge(){
   const queued=outbox.length;
+  // "Live" is the socket, not the golf — on a finished round the header went on
+  // shouting LIVE at a comp that was over. Say what state the round is in.
+  let done=false; try{ done=compFinished() }catch(e){}
   ['conn','conn2'].forEach(id=>{const e=$(id);
-    if(e)e.className='livepill'+((connOk&&!queued)?'':' off')});
+    if(e)e.className='livepill'+((connOk&&!queued&&!done)?'':' off')});
   const t=$('conn-t');
-  if(t)t.textContent=queued?(queued+(queued===1?' to send':' to send')):(connOk?'Live':'Offline');
+  if(t)t.textContent=queued?(queued+' to send'):(done?'Final':(connOk?'Live':'Offline'));
+  const t2=document.querySelector('#conn2 span:last-child');
+  if(t2)t2.textContent=done?'Final':(connOk?'Live':'Offline');
 }
 
 // Lay anything still queued back over what the server just sent, so a score
