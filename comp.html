@@ -519,9 +519,15 @@ async function loadAll(){
     sb.from('gc_round_locks').select('team_id,locked').eq('round_id',round.id)
   ]);
   teams=t.data||[];
+  // Give every team an empty roster before the second fetch. If that call fails
+  // — a flat spot on the course is enough — the screen used to render against
+  // teams whose .members was undefined and the whole scorecard threw.
+  teams.forEach(x=>{ if(!Array.isArray(x.members))x.members=[] });
   const tm=await sb.from('gc_team_members').select('team_id,comp_player_id,slot');
-  const byTeam={}; (tm.data||[]).forEach(m=>{(byTeam[m.team_id]=byTeam[m.team_id]||[]).push(m)});
-  teams.forEach(x=>{x.members=(byTeam[x.id]||[]).sort((a,b)=>a.slot-b.slot).map(m=>m.comp_player_id)});
+  if(tm.data){
+    const byTeam={}; tm.data.forEach(m=>{(byTeam[m.team_id]=byTeam[m.team_id]||[]).push(m)});
+    teams.forEach(x=>{x.members=(byTeam[x.id]||[]).sort((a,b)=>a.slot-b.slot).map(m=>m.comp_player_id)});
+  }
   scores={}; picked={};
   (s.data||[]).forEach(r=>{
     (scores[r.comp_player_id]=scores[r.comp_player_id]||{})[r.hole]=r.gross;
@@ -598,12 +604,12 @@ function hcpTag(p){
 }
 function teamHcp(tid){
   const f=fmt(), t=teams.find(x=>x.id===tid); if(!t)return 0;
-  const sum=t.members.reduce((a,pid)=>{const p=players.find(x=>x.id===pid);return a+phcp(p)},0);
+  const sum=(t.members||[]).reduce((a,pid)=>{const p=players.find(x=>x.id===pid);return a+phcp(p)},0);
   return Math.round(sum/(f.hcpDiv||1));
 }
 function teamTotals(tid){
   const f=fmt(); let g=0,p=0,n=0,unres=0; const contribs={};
-  const t=teams.find(x=>x.id===tid); if(t)t.members.forEach(pid=>contribs[pid]=0);
+  const t=teams.find(x=>x.id===tid); if(t)(t.members||[]).forEach(pid=>contribs[pid]=0);
   for(let i=1;i<=18;i++){
     const r=teamHole(tid,i);
     if(f.entry==='team'){
@@ -782,7 +788,7 @@ function matchState(from,to){
   const left=(last===0)?(to-from+1):(to-last);
   const lead=Math.abs(up);
   const over=lead>left;
-  const aN=a.members.map(pname).join(' & '), bN=b.members.map(pname).join(' & ');
+  const aN=(a.members||[]).map(pname).join(' & '), bN=(b.members||[]).map(pname).join(' & ');
   let status, detail;
   if(played===0){ status='Not started'; detail=''; }
   else if(over){
@@ -813,14 +819,14 @@ function renderScore(){
   if(watch){ $('sc-sub').textContent='Watching'; }
   else if(myPlace){
     // Signed in and in the comp — say plainly whose card this is
-    const mates=t?t.members.filter(id=>id!==myPlace.comp_player_id).map(pname):[];
+    const mates=t?(t.members||[]).filter(id=>id!==myPlace.comp_player_id).map(pname):[];
     const gm=cardPlayers().filter(id=>id!==myPlace.comp_player_id
                    &&mates.indexOf(pname(id))<0).map(pname);
     $('sc-sub').textContent='Scoring as '+myPlace.display_name
       +(mates.length?(' · with '+mates.join(' & ')):'')
       +(gm.length?(' · group: '+gm.map(n=>n.split(' ')[0]).join(', ')):'');
   } else {
-    $('sc-sub').textContent=t?(t.members.map(pname).join(' & ')||('Team '+(t.team_no+1))):'';
+    $('sc-sub').textContent=t?((t.members||[]).map(pname).join(' & ')||('Team '+(t.team_no+1))):'';
   }
   if(watch){show('v-board');renderBoard();return}
   // Every card handed in on every day — there's nothing left to score, so the
@@ -879,7 +885,7 @@ function renderScore(){
     const mem=oneCard ? players.map(p=>p.id) : cardPlayers();
     // One card for the whole playing group: each row uses ITS OWN team's
     // nomination, lock and totals, not mine.
-    const groupCard=!oneCard && mem.some(pid=>!(t2&&t2.members.indexOf(pid)>=0));
+    const groupCard=!oneCard && mem.some(pid=>!(t2&&(t2.members||[]).indexOf(pid)>=0));
     let lastTeam=null;
     rows=mem.map(pid=>{
       const p=players.find(x=>x.id===pid)||{};
@@ -1826,7 +1832,7 @@ function renderBoard(){
   } else {
     rows=teams.map(t=>{
       const tt=teamTotals(t.id);
-      return{label:t.members.map(pname).join(' & ')||('Team '+(t.team_no+1)),
+      return{label:(t.members||[]).map(pname).join(' & ')||('Team '+(t.team_no+1)),
              hcp:tt.hcp,primary:(f.agg==='nett'?tt.nett:tt.pts),gross:tt.gross,
              holes:tt.holes,low:f.low,unres:tt.unres};
     }).filter(r=>r.holes>0);
