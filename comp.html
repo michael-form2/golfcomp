@@ -856,32 +856,55 @@ function renderScore(){
   const h=holeOf(hole), th=teamHole(myTeam,hole);
   let rows='';
   if(f.entry==='team'){
-    const g=th.gross;
-    rows='<div style="padding:14px 13px">'
-      +'<div class="step">'
-      +'<button onclick="stepTeam(-1)" '+(locked?'disabled':'')+'>−</button>'
-      +'<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
-      +'onchange="setTeam(this.value)" '+(locked?'disabled':'')+'>'
-      +'<button onclick="stepTeam(1)" '+(locked?'disabled':'')+'>+</button></div>';
-    if(f.drives){
-      const t2=teams.find(x=>x.id===myTeam);
-      const counts={}; Object.values(teamScores[myTeam]||{}).forEach(r=>{if(r.d)counts[r.d]=(counts[r.d]||0)+1});
-      const need=minNeeded();
-      rows+='<div style="font-size:9.5px;font-weight:900;color:var(--muted);text-transform:uppercase;'
-        +'letter-spacing:.7px;margin:13px 0 6px">Whose drive?'
-        +(need?('<span style="float:right;text-transform:none;letter-spacing:0;font-weight:700">'
-          +need+' each minimum</span>'):'')
-        +'</div><div style="display:flex;gap:7px;flex-wrap:wrap">'
-        +(t2?t2.members:[]).map(pid=>{
-          const on=(th.drive===pid), used=counts[pid]||0, met=(need>0&&used>=need);
-          return '<button onclick="setDrive(\''+pid+'\')" '
-          +'style="flex:1;min-width:90px;border:2px solid '+(on?'var(--green)':(need&&!met?'#d9b45d':'#e2dbcd'))
-          +';background:'+(on?'var(--green)':'#fff')+';color:'+(on?'#fff':'var(--ink)')
-          +';border-radius:13px;padding:10px;font-size:11.5px;font-weight:900">'+esc(pname(pid).split(' ')[0])
-          +'<span style="display:block;font-size:9px;font-weight:700;opacity:.7;margin-top:2px">'
-          +used+(need?('/'+need+(met?' ✓':'')):' used')+'</span></button>'}).join('')+'</div>';
-    }
-    rows+='</div>';
+    // Every team walking with you, not just your own. Ambrose used to show one
+    // stepper for your pair and leave the others as a read-only line, so the
+    // person marking couldn't enter the group's other card at all.
+    const inCard=cardPlayers();
+    const seen=[], grpTeams=[];
+    inCard.forEach(pid=>{const t=teamOf(pid);
+      if(t&&seen.indexOf(t.id)<0){seen.push(t.id);grpTeams.push(t)}});
+    if(!grpTeams.length){const t0=teams.find(x=>x.id===myTeam); if(t0)grpTeams.push(t0)}
+    grpTeams.sort((a,b)=>(a.id===myTeam?-1:(b.id===myTeam?1:a.team_no-b.team_no)));
+    const need=minNeeded();
+
+    rows=grpTeams.map(t2=>{
+      const tid=t2.id, mine=(tid===myTeam);
+      const tLocked=!!locks[tid] || !amScorer();
+      const tth=teamHole(tid,hole), g=tth.gross;
+      const nm=(t2.members||[]).map(pname).join(' & ')||('Team '+(t2.team_no+1));
+      let blk='<div class="striplabel" style="padding:9px 13px 0">'
+        +(mine?'Your team':esc(nm))+'</div>'
+        +'<div style="padding:4px 13px 14px'+(mine?'':';opacity:.97')+'">'
+        +(mine?'':'<div style="font-size:10px;color:var(--muted);font-weight:800;'
+                 +'margin-bottom:7px">'+esc(nm)+'</div>')
+        +'<div class="step">'
+        +'<button onclick="stepTeamFor(\''+tid+'\',-1)" '+(tLocked?'disabled':'')+'>−</button>'
+        +'<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
+        +'onchange="setTeamFor(\''+tid+'\',this.value)" '+(tLocked?'disabled':'')+'>'
+        +'<button onclick="stepTeamFor(\''+tid+'\',1)" '+(tLocked?'disabled':'')+'>+</button></div>';
+      if(f.drives){
+        const counts={};
+        Object.values(teamScores[tid]||{}).forEach(r=>{if(r&&r.d)counts[r.d]=(counts[r.d]||0)+1});
+        blk+='<div style="font-size:9.5px;font-weight:900;color:var(--muted);text-transform:uppercase;'
+          +'letter-spacing:.7px;margin:13px 0 6px">Whose drive?'
+          +(need?('<span style="float:right;text-transform:none;letter-spacing:0;font-weight:700">'
+            +need+' each minimum</span>'):'')
+          +'</div><div style="display:flex;gap:7px;flex-wrap:wrap">'
+          +(t2.members||[]).map(pid=>{
+            const on=(tth.drive===pid), used=counts[pid]||0, met=(need>0&&used>=need);
+            return '<button onclick="setDriveFor(\''+tid+'\',\''+pid+'\')" '+(tLocked?'disabled':'')
+            +' style="flex:1;min-width:90px;border:2px solid '+(on?'var(--green)':(need&&!met?'#d9b45d':'#e2dbcd'))
+            +';background:'+(on?'var(--green)':'#fff')+';color:'+(on?'#fff':'var(--ink)')
+            +';border-radius:13px;padding:10px;font-size:11.5px;font-weight:900;font-family:inherit">'
+            +esc(pname(pid).split(' ')[0])
+            +'<span style="display:block;font-size:9px;font-weight:700;opacity:.7;margin-top:2px">'
+            +used+(need?('/'+need+(met?' ✓':'')):' used')+'</span></button>'}).join('')+'</div>';
+      }
+      const tt=teamTotals(tid);
+      blk+='<div style="margin-top:11px;font-size:10px;font-weight:800;color:var(--muted)">'
+        +(tt.holes?(tt.nett+' nett · H/C '+tt.hcp+' · thru '+tt.holes):'no scores yet')+'</div>';
+      return blk+'</div>';
+    }).join('');
   } else {
     const t2=teams.find(x=>x.id===myTeam);
     // A per-hole game is everyone against everyone, so the card shows the lot
@@ -1377,6 +1400,28 @@ async function setMyGroup(pid){
   await loadAll();
   renderScore();
   toast(next.length?('Marking for '+(next.length+1)+' players'):'Marking for yourself only');
+}
+// Team-score entry, for any team on your card — not just your own.
+async function setTeamFor(tid,v){
+  const g=String(v).trim()===''?null:Math.max(1,Math.min(20,parseInt(v,10)||0));
+  const prev=(teamScores[tid]||{})[hole]||{};
+  (teamScores[tid]=teamScores[tid]||{});
+  if(g==null)delete teamScores[tid][hole];else teamScores[tid][hole]={g,d:prev.d||null};
+  renderScore();
+  obQueue('team:'+round.id+':'+tid+':'+hole,'gc_set_team_score',
+    {p_round_id:round.id,p_team_id:tid,p_hole:hole,p_gross:g,p_drive_by:prev.d||null});
+}
+function stepTeamFor(tid,d){
+  const cur=((teamScores[tid]||{})[hole]||{}).g;
+  setTeamFor(tid,cur==null?holeOf(hole).par:cur+d);
+}
+async function setDriveFor(tid,pid){
+  const rec=(teamScores[tid]||{})[hole]||{g:null,d:null};
+  rec.d=(rec.d===pid)?null:pid;
+  (teamScores[tid]=teamScores[tid]||{})[hole]=rec;
+  renderScore();
+  obQueue('team:'+round.id+':'+tid+':'+hole,'gc_set_team_score',
+    {p_round_id:round.id,p_team_id:tid,p_hole:hole,p_gross:rec.g,p_drive_by:rec.d});
 }
 async function setTeam(v){
   const g=String(v).trim()===''?null:Math.max(1,Math.min(20,parseInt(v,10)||0));
