@@ -904,9 +904,27 @@ function renderScore(){
             +'<span style="display:block;font-size:9px;font-weight:700;opacity:.7;margin-top:2px">'
             +used+(need?('/'+need+(met?' ✓':'')):' used')+'</span></button>'}).join('')+'</div>';
       }
+      // Each team's running nett, sized so you can read it at a glance — this
+      // is the number everyone actually cares about between shots.
       const tt=teamTotals(tid);
-      blk+='<div style="margin-top:11px;font-size:10px;font-weight:800;color:var(--muted)">'
-        +(tt.holes?(tt.nett+' nett · H/C '+tt.hcp+' · thru '+tt.holes):'no scores yet')+'</div>';
+      let pp=0;
+      for(let i=1;i<=18;i++){const rr=(teamScores[tid]||{})[i];
+        if(rr&&rr.g!=null)pp+=holeOf(i).par}
+      const tPar=(tt.holes?(tt.gross-pp-Math.round(tt.hcp||0)):null);
+      blk+='<div style="display:flex;align-items:baseline;gap:9px;margin-top:12px;'
+        +'padding-top:10px;border-top:1px solid var(--line)">'
+        +'<div style="flex:1;min-width:0;font-size:9.5px;font-weight:900;'
+        +'text-transform:uppercase;letter-spacing:.7px;color:var(--muted)">'
+        +(tt.holes?('H/C '+Math.round(tt.hcp||0)+' · thru '+tt.holes):'Not started')+'</div>'
+        +(tt.holes
+          ? ('<div style="font-size:12px;font-weight:900;color:'
+             +(tPar<0?'var(--good)':(tPar>0?'var(--bad)':'var(--muted)'))+'">'
+             +toParText(tPar)+'</div>'
+             +'<div style="font-size:20px;font-weight:900;color:var(--green);'
+             +'white-space:nowrap">'+tt.nett+'<span style="font-size:10px;'
+             +'font-weight:800;opacity:.65"> nett</span></div>')
+          : '')
+        +'</div>';
       return blk+'</div>';
     }).join('');
   } else {
@@ -1121,7 +1139,9 @@ function renderScore(){
   // Match on any of my team's players — works whether or not I'm signed in
   const myMem=(teams.find(x=>x.id===myTeam)||{}).members||[];
   const myGroup=groups.find(g=>(g.members||[]).some(m=>myMem.indexOf(m)>=0));
-  if(myGroup){
+  // On a team-entry card every team in the group already has its own block with
+  // its nett on it, so repeating them down here is the same numbers twice.
+  if(myGroup && f.entry!=='team'){
     const others=teams.filter(t=>t.id!==myTeam
       && (t.members||[]).some(m=>(myGroup.members||[]).indexOf(m)>=0));
     if(others.length){
