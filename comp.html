@@ -118,6 +118,8 @@ button{cursor:pointer}
 .teamtot{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;
   background:var(--green);color:#fff;border-radius:0 0 22px 22px}
 .teamtot>div:first-child{min-width:0;flex:1 1 auto}
+/* the same bar, but sitting under a team on the card rather than closing it */
+.teamtot.inline{border-radius:16px;margin:12px 0 2px}
 .teamtot .l{font-size:8.5px;text-transform:uppercase;letter-spacing:.9px;opacity:.8;
   line-height:1.5}
 /* The score must never wrap. Adding the contributions to the label made it long
@@ -904,27 +906,28 @@ function renderScore(){
             +'<span style="display:block;font-size:9px;font-weight:700;opacity:.7;margin-top:2px">'
             +used+(need?('/'+need+(met?' ✓':'')):' used')+'</span></button>'}).join('')+'</div>';
       }
-      // Each team's running nett, sized so you can read it at a glance — this
-      // is the number everyone actually cares about between shots.
+      // The green total bar, once per team, rather than one at the foot of the
+      // card that only ever showed your own.
       const tt=teamTotals(tid);
       let pp=0;
       for(let i=1;i<=18;i++){const rr=(teamScores[tid]||{})[i];
         if(rr&&rr.g!=null)pp+=holeOf(i).par}
       const tPar=(tt.holes?(tt.gross-pp-Math.round(tt.hcp||0)):null);
-      blk+='<div style="display:flex;align-items:baseline;gap:9px;margin-top:12px;'
-        +'padding-top:10px;border-top:1px solid var(--line)">'
-        +'<div style="flex:1;min-width:0;font-size:9.5px;font-weight:900;'
-        +'text-transform:uppercase;letter-spacing:.7px;color:var(--muted)">'
-        +(tt.holes?('H/C '+Math.round(tt.hcp||0)+' · thru '+tt.holes):'Not started')+'</div>'
-        +(tt.holes
-          ? ('<div style="font-size:12px;font-weight:900;color:'
-             +(tPar<0?'var(--good)':(tPar>0?'var(--bad)':'var(--muted)'))+'">'
-             +toParText(tPar)+'</div>'
-             +'<div style="font-size:20px;font-weight:900;color:var(--green);'
-             +'white-space:nowrap">'+tt.nett+'<span style="font-size:10px;'
-             +'font-weight:800;opacity:.65"> nett</span></div>')
-          : '')
-        +'</div>';
+      let drv='';
+      if(f.drives&&need>0){
+        const c2={};
+        Object.values(teamScores[tid]||{}).forEach(r2=>{if(r2&&r2.d)c2[r2.d]=(c2[r2.d]||0)+1});
+        drv='<span class="mins">drives: '+(t2.members||[]).map(pid=>{
+          const n2=c2[pid]||0, ok=n2>=need;
+          return '<span style="color:'+(ok?'#9fe3bf':'#efd78b')+'">'
+            +esc(pname(pid).split(' ')[0])+' '+n2+'/'+need+(ok?' ✓':'')+'</span>';
+        }).join(' · ')+'</span>';
+      }
+      blk+='<div class="teamtot inline"><div><div class="l">'
+        +(mine?'Your team':esc(nm))+' · H/C '+Math.round(tt.hcp||0)
+        +(tt.holes?(' · thru '+tt.holes):'')
+        +(tt.holes?(' · '+toParText(tPar)):'')+drv+'</div></div>'
+        +'<div class="v">'+(tt.holes?(tt.nett+' nett'):'—')+'</div></div>';
       return blk+'</div>';
     }).join('');
   } else {
@@ -1285,8 +1288,10 @@ function renderScore(){
       ? '<div style="font-size:10px;color:var(--muted);text-align:center;padding:9px 12px 0">'
         +'Enter each score, then tap a points box to pick whose counts.</div>':'')
     +rows
-    +'<div class="teamtot"><div><div class="l">'+totLine.l+'</div></div>'
-    +'<div class="v">'+totLine.v+'</div></div></section>'
+    // on a team card every team already carries its own green bar
+    +(f.entry==='team' ? '</section>'
+      : ('<div class="teamtot"><div><div class="l">'+totLine.l+'</div></div>'
+         +'<div class="v">'+totLine.v+'</div></div></section>'))
     +'<div class="nav2">'
     +'<button onclick="stepHole(-1)" '+(hole<=1?'disabled':'')+'>← PREV</button>'
     +'<div class="ctr"><span class="b">'+hole+'</span><span class="s">OF 18</span></div>'
