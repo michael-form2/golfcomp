@@ -2170,7 +2170,7 @@ async function loadFeed(){
         +'<div class="small">'+esc(r.comp_name||'')+' · '+esc(r.course_name||'')
         +' · thru '+(r.holes_done||0)+'</div></div>'
         +'<button class="ghostbtn" style="margin:0;width:auto;padding:8px 13px;font-size:11px"'
-        +' onclick="location.href=\'/c/'+r.comp_id+'\'">Watch</button>'
+        +' onclick="location.href=\'/c/'+r.comp_id+'?watch=1\'">Watch</button>'
         +'</div></section>';
     }
     return '<section class="card" style="padding:13px;margin-bottom:9px">'

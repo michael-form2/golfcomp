@@ -2042,6 +2042,9 @@ async function afterSignIn(){
     toast('Organiser view');
     return;
   }
+  // Came in from "Watch" on the mates feed — that's already the answer, so
+  // don't stop and ask whether they'd like to join.
+  if(/[?&]watch=1/.test(location.search)){ watchBoard(); startSync(); return }
   // this branch set the subtitle but never the title, so the card sat there
   // saying "Loading…" over a comp that had finished loading
   $('g-name').textContent=(comp&&comp.name)||'This comp';
