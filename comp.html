@@ -366,7 +366,7 @@ const FMT={
 };
 
 let sb=null, compId=null, comp=null, round=null, players=[], holes=[], teams=[],
-    scores={}, teamScores={}, noms={}, locks={},
+    scores={}, picked={}, teamScores={}, noms={}, locks={},
     myTeam=null, pin='', isAdmin=false, hole=1, watch=false, pollT=null,
     myPlace=null,   // set when a signed-in player is in this comp
     allRounds=[], allHoles=[], dayNo=null, boardTab='day', groups=[], allGroups=[],
@@ -513,7 +513,7 @@ async function loadAll(){
   groups=allGroups.filter(g=>g.round_no===(round?round.round_no:1));
   const [t,s,ts,n,l]=await Promise.all([
     sb.from('gc_teams').select('id,team_no,name').eq('round_id',round.id).order('team_no'),
-    sb.from('gc_scores').select('comp_player_id,hole,gross').eq('round_id',round.id),
+    sb.from('gc_scores').select('comp_player_id,hole,gross,picked_up').eq('round_id',round.id),
     sb.from('gc_team_scores').select('team_id,hole,gross,drive_by').eq('round_id',round.id),
     sb.from('gc_nominations').select('team_id,hole,comp_player_id').eq('round_id',round.id),
     sb.from('gc_round_locks').select('team_id,locked').eq('round_id',round.id)
@@ -522,7 +522,11 @@ async function loadAll(){
   const tm=await sb.from('gc_team_members').select('team_id,comp_player_id,slot');
   const byTeam={}; (tm.data||[]).forEach(m=>{(byTeam[m.team_id]=byTeam[m.team_id]||[]).push(m)});
   teams.forEach(x=>{x.members=(byTeam[x.id]||[]).sort((a,b)=>a.slot-b.slot).map(m=>m.comp_player_id)});
-  scores={}; (s.data||[]).forEach(r=>{(scores[r.comp_player_id]=scores[r.comp_player_id]||{})[r.hole]=r.gross});
+  scores={}; picked={};
+  (s.data||[]).forEach(r=>{
+    (scores[r.comp_player_id]=scores[r.comp_player_id]||{})[r.hole]=r.gross;
+    if(r.picked_up)(picked[r.comp_player_id]=picked[r.comp_player_id]||{})[r.hole]=true;
+  });
   teamScores={}; (ts.data||[]).forEach(r=>{(teamScores[r.team_id]=teamScores[r.team_id]||{})[r.hole]={g:r.gross,d:r.drive_by}});
   noms={}; (n.data||[]).forEach(r=>{(noms[r.team_id]=noms[r.team_id]||{})[r.hole]=r.comp_player_id});
   locks={}; (l.data||[]).forEach(r=>{locks[r.team_id]=r.locked});
@@ -915,12 +919,26 @@ function renderScore(){
           +'<span><b>'+rc.shots+'</b><i>SHOTS</i></span>'
           +'<span><b>'+rc.pts+'</b><i>PTS</i></span></span>'
         : '';
-      return divider+'<div class="prow'+(counts&&team?' counts':'')+'">'
+      const isPu=!!(picked[pid]||{})[hole];
+      // Stableford and the points games only — in stroke or a match you have to
+      // hole out, so there's nothing to pick up.
+      const canPu=(f.agg==='individual'||f.agg==='points');
+      const puBtn=canPu
+        ? '<button onclick="pickUp(\''+pid+'\')" '+(locked?'disabled':'')
+          +' style="margin-top:4px;border:1px solid '+(isPu?'var(--green)':'#e2dbcd')
+          +';background:'+(isPu?'var(--green)':'#fff')+';color:'+(isPu?'#fff':'var(--muted)')
+          +';border-radius:9px;padding:3px 8px;font-size:9px;font-weight:900;'
+          +'letter-spacing:.4px;cursor:pointer">'+(isPu?'PICKED UP ✕':'PICK UP')+'</button>'
+        : '';
+      return divider+'<div class="prow'+(counts&&team?' counts':'')+(isPu?' pu':'')+'">'
         +'<div class="nm">'+esc(p.name||'?')+'<small>'+sh+' shot'+(sh===1?'':'s')+' here'
-        +hcpTag(p)+'</small>'+run+tag+mintag+'</div>'
+        +hcpTag(p)+'</small>'+run+tag+mintag+puBtn+'</div>'
         +'<div class="step"><button onclick="stepPlayer(\''+pid+'\',-1)" '+(locked?'disabled':'')+'>−</button>'
-        +'<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
-        +'onchange="setPlayer(\''+pid+'\',this.value)" '+(locked?'disabled':'')+'>'
+        +(isPu
+          ? '<input type="text" value="PU" readonly title="Picked up — counts as '+g+'" '
+            +'style="text-align:center;font-weight:900;color:var(--muted)">'
+          : '<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
+            +'onchange="setPlayer(\''+pid+'\',this.value)" '+(locked?'disabled':'')+'>')
         +'<button onclick="stepPlayer(\''+pid+'\',1)" '+(locked?'disabled':'')+'>+</button></div>'
         +(team
           ? '<button class="use'+(counts?' on':'')+((tied&&th.needsPick)?' pick':'')+'" '
@@ -1243,8 +1261,29 @@ async function setPlayer(pid,v){
   (scores[pid]=scores[pid]||{});
   if(g==null)delete scores[pid][hole];else scores[pid][hole]=g;
   renderScore();
+  if(picked[pid])delete picked[pid][hole];     // a real number replaces a pickup
   obQueue('score:'+round.id+':'+pid+':'+hole,'gc_set_score',
-    {p_round_id:round.id,p_comp_player_id:pid,p_hole:hole,p_gross:g});
+    {p_round_id:round.id,p_comp_player_id:pid,p_hole:hole,p_gross:g,p_picked_up:false});
+}
+// Picked up: no gross to write down, scores zero, and posts to the handicap as
+// net double bogey — which is what WHS does with a hole you didn't finish.
+function pickUp(pid){
+  const on=!!(picked[pid]||{})[hole];
+  if(on){
+    delete picked[pid][hole];
+    if(scores[pid])delete scores[pid][hole];
+    renderScore();
+    obQueue('score:'+round.id+':'+pid+':'+hole,'gc_set_score',
+      {p_round_id:round.id,p_comp_player_id:pid,p_hole:hole,p_gross:null,p_picked_up:false});
+    return;
+  }
+  const p=players.find(x=>x.id===pid)||{}, h=holeOf(hole);
+  const ndb=h.par+2+strokes(phcp(p),h.si);
+  (picked[pid]=picked[pid]||{})[hole]=true;
+  (scores[pid]=scores[pid]||{})[hole]=ndb;
+  renderScore();
+  obQueue('score:'+round.id+':'+pid+':'+hole,'gc_set_score',
+    {p_round_id:round.id,p_comp_player_id:pid,p_hole:hole,p_gross:null,p_picked_up:true});
 }
 function stepPlayer(pid,d){
   const cur=(scores[pid]||{})[hole];
