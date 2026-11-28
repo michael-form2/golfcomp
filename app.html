@@ -1732,6 +1732,9 @@ async function beginRound(withMate){
     ? ('Scoring for you and '+partner.name+'.')
     : 'Enter your score for each hole.';
   await loadHoles();
+  // Save it the moment it starts, not on the first score. Starting a round and
+  // going straight to Home is exactly when it used to vanish.
+  rdSave();
 }
 
 let card={}, cardP={}, rdHole=1;
@@ -1753,9 +1756,10 @@ function rdDraft(){
   try{
     const d=JSON.parse(localStorage.getItem(RD_KEY)||'null');
     if(!d||!d.tee)return null;
-    // a card with nothing on it isn't worth offering back
-    const n=Object.keys(d.card||{}).length+Object.keys(d.cardP||{}).length;
-    return n?d:null;
+    // Offered back even with nothing on the card yet — you've already chosen
+    // the course, the tee and who you're playing with, and losing that is the
+    // whole complaint. "Bin it" is there for when you don't want it.
+    return d;
   }catch(e){ return null }
 }
 function rdClear(){ try{localStorage.removeItem(RD_KEY)}catch(e){} }
