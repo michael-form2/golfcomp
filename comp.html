@@ -88,6 +88,10 @@ button{cursor:pointer}
 .step button{border:0;background:var(--green);color:#fff;border-radius:11px;height:46px;
   font-size:19px;font-weight:900;padding:0;min-width:0}
 .step button:active{background:var(--green2)}
+/* A dead stepper looked exactly like a live one, so you could tap + on a card
+   you're not marking and wonder why nothing happened. */
+.step button:disabled{background:#ded7c9;color:#9aa39c}
+.step input:disabled{background:#f3efe7;color:#9aa39c;border-style:dashed}
 /* number inputs carry an intrinsic min-width — without this they blow the grid out */
 .step input{border:1px solid #e2dbcd;border-radius:11px;height:46px;text-align:center;
   font-size:18px;font-weight:900;padding:0 2px;background:#fff;outline:none;
@@ -1227,15 +1231,16 @@ function renderScore(){
         +'border-left:3px solid var(--green)">'
         +'<div style="font-size:12.5px;line-height:1.5">'
         +(markAll()
-          ? '<strong>You’re marking the whole group.</strong> Everyone’s scores are '
-            +'yours to enter.'
+          ? '<strong>You’re keeping the whole group’s card.</strong> Everyone’s scores '
+            +'are yours to enter.'
           : ('<strong>You’re marking '+esc(theirs)+'.</strong>'
-             +(keptBy?(' Your card is kept by '+esc(keptBy)+' — check it before you '
-                       +'hand it in.'):'')))
+             +(keptBy?(' Your own card is kept by '+esc(keptBy)+' — you can see it but '
+                       +'not change it. Check it before you confirm.'):'')))
         +'</div>'
         +'<button class="ghostbtn" style="margin-top:9px" onclick="toggleMarkAll()">'
-        +(markAll()?'Go back to marking just '+esc(theirs)
-                   :'Nobody else has the app — let me mark the lot')
+        +(markAll()
+          ? 'Everyone’s got the app — mark only '+esc(theirs)
+          : 'Go back to keeping the whole group’s card')
         +'</button></section>';
     }
   }
@@ -2250,14 +2255,18 @@ function markingTeams(){
   if(i<0)return [];
   return [gts[(i+1)%gts.length]];
 }
-// Not everyone in the group will have the app out. This lets one person keep
-// the lot, which is the reality most weekends.
-function markAllKey(){ return round?('gc_markall_'+round.id):null }
-function markAll(){ const k=markAllKey();
+// Marking the whole group is the DEFAULT, because most of the time one bloke
+// in the buggy has the app and everyone else is just playing. Strict
+// cross-marking — you keep only your opponent's card — is opt-in per round.
+// It was the other way round for about ten minutes and it locked the only
+// person with a phone out of his own scorecard.
+function strictKey(){ return round?('gc_strict_'+round.id):null }
+function strictMarking(){ const k=strictKey();
   try{ return !!k&&localStorage.getItem(k)==='1' }catch(e){ return false } }
+function markAll(){ return !strictMarking() }
 function toggleMarkAll(){
-  const k=markAllKey(); if(!k)return;
-  try{ markAll()?localStorage.removeItem(k):localStorage.setItem(k,'1') }catch(e){}
+  const k=strictKey(); if(!k)return;
+  try{ strictMarking()?localStorage.removeItem(k):localStorage.setItem(k,'1') }catch(e){}
   renderScore();
 }
 // Whose scores this phone may change.
