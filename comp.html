@@ -1829,11 +1829,36 @@ async function showOverall(){
   h+='</tbody></table></section>';
 
   const partial=rows.some(r=>!r.out_complete);
+  // A trip can run a points day and a strokes day. Spell out how they're put
+  // together, with this comp's own days named, rather than "added together" —
+  // which stopped being true once mixed formats were reconciled properly.
+  const dayKinds=allRounds.map(rr=>({no:rr.round_no,
+    low:/^(ambrose|stroke)/.test(rr.format||''), label:(FMT[rr.format]||{}).label||rr.format}));
+  const lowDays=dayKinds.filter(d=>d.low), ptDays=dayKinds.filter(d=>!d.low);
+  const mixed=lowDays.length&&ptDays.length;
+  const dlist=(arr)=>arr.map(d=>'Day '+d.no).join(' and ');
+  let how;
+  if(mixed){
+    how='<strong>How the total works.</strong> '
+      +dlist(ptDays)+' '+(ptDays.length>1?'are':'is')+' scored in stableford points — '
+      +'more is better. '+dlist(lowDays)+' '+(lowDays.length>1?'are':'is')
+      +' scored as nett strokes — fewer is better. '
+      +'Because they pull opposite ways, the total is the nett <em>minus</em> the points, '
+      +'so the <strong>lowest total wins</strong>.'
+      +'<br><br>Say you shoot 79 off a team handicap of 7 on '+dlist(lowDays)
+      +': that’s 72 nett. Take off 53 points from '+dlist(ptDays)+' and your total is 19.';
+  } else if(low){
+    how='<strong>How the total works.</strong> Every day is nett strokes — gross minus '
+      +'your handicap for that course — added up. <strong>Lowest wins.</strong>';
+  } else {
+    how='<strong>How the total works.</strong> Every day is stableford points, added up. '
+      +'<strong>Most points wins.</strong>';
+  }
   h+='<div class="note">'+(partial
     ? '<strong>Still going.</strong> Numbers in brackets are days not yet finished, so the '
-      +'total will move.'
-    : '<strong>All in.</strong> '+(low?'Lowest combined nett wins.':'Most points wins.'))
-    +'<br><br>Each day is scored on its own course and format, then added together.</div>'
+      +'total will move. A part-played day uses a handicap scaled to the holes done.'
+    : '<strong>All in.</strong> '+(low?'Lowest total wins.':'Most points wins.'))
+    +'<br><br>'+how+'</div>'
     +'<button class="ghostbtn" onclick="backToScore()">← Back to my card</button>';
   b.innerHTML=h;
 }
