@@ -946,6 +946,27 @@ function renderScore(){
     // nomination, lock and totals, not mine.
     const groupCard=!oneCard && mem.some(pid=>!(t2&&(t2.members||[]).indexOf(pid)>=0));
     let lastTeam=null;
+    // The same green bar the Ambrose card uses, once under each team, so you
+    // can read both sides of a four-ball without scrolling to the foot.
+    const teamBar=(tid)=>{
+      const tb=teams.find(x=>x.id===tid); if(!tb)return '';
+      const tt=teamTotals(tid);
+      const nmb=(tb.members||[]).map(pname).join(' & ')||('Team '+(tb.team_no+1));
+      const need2=minNeeded();
+      let mins='';
+      if(need2>0){
+        mins='<span class="mins">scores: '+(tb.members||[]).map(pid2=>{
+          const n2=(tt.contribs||{})[pid2]||0, ok=n2>=need2;
+          return '<span style="color:'+(ok?'#9fe3bf':'#efd78b')+'">'
+            +esc(pname(pid2).split(' ')[0])+' '+n2+'/'+need2+(ok?' ✓':'')+'</span>';
+        }).join(' · ')+'</span>';
+      }
+      return '<div class="teamtot inline" style="margin:10px 13px 4px"><div><div class="l">'
+        +(tid===myTeam?'Your team':esc(nmb))
+        +(tt.holes?(' · thru '+tt.holes+'/18'):' · not started')+mins+'</div></div>'
+        +'<div class="v">'+(tt.holes?(tt.pts+' pts'):'—')+'</div></div>';
+    };
+    const parts=[];
     rows=mem.map(pid=>{
       const p=players.find(x=>x.id===pid)||{};
       const pt=teamOf(pid)||t2;
@@ -998,7 +1019,7 @@ function renderScore(){
           +'letter-spacing:.4px;cursor:pointer;font-family:inherit">'
           +(isPu?'PICKED UP ✕':'PICK UP')+'</button>'
         : '';
-      return divider+'<div class="prow'+(counts&&team?' counts':'')+(isPu?' pu':'')+'">'
+      const rowHtml=divider+'<div class="prow'+(counts&&team?' counts':'')+(isPu?' pu':'')+'">'
         +'<div class="nm">'+esc(p.name||'?')+'<small>'+sh+' shot'+(sh===1?'':'s')+' here'
         +hcpTag(p)+'</small>'+run+tag+mintag+'</div>'
         +'<div><div class="step"><button onclick="stepPlayer(\''+pid+'\',-1)" '+(locked?'disabled':'')+'>−</button>'
@@ -1017,7 +1038,16 @@ function renderScore(){
           : '<div class="use" style="border-style:solid;border-color:#e6ded0">'
             +'<span class="v">'+(pts==null?'—':pts)+'</span><span class="l">PTS</span></div>')
         +'</div>';
+      parts.push({tid:(pt?pt.id:null), html:rowHtml});
+      return rowHtml;
     }).join('');
+    // close each team off with its own bar, where teams are a real thing
+    if(!oneCard && f.agg!=='individual' && f.agg!=='stroke_individual'){
+      rows=parts.map((p,i)=>{
+        const nxt=parts[i+1];
+        return p.html+((p.tid && (!nxt || nxt.tid!==p.tid)) ? teamBar(p.tid) : '');
+      }).join('');
+    }
   }
 
   let totLine;
@@ -1142,9 +1172,12 @@ function renderScore(){
   // Match on any of my team's players — works whether or not I'm signed in
   const myMem=(teams.find(x=>x.id===myTeam)||{}).members||[];
   const myGroup=groups.find(g=>(g.members||[]).some(m=>myMem.indexOf(m)>=0));
-  // On a team-entry card every team in the group already has its own block with
-  // its nett on it, so repeating them down here is the same numbers twice.
-  if(myGroup && f.entry!=='team'){
+  // Every team on the card now carries its own green bar, so the rivals card
+  // underneath was the same numbers a second time. Only per-hole games and
+  // singles match play — which have no teams — still need it.
+  const teamsOnCard=(f.entry==='team'
+    ||(f.agg!=='individual'&&f.agg!=='stroke_individual'&&f.agg!=='perhole'&&f.agg!=='match'));
+  if(myGroup && !teamsOnCard){
     const others=teams.filter(t=>t.id!==myTeam
       && (t.members||[]).some(m=>(myGroup.members||[]).indexOf(m)>=0));
     if(others.length){
@@ -1288,8 +1321,9 @@ function renderScore(){
       ? '<div style="font-size:10px;color:var(--muted);text-align:center;padding:9px 12px 0">'
         +'Enter each score, then tap a points box to pick whose counts.</div>':'')
     +rows
-    // on a team card every team already carries its own green bar
-    +(f.entry==='team' ? '</section>'
+    // where teams are on the card they each carry their own green bar, so the
+    // single one at the foot would just repeat your own team
+    +(teamsOnCard ? '</section>'
       : ('<div class="teamtot"><div><div class="l">'+totLine.l+'</div></div>'
          +'<div class="v">'+totLine.v+'</div></div></section>'))
     +'<div class="nav2">'

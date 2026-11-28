@@ -265,7 +265,13 @@ input.big{font-size:30px;font-weight:900;text-align:center;padding:16px}
   font-size:20px;font-weight:900;padding:0}
 .step button:active{background:var(--green2)}
 .step input{border:1px solid #e2dbcd;border-radius:12px;height:48px;text-align:center;
-  font-size:20px;font-weight:900;padding:0;background:#fff;outline:none;width:100%}
+  font-size:20px;font-weight:900;padding:0;background:#fff;outline:none;width:100%;
+  min-width:0;-moz-appearance:textfield}
+/* The browser's own up/down arrows sat inside the box, shoving the number off
+   centre and giving a second, tiny way to change a score. comp.html already
+   dropped them; this card never did. */
+.step input::-webkit-outer-spin-button,
+.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .step input:focus{border-color:var(--gold)}
 .ptsbox{display:flex;flex-direction:column;align-items:center;justify-content:center;
   min-height:50px;border-radius:13px;border:1px solid #e6ded0;background:#faf7f0;line-height:1.1}
@@ -1751,7 +1757,7 @@ function pickPartner(id,name,hcp,el){
 
 async function beginRound(withMate){
   if(withMate && !partner){ toast('Pick your playing partner first', true); return; }
-  card={}; cardP={}; rdHole=1;
+  card={}; cardP={}; cardPU={}; cardPPU={}; rdHole=1;
   rdClear();          // starting a new one replaces any half-finished card
   roundTee = withMate ? csValue('ma') : csValue('so');
   if(!roundTee){toast('Search for your course first',true);return}
@@ -1771,6 +1777,8 @@ async function beginRound(withMate){
 }
 
 let card={}, cardP={}, rdHole=1;
+// which holes were picked up rather than holed out
+let cardPU={}, cardPPU={};
 
 // ---------- a round you haven't submitted yet ----------
 // card and cardP only ever lived in memory, so tapping Home — or closing the
@@ -1782,6 +1790,7 @@ function rdSave(){
   if(!roundTee)return;
   try{ localStorage.setItem(RD_KEY,JSON.stringify({
     tee:roundTee, date:roundDate, partner:partner, card:card, cardP:cardP,
+    pu:cardPU, ppu:cardPPU,
     hole:rdHole, label:($('rd-course')||{}).textContent||'', at:Date.now()
   })) }catch(e){}
 }
@@ -1824,6 +1833,7 @@ async function resumeRound(){
   holes=data;
   // set the card AFTER loading holes — loadHoles() clears it
   card=d.card||{}; cardP=d.cardP||{}; rdHole=d.hole||1;
+  cardPU=d.pu||{}; cardPPU=d.ppu||{};
   renderRoundHole();
 }
 function binRound(){
@@ -1868,13 +1878,25 @@ function renderRoundHole(){
     const g=r.store[rdHole];
     const sh=strokesOn(r.hcp,h.si);
     const pts=stbl(g,h.par,sh);
+    const isPu=!!(r.id==='me'?cardPU:cardPPU)[rdHole];
     body+='<div class="prow">'
       +'<div class="nm">'+esc(r.name)+'<small>'+sh+' shot'+(sh===1?'':'s')+' here</small></div>'
-      +'<div class="step">'
+      +'<div><div class="step">'
       +'<button onclick="stepCard(\''+r.id+'\',-1)">−</button>'
-      +'<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
-      +'onchange="setCard(\''+r.id+'\',this.value)">'
+      +(isPu
+        ? '<input type="text" value="PU" readonly title="Picked up — counts as '+g+'">'
+        : '<input type="number" inputmode="numeric" min="1" max="20" value="'+(g==null?'':g)+'" '
+          +'onchange="setCard(\''+r.id+'\',this.value)">')
       +'<button onclick="stepCard(\''+r.id+'\',1)">+</button></div>'
+      // Picking up is the norm in a social round. It scores nothing and goes to
+      // your handicap as net double bogey, which is what WHS does with a hole
+      // you didn't finish.
+      +'<button onclick="pickUpCard(\''+r.id+'\')" style="width:100%;margin-top:5px;'
+      +'border:1px solid '+(isPu?'var(--green)':'#e2dbcd')+';background:'
+      +(isPu?'var(--green)':'#fff')+';color:'+(isPu?'#fff':'var(--muted)')
+      +';border-radius:10px;padding:5px 6px;font-size:9px;font-weight:900;'
+      +'letter-spacing:.4px;cursor:pointer;font-family:inherit">'
+      +(isPu?'PICKED UP ✕':'PICK UP')+'</button></div>'
       +'<div class="ptsbox'+(pts>=3?' good':'')+'"><span class="v">'+(pts==null?'—':pts)
       +'</span><span class="l">PTS</span></div></div>';
   });
@@ -2054,11 +2076,34 @@ function signCard(who){
 function setCard(who,v){
   const n=String(v).trim()===''?null:Math.max(1,Math.min(20,parseInt(v,10)||0));
   const store=(who==='me')?card:cardP;
+  const mark=(who==='me')?cardPU:cardPPU;
+  delete mark[rdHole];
   if(n==null)delete store[rdHole];else store[rdHole]=n;
   rdSave();
   renderRoundHole();
 }
+// Picked up: no score to write down. Stored as net double bogey — the most
+// that hole could ever have been worth — so it scores zero points and posts to
+// the handicap the way WHS treats an unfinished hole.
+function pickUpCard(who){
+  const mark=(who==='me')?cardPU:cardPPU;
+  const store=(who==='me')?card:cardP;
+  if(mark[rdHole]){
+    delete mark[rdHole]; delete store[rdHole];
+  } else {
+    const h=holeOf(rdHole);
+    const hcp=(who==='me')
+      ? (me.handicap==null?36:Number(me.handicap))
+      : (partner&&partner.hcp!=null?Number(partner.hcp):36);
+    store[rdHole]=h.par+2+strokesOn(hcp,h.si);
+    mark[rdHole]=true;
+  }
+  rdSave();
+  renderRoundHole();
+}
 function stepCard(who,d){
+  const mark=(who==='me')?cardPU:cardPPU;
+  delete mark[rdHole];           // a real number replaces a pickup
   const store=(who==='me')?card:cardP;
   const cur=store[rdHole];
   // First tap on an empty box lands on par, same as the comp scorer. It used to
