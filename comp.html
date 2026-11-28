@@ -20,12 +20,15 @@
 :root{--green:#082f25;--green2:#14523f;--cream:#f4f0e8;--ink:#122019;--gold:#d8b45c;
       --muted:#6f7b74;--line:rgba(18,32,25,.09);--bad:#b3261e;--good:#25704d}
 *{box-sizing:border-box}
-html{overflow-x:hidden;width:100%;overscroll-behavior:none;
+/* This was three overlapping rules: overflow-x and width:100% on html,
+   overscroll-behavior:none on html (both axes), and overscroll-behavior-y:
+   contain on body. On iOS that combination gives the root its own scroll
+   context and the page stops responding to a swipe. app.html has never had the
+   problem, so this is now exactly app.html's rule. */
+html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#082f25;color:var(--ink);-webkit-text-size-adjust:100%;overflow-x:hidden;
   overscroll-behavior-x:none;touch-action:pan-y pinch-zoom}
 .hscroll{touch-action:pan-x pinch-zoom}
-html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#082f25;color:var(--ink);-webkit-text-size-adjust:100%}
-body{overflow-x:hidden;max-width:100%;overscroll-behavior-y:contain}
 button,input,select{font:inherit}
 button{cursor:pointer}
 .app{width:100%;max-width:430px;min-height:100vh;margin:auto;background:var(--cream);
@@ -1595,7 +1598,7 @@ function renderPerHole(){
     perch:'<strong>Win a hole and you’re on the perch.</strong> Win the next one from up there '
          +'and it’s a point. Halve it and you stay put. Lose it and whoever won takes your spot.'
   }[g.mode])+'</div>'
-  +'<button class="ghostbtn" onclick="location.href=\'/app\'">← Back to dashboard</button>';
+  +'<button class="ghostbtn" onclick="backToScore()">← Back to my card</button>';
 
   $('lb-body').innerHTML=dayTabs('day')+h;
 }
@@ -1684,7 +1687,7 @@ async function showOverall(){
       +'total will move.'
     : '<strong>All in.</strong> '+(low?'Lowest combined nett wins.':'Most points wins.'))
     +'<br><br>Each day is scored on its own course and format, then added together.</div>'
-    +'<button class="ghostbtn" onclick="location.href=\'/app\'">← Back to dashboard</button>';
+    +'<button class="ghostbtn" onclick="backToScore()">← Back to my card</button>';
   b.innerHTML=h;
 }
 
@@ -1829,7 +1832,7 @@ function renderBoard(){
       +'something even if the overall is gone.<br><br>'
       +'Better score in each pair takes the hole, level is halved. A match ends once a pair is '
       +'further ahead than there are holes left — that’s where “3 &amp; 2” comes from.</div>'
-      +'<button class="ghostbtn" onclick="location.href=\'/app\'">← Back to dashboard</button>';
+      +'<button class="ghostbtn" onclick="backToScore()">← Back to my card</button>';
     $('lb-body').innerHTML=dayTabs('day')+h;
     return;
   }
@@ -1901,7 +1904,7 @@ function renderBoard(){
         +'max-width:280px;margin-left:auto;margin-right:auto">'+esc(line)+'</div>'):'')
       +'</div></section>'+h;
   }
-  h+='<button class="ghostbtn" onclick="location.href=\'/app\'">← Back to dashboard</button>';
+  h+='<button class="ghostbtn" onclick="backToScore()">← Back to my card</button>';
   $('lb-body').innerHTML=dayTabs('day')+h;
 }
 
@@ -2012,6 +2015,12 @@ async function gMagic(){
   if(error){gErr(esc(error.message));return}
   gErr('<span style="color:var(--green)">Link sent to '+esc(em)
     +'. Open it on this phone and you’ll come straight back here.</span>');
+}
+// From the leaderboard, "back" means back to your card. Only someone who isn't
+// playing — a watcher — has nothing to go back to, so they get the dashboard.
+function backToScore(){
+  if(watch||!myPlace){ location.href='/app'; return }
+  show('v-score'); renderScore();
 }
 function watchBoard(){
   watch=true; hideGate();
