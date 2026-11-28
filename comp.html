@@ -2012,22 +2012,36 @@ function renderBoard(){
   let rows=[];
   if(f.agg==='individual'||f.agg==='stroke_individual'){
     rows=players.map(p=>{
-      let pts=0,g=0,n=0;
+      let pts=0,g=0,n=0,parPlayed=0;
       const ch=phcp(p);
       for(let i=1;i<=18;i++){const v=(scores[p.id]||{})[i];
-        if(v!=null){g+=v;n++;pts+=stbl(v,holeOf(i).par,strokes(ch,holeOf(i).si))}}
+        if(v!=null){g+=v;n++;parPlayed+=holeOf(i).par;
+          pts+=stbl(v,holeOf(i).par,strokes(ch,holeOf(i).si))}}
       return{label:p.name,hcp:ch,primary:(f.agg==='individual'?pts:g-ch),
-             holes:n,low:f.low,gross:g};
+             holes:n,low:f.low,gross:g,parPlayed:parPlayed};
     }).filter(r=>r.holes>0);
   } else {
     rows=teams.map(t=>{
       const tt=teamTotals(t.id);
+      let parPlayed=0;
+      for(let i=1;i<=18;i++){
+        const r2=(teamScores[t.id]||{})[i];
+        const has=(f.entry==='team')?(r2&&r2.g!=null):(teamHole(t.id,i).pts!=null);
+        if(has)parPlayed+=holeOf(i).par;
+      }
       return{label:(t.members||[]).map(pname).join(' & ')||('Team '+(t.team_no+1)),
              hcp:tt.hcp,primary:(f.agg==='nett'?tt.nett:tt.pts),gross:tt.gross,
-             holes:tt.holes,low:f.low,unres:tt.unres};
+             holes:tt.holes,low:f.low,unres:tt.unres,parPlayed:parPlayed};
     }).filter(r=>r.holes>0);
   }
-  rows.sort((a,b)=>f.low?(a.primary-b.primary):(b.primary-a.primary));
+  // Mid-round, a raw nett isn't comparable: teams are at different holes and
+  // the full handicap is being taken off a part-played card. Scale the
+  // allowance to the holes done and show the score against par instead.
+  rows.forEach(r=>{
+    r.used=r.holes>=18?r.hcp:(r.hcp*r.holes/18);
+    r.toPar=r.low?Math.round((r.gross-r.used-r.parPlayed)*10)/10:null;
+  });
+  rows.sort((a,b)=>f.low?(a.toPar-b.toPar):(b.primary-a.primary));
   const done=rows.length&&rows.every(r=>r.holes===18);
 
   if(!rows.length){
@@ -2039,14 +2053,20 @@ function renderBoard(){
   let h='<section class="card" style="overflow:hidden"><table class="lb"><thead><tr>'
     +'<th>Pos</th><th>'+((f.agg==='individual'||f.agg==='stroke_individual')?'Player':'Team')+'</th>'
     +(f.agg==='nett'||f.agg==='stroke_individual'?'<th class="num">Gross</th><th class="num">H/C</th>':'')
-    +'<th class="num">'+(f.low?'Nett':'Pts')+'</th><th class="num">Thru</th></tr></thead><tbody>';
+    +'<th class="num">'+(f.low?(done?'Nett':'To par'):'Pts')+'</th>'
+    +'<th class="num">Thru</th></tr></thead><tbody>';
   let pos=0,last=null;
   rows.forEach((r,i)=>{
-    if(last===null||r.primary!==last){pos=i+1;last=r.primary}
+    const key=f.low?r.toPar:r.primary;
+    if(last===null||key!==last){pos=i+1;last=key}
     h+='<tr class="'+(done&&i===0?'win':'')+'"><td><span class="pos">'+(done&&i===0?'🏆 ':'')+pos+'</span></td>'
       +'<td>'+esc(r.label)+'</td>'
-      +(f.agg==='nett'||f.agg==='stroke_individual'?'<td class="num">'+r.gross+'</td><td class="num">'+Math.round(r.hcp)+'</td>':'')
-      +'<td class="num">'+r.primary+'</td><td class="num">'+r.holes+'</td></tr>';
+      +(f.agg==='nett'||f.agg==='stroke_individual'
+        ? '<td class="num">'+r.gross+'</td><td class="num">'
+          +(r.holes>=18?Math.round(r.hcp):(Math.round(r.used*10)/10))+'</td>'
+        : '')
+      +'<td class="num">'+(f.low?(done?r.primary:toParText(r.toPar)):r.primary)+'</td>'
+      +'<td class="num">'+r.holes+'</td></tr>';
   });
   h+='</tbody></table></section>';
   const unres=rows.reduce((a,r)=>a+(r.unres||0),0);
