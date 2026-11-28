@@ -3200,7 +3200,11 @@ function renderComp(){
       h+='<button class="'+(prevHasTeams&&!built?'ghostbtn':'primary')+'" onclick="autoTeams()">'
         +(built?'Rebuild teams — balanced by handicap':'Build teams — balanced by handicap')+'</button>'
         +'<div class="fine" style="text-align:left;margin-top:7px">Pairs the strongest with the '
-        +'weakest so the teams are even. You can change anyone below.</div>';
+        +'weakest so the teams are even. You can change anyone below.'
+        +(f.key.indexOf('ambrose')===0
+          ? ' Ambrose teams play off one combined handicap.'
+          : ' Everyone still plays off their own handicap — teams only decide whose '
+            +'score counts.')+'</div>';
       if(built){
         // Build the option list per slot so the current pick is actually selected
         const optsFor=(sel)=>'<option value="">—</option>'+ps.map(p=>
@@ -3212,8 +3216,16 @@ function renderComp(){
             return a+(p?Number(p.playing_hcp):0)},0);
           const isAmb=f.key.indexOf('ambrose')===0;
           const thc=Math.round(sum/((mem.length||r.team_size)*2));
+          // Only Ambrose has a real team handicap. In best ball and the team
+          // stablefords each player gets their own shots off their own mark,
+          // so "combined 7" described a number nobody plays off.
+          const marks=mem.map(id=>{const q=ps.find(x=>x.id===id);
+            return q?Math.round(q.playing_hcp):null}).filter(x=>x!=null);
           h+='<div class="tbox"><div class="th"><span class="tn">Team '+(t.team_no+1)+'</span>'
-            +'<span class="thc">'+(isAmb?('team H/C '+thc):('combined '+Math.round(sum)))+'</span></div>';
+            +'<span class="thc">'
+            +(isAmb ? ('team H/C '+thc)
+                    : (marks.length?('off '+marks.join(' &amp; ')):''))
+            +'</span></div>';
           for(let s=0;s<r.team_size;s++){
             h+='<select onchange="setSlot('+ti+','+s+',this.value)">'+optsFor(mem[s]||'')+'</select>';
           }
