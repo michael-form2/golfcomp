@@ -869,7 +869,7 @@ function renderScore(){
 
     rows=grpTeams.map(t2=>{
       const tid=t2.id, mine=(tid===myTeam);
-      const tLocked=!!locks[tid] || !amScorer();
+      const tLocked=!canEditTeam(tid);
       const tth=teamHole(tid,hole), g=tth.gross;
       const nm=(t2.members||[]).map(pname).join(' & ')||('Team '+(t2.team_no+1));
       let blk='<div class="striplabel" style="padding:9px 13px 0">'
@@ -926,7 +926,7 @@ function renderScore(){
       const pt=teamOf(pid)||t2;
       const th=pt?teamHole(pt.id,hole):{credited:[],tied:[]};
       const tot=pt?teamTotals(pt.id):{contribs:{}};
-      const locked=!!locks[pt?pt.id:myTeam] || !amScorer();
+      const locked=!canEditTeam(pt?pt.id:myTeam);
       let divider='';
       if(groupCard&&pt&&(pt.members||[]).length>1&&pt.id!==lastTeam){
         divider='<div style="font-size:9.5px;font-weight:900;color:var(--muted);text-transform:uppercase;'
@@ -1211,6 +1211,35 @@ function renderScore(){
       +'</div>';
   }
 
+  // Who's keeping whose card
+  let markBanner='';
+  if(amScorer()&&myTeam){
+    const m=markingTeams();
+    if(m.length){
+      const theirs=(m[0].members||[]).map(pname).join(' & ')||('Team '+(m[0].team_no+1));
+      const gts=groupTeams();
+      // whoever marks me is the team before mine in the ring
+      const keeper=gts[(gts.findIndex(t=>t.id===myTeam)-1+gts.length)%gts.length];
+      const keptBy=keeper&&keeper.id!==myTeam
+        ? ((keeper.members||[]).map(pname).join(' & ')||('Team '+(keeper.team_no+1)))
+        : null;
+      markBanner='<section class="card" style="padding:12px 13px;margin-bottom:11px;'
+        +'border-left:3px solid var(--green)">'
+        +'<div style="font-size:12.5px;line-height:1.5">'
+        +(markAll()
+          ? '<strong>You’re marking the whole group.</strong> Everyone’s scores are '
+            +'yours to enter.'
+          : ('<strong>You’re marking '+esc(theirs)+'.</strong>'
+             +(keptBy?(' Your card is kept by '+esc(keptBy)+' — check it before you '
+                       +'hand it in.'):'')))
+        +'</div>'
+        +'<button class="ghostbtn" style="margin-top:9px" onclick="toggleMarkAll()">'
+        +(markAll()?'Go back to marking just '+esc(theirs)
+                   :'Nobody else has the app — let me mark the lot')
+        +'</button></section>';
+    }
+  }
+
   const scoreBanner = amScorer()
     ? ''
     : '<section class="card" style="padding:12px 13px;margin-bottom:11px;'
@@ -1223,7 +1252,7 @@ function renderScore(){
 
   $('sc-body').innerHTML=
     '<div class="who-else" id="who-else" style="display:none"></div>'
-    +dayTabs+scoreBanner+groupPicker
+    +dayTabs+scoreBanner+markBanner+groupPicker
     +'<section class="card">'
     +'<div class="holehead"><div class="n">Hole '+hole+'</div>'
     +'<div class="i">Par '+h.par+' · SI '+(h.si==null?'—':h.si)+(h.metres?('<br>'+h.metres+'m'):'')+'</div></div>'
@@ -1242,12 +1271,19 @@ function renderScore(){
     +(amScorer()&&!locks[myTeam]&&tot.holes>=18
       ? '<section class="card" style="padding:15px 16px;margin:14px 0 11px;'
         +'border:2px solid var(--green);background:#f1f7f3">'
-        +'<b style="font-size:14px;color:var(--green)">All 18 holes are in.</b>'
-        +'<div class="fine" style="text-align:left;margin:3px 0 11px">Hand the card in and '
-        +'it goes to the leaderboard and everyone’s handicap. You’ll need the organiser to '
-        +'unlock it after that.</div>'
+        +'<b style="font-size:14px;color:var(--green)">'
+        +(markingTeams().length&&!markAll()
+          ? 'Your card is complete — check it.'
+          : 'All 18 holes are in.')+'</b>'
+        +'<div class="fine" style="text-align:left;margin:3px 0 11px">'
+        +(markingTeams().length&&!markAll()
+          ? 'Your marker has filled every hole. Have a look back through, then confirm '
+            +'it. After that it goes to the leaderboard and everyone’s handicap.'
+          : 'Hand the card in and it goes to the leaderboard and everyone’s handicap. '
+            +'You’ll need the organiser to unlock it after that.')+'</div>'
         +'<button class="primary" style="margin:0" onclick="lockCard(true)">'
-        +'Submit card →</button></section>'
+        +(markingTeams().length&&!markAll()?'That’s right — confirm':'Submit card →')
+        +'</button></section>'
       : '')
     +strip+notes+rivals
     +(!amScorer() ? ''
@@ -2143,6 +2179,45 @@ async function scoreDay(n){
   }
   holeRestored=null; hole=1; restoreHole(); holeRestored=round.id;
   show('v-score'); renderScore();
+}
+// ---------- cross-marking ----------
+// You keep your opponent's card and they keep yours, the way a comp actually
+// works. Markers fall out of the playing-group draw in a ring — in a four-ball
+// Team 1 marks Team 2 and Team 2 marks Team 1 — so there's nothing to set up.
+function groupTeams(){
+  const seen=[], out=[];
+  cardPlayers().forEach(pid=>{
+    const t=teamOf(pid);
+    if(t&&seen.indexOf(t.id)<0){seen.push(t.id);out.push(t)}
+  });
+  out.sort((a,b)=>a.team_no-b.team_no);
+  return out;
+}
+function markingTeams(){
+  const gts=groupTeams();
+  if(gts.length<2)return [];
+  const i=gts.findIndex(t=>t.id===myTeam);
+  if(i<0)return [];
+  return [gts[(i+1)%gts.length]];
+}
+// Not everyone in the group will have the app out. This lets one person keep
+// the lot, which is the reality most weekends.
+function markAllKey(){ return round?('gc_markall_'+round.id):null }
+function markAll(){ const k=markAllKey();
+  try{ return !!k&&localStorage.getItem(k)==='1' }catch(e){ return false } }
+function toggleMarkAll(){
+  const k=markAllKey(); if(!k)return;
+  try{ markAll()?localStorage.removeItem(k):localStorage.setItem(k,'1') }catch(e){}
+  renderScore();
+}
+// Whose scores this phone may change.
+function canEditTeam(tid){
+  if(!amScorer())return false;
+  if(locks[tid])return false;
+  if(markAll())return true;
+  const m=markingTeams();
+  if(!m.length)return true;          // on your own in the group — keep your own card
+  return m.some(t=>t.id===tid);
 }
 function backToScore(){
   if(watch||!myPlace){ location.href='/app'; return }
