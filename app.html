@@ -1657,7 +1657,7 @@ let partner=null, roundTee=null, roundDate=null;
 async function startRound(){
   show('v-play');
   csRender('so'); csRender('ma');
-  const today=new Date().toISOString().slice(0,10);
+  const today=todayISO();
   if(!$('so-date').value)$('so-date').value=today;
   if(!$('ma-date').value)$('ma-date').value=today;
 }
@@ -2401,7 +2401,7 @@ function renderFourGames(){
 async function openFourSheet(){
   four=[]; fourTeams=null; fourGame=null;
   $('fr-results').innerHTML=''; $('fr-email').value=''; $('fr-msg').innerHTML='';
-  if(!$('fr-date').value)$('fr-date').value=new Date().toISOString().slice(0,10);
+  if(!$('fr-date').value)$('fr-date').value=todayISO();
   csState('fr').tee=''; csState('fr').label=''; csState('fr').q=''; csState('fr').results=null;
   // picking a course is the whole of step 1 — move straight on when it's chosen
   csState('fr').onPick='fourShow(2)';
@@ -2794,16 +2794,35 @@ function minBlurb(key){
     : 'Everyone has to be the counting score on at least this many holes, so nobody can '
       +'just make up the numbers. Set 0 for no requirement.';
 }
+// toISOString() is UTC. In Melbourne that's the previous day until 11am, so
+// every round teed off in the morning defaulted to yesterday's date — which
+// then posted to handicaps under the wrong day.
+function isoLocal(d){
+  const p=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+}
+function todayISO(){ return isoLocal(new Date()) }
+function nextISO(iso){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||''));
+  if(!m)return todayISO();
+  const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+  d.setDate(d.getDate()+1);
+  return isoLocal(d);
+}
 function blankDay(n){
-  const iso=new Date(Date.now()+n*86400000).toISOString().slice(0,10);
-  return {date:iso,tee:'',course:null,format:'stableford_individual',size:1,min:0};
+  const d=new Date(); d.setDate(d.getDate()+(n||0));
+  return {date:isoLocal(d),tee:'',course:null,format:'stableford_individual',size:1,min:0};
 }
 function addDay(){
   const last=ncDays[ncDays.length-1];
   const d=blankDay(ncDays.length);
-  // Same course as yesterday is the common case on a trip
+  // Same course as the day before is the common case on a trip
   if(last){ d.tee=last.tee; d.course=last.course; d.format=last.format;
-            d.size=last.size; d.min=last.min }
+            d.size=last.size; d.min=last.min;
+            // A trip runs on consecutive days from the day before it. This used
+            // to be "today + however many days", so day two of a comp booked
+            // for March landed on tomorrow.
+            d.date=nextISO(last.date) }
   ncDays.push(d);
   renderDays();
 }
