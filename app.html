@@ -2061,7 +2061,9 @@ function setCard(who,v){
 function stepCard(who,d){
   const store=(who==='me')?card:cardP;
   const cur=store[rdHole];
-  setCard(who,(cur==null?holeOf(rdHole).par:cur)+d);
+  // First tap on an empty box lands on par, same as the comp scorer. It used to
+  // add the step to par as well, so + gave you a bogey before you'd started.
+  setCard(who,(cur==null?holeOf(rdHole).par:cur+d));
 }
 function stepRound(d){rdHole=Math.max(1,Math.min(18,rdHole+d));rdSave();renderRoundHole()}
 function jumpRound(n){rdHole=n;rdSave();renderRoundHole()}
@@ -3175,6 +3177,26 @@ function renderComp(){
       }).join('')+'</div>';
   }
 
+  // What this day is being played as. The format was locked once the comp
+  // existed, so a day set to the wrong game could only be fixed by deleting the
+  // whole comp and starting again.
+  h+='<section class="card" style="padding:13px;margin-bottom:4px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">'
+    +'<label style="flex:1;margin:0">Playing'+(multi?(' on Day '+r.round_no):'')+'</label>'
+    +(r.started
+      ? '<span class="small" style="background:none;padding:0;color:var(--muted)">'
+        +'started — can’t change</span>'
+      : '')
+    +'</div>'
+    +(r.started
+      ? ('<div style="font-size:13px;font-weight:900;margin-top:6px">'+esc(f.name)+'</div>')
+      : ('<select onchange="csSetFormat(this.value)">'
+         +FORMATS.map(x=>'<option value="'+x.key+'"'+(x.key===r.format?' selected':'')+'>'
+           +esc(x.name)+'</option>').join('')
+         +'</select>'))
+    +'<div class="fine" style="text-align:left;margin-top:7px">'+esc(f.blurb)+'</div>'
+    +'</section>';
+
   // 3. Teams (only for team formats)
   const stepTeams=multi?3:2;
   if(f.teams){
@@ -3561,7 +3583,11 @@ async function autoTeams(){
 // switch to one that actually fits the number you've got.
 async function csSetFormat(key){
   const r=csDay(), f=fmtOf(key);
-  if(!confirm('Change this day to '+f.name+'? Any teams already built will be cleared.'))return;
+  if(key===r.format)return;
+  // put the dropdown back if they change their mind
+  if(!confirm('Change this day to '+f.name+'? Any teams already built will be cleared.')){
+    renderComp(); return;
+  }
   const {error}=await sb.rpc('gc_update_round',{
     p_comp_id:cs.comp.id, p_pin:csPin, p_round_id:r.id,
     p_played_on:r.played_on, p_tee_id:r.tee_id,
